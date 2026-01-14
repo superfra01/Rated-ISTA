@@ -55,7 +55,7 @@ public class FilmDAO {
     }
 
     public FilmBean findById(final int idFilm) { // Parametro final
-        final String query = "SELECT ID_Film, Locandina, Nome, Anno, Durata, Generi, Regista, Trama, Valutazione, Attori FROM Film WHERE ID_Film = ?";
+        final String query = "SELECT * FROM Film WHERE ID_Film = ?";
         try (final Connection connection = dataSource.getConnection();
              final PreparedStatement ps = connection.prepareStatement(query)) {
             ps.setInt(1, idFilm);
@@ -82,7 +82,7 @@ public class FilmDAO {
     }
     
     public List<FilmBean> findByName(final String name) { // Parametro final
-        final String query = "SELECT ID_Film, Locandina, Nome, Anno, Durata, Generi, Regista, Trama, Valutazione, Attori FROM Film WHERE nome LIKE ?";
+        final String query = "SELECT * FROM Film WHERE nome LIKE ?";
         final List<FilmBean> films = new ArrayList<>();
         try (final Connection connection = dataSource.getConnection();
              final PreparedStatement ps = connection.prepareStatement(query)) {
@@ -110,7 +110,7 @@ public class FilmDAO {
     }
 
     public List<FilmBean> findAll() {
-        final String query = "SELECT ID_Film, Locandina, Nome, Anno, Durata, Generi, Regista, Trama, Valutazione, Attori FROM Film";
+        final String query = "SELECT * FROM Film";
         final List<FilmBean> films = new ArrayList<>();
         try (final Connection connection = dataSource.getConnection();
              final PreparedStatement ps = connection.prepareStatement(query);
