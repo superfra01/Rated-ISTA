@@ -1,0 +1,41 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #2d2d2d;
+    color: white;
+    text-align: center;
+}
+
+main {
+    padding: 50px 20px;
+}
+
+.about-container {
+    max-width: 800px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.about-container .logo-large {
+    width: 350px; 
+}
+
+.about-container .description {
+    font-size: 18px;
+    line-height: 1.6;
+    color: #ccc;
+    margin-bottom: 30px;
+}
+
+.catalogue-button {
+    padding: 10px 20px;
+    background-color: #ff4c4c; 
+    border: none;   
+    border-radius: 4px;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;}
+    
+.catalogue-button:hover {
+	background-color: #e60000;}
