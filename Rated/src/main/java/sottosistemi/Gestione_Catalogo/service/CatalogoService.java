@@ -84,6 +84,8 @@ public class CatalogoService {
     	film.setNome(Nome);
     	film.setRegista(Regista);
     	film.setTrama(Trama);
+        final FilmBean filmAttuale = FilmDAO.findById(idFilm);
+        film.setValutazione(filmAttuale.getValutazione());
     	FilmDAO.update(film);
     }
     
