@@ -1,5 +1,6 @@
 <%@ page import="java.util.List" %>
 <%@ page import="model.Entity.FilmBean" %>
+<%@ page import="model.Entity.FilmGenereBean" %>
 <%@ page import="model.Entity.UtenteBean" %>
 <%@ page import="java.util.Base64" %>
 
@@ -82,7 +83,27 @@
                 </div>
                 <div class="film-info">
                     <h3><%= film.getNome() %></h3>
-                    <p class="film-genres"><%= film.getGeneri() %></p>
+
+					<%
+					    // Recupero la lista dei generi dalla sessione usando la chiave generata nella Servlet
+					    List<FilmGenereBean> listaGeneri = (List<FilmGenereBean>) session.getAttribute(film.getIdFilm() + "Generi");
+					    
+					    String stringaGeneri = "";
+					    if (listaGeneri != null && !listaGeneri.isEmpty()) {
+					        StringBuilder sb = new StringBuilder();
+					        for (FilmGenereBean g : listaGeneri) {
+					            if (sb.length() > 0) {
+					                sb.append(", "); // Aggiunge la virgola tra i generi
+					            }
+					            sb.append(g.getNomeGenere()); 
+					        }
+					        stringaGeneri = sb.toString();
+					    } else {
+					        stringaGeneri = "Non specificato";
+					    }
+					%>
+
+<p class="film-genres"><%= stringaGeneri %></p>
                     <div class="film-rating">
                         <%
                             int stars = film.getValutazione();

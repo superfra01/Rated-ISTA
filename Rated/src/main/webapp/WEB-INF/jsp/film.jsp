@@ -1,17 +1,20 @@
 <%@ page contentType="text/html; charset=UTF-8" language="java" %>
 <%@ page import="java.util.List" %>
+<%@ page import="java.util.ArrayList" %>
 <%@ page import="java.util.HashMap" %>
 <%@ page import="model.Entity.FilmBean" %>
+<%@ page import="model.Entity.FilmGenereBean" %>
 <%@ page import="model.Entity.RecensioneBean" %>
 <%@ page import="model.Entity.UtenteBean" %>
 <%@ page import="model.Entity.ValutazioneBean" %>
+<%@ page import="java.util.Base64" %>
 
 <!DOCTYPE html>
 <html lang="it">
 <head>
     <meta charset="UTF-8">
     <title>Film</title>
-	<link rel="icon" type="image/x-icon" href="${pageContext.request.contextPath}/static/images/favicon.ico">
+    <link rel="icon" type="image/x-icon" href="${pageContext.request.contextPath}/static/images/favicon.ico">
     <link rel="stylesheet" href="static/css/Film.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <script src="static/scripts/filmFunctions.js" defer></script>
@@ -21,18 +24,39 @@
 <jsp:include page="header.jsp" />
 
 <%
+    // --- RECUPERO DATI DALLA SESSIONE ---
     FilmBean film = (FilmBean) session.getAttribute("film");
     List<RecensioneBean> recensioni = (List<RecensioneBean>) session.getAttribute("recensioni");
     UtenteBean user = (UtenteBean) session.getAttribute("user");
     HashMap<String, ValutazioneBean> valutazioni = (HashMap<String, ValutazioneBean>) session.getAttribute("valutazioni");
+
+    // --- GESTIONE GENERI ---
+    // Recupero la lista di FilmGenereBean salvata dalla Servlet con la chiave "Generi"
+    List<FilmGenereBean> listaGeneri = (List<FilmGenereBean>) session.getAttribute("Generi");
+    
+    // Preparo due variabili:
+    // 1. displayGeneri: una stringa formattata per la visualizzazione (es: "Azione, Avventura")
+    // 2. nomiGeneriAttuali: una lista di stringhe per verificare la presenza nel form di modifica
+    String displayGeneri = "Nessun genere";
+    List<String> nomiGeneriAttuali = new ArrayList<>();
+
+    if (listaGeneri != null && !listaGeneri.isEmpty()) {
+        StringBuilder sb = new StringBuilder();
+        for (FilmGenereBean g : listaGeneri) {
+            if (sb.length() > 0) sb.append(", ");
+            sb.append(g.getNomeGenere()); // Aggiungo alla stringa
+            nomiGeneriAttuali.add(g.getNomeGenere()); // Aggiungo alla lista di appoggio
+        }
+        displayGeneri = sb.toString();
+    }
 %>
 
 <div class="page-container">
     <div class="content-section">
+        
         <div class="left-column">
             <div class="sort-bar">
-                <!-- Eventuale barra di ordinamento -->
-            </div>
+                </div>
 
             <% if (recensioni != null && !recensioni.isEmpty()) {
                 HashMap<String, String> users = (HashMap<String, String>) session.getAttribute("users");
@@ -52,7 +76,6 @@
 
             <div class="review-card">
                 <div class="review-username">
-                    <!-- Modificato: ora usa lo username invece della mail -->
                     <a href="<%= request.getContextPath() %>/profile?visitedUser=<%= usernameRecensore %>" class="profile-link">
                         <%= usernameRecensore %>
                     </a>
@@ -75,14 +98,14 @@
                     <div class="likes-dislikes">
                         <button class="btn-like <%= (val != null && val.isLikeDislike()) ? "active" : "" %>" 
                                 <%= (user != null && "RECENSORE".equals(user.getTipoUtente())) 
-                                     ? "onclick=\"voteReview('" + film.getIdFilm() + "', '" + emailRecensore + "', true)\"" 
-                                     : "disabled" %>>
+                                    ? "onclick=\"voteReview('" + film.getIdFilm() + "', '" + emailRecensore + "', true)\"" 
+                                    : "disabled" %>>
                             <i class="fas fa-thumbs-up"></i> <span><%= r.getNLike() %></span>
                         </button>
                         <button class="btn-dislike <%= (val != null && !val.isLikeDislike()) ? "active" : "" %>" 
                                 <%= (user != null && "RECENSORE".equals(user.getTipoUtente())) 
-                                     ? "onclick=\"voteReview('" + film.getIdFilm() + "', '" + emailRecensore + "', false)\"" 
-                                     : "disabled" %>>
+                                    ? "onclick=\"voteReview('" + film.getIdFilm() + "', '" + emailRecensore + "', false)\"" 
+                                    : "disabled" %>>
                             <i class="fas fa-thumbs-down"></i> <span><%= r.getNDislike() %></span>
                         </button>
                     </div>
@@ -111,13 +134,13 @@
                     if (film.getLocandina() != null) {
                         byte[] iconaBytes = film.getLocandina() ;
                         if (iconaBytes.length > 0) {
-                            LocandinaBase64 = java.util.Base64.getEncoder().encodeToString(iconaBytes);
+                            LocandinaBase64 = Base64.getEncoder().encodeToString(iconaBytes);
                         }
                     }
                 %>
                 <img class="film-poster" 
-                     src="data:image/png;base64,<%= LocandinaBase64 %>" 
-                   alt="Locandina di <%= film.getNome() %>" />
+                     src="<%= LocandinaBase64.isEmpty() ? request.getContextPath() + "/static/images/RATED_icon.png" : "data:image/png;base64," + LocandinaBase64 %>" 
+                    alt="Locandina di <%= film.getNome() %>" />
 
                 <h2 class="film-title"><%= film.getNome() %></h2>
                 <div class="review-stars">
@@ -130,48 +153,48 @@
                             <i class="far fa-star"></i>
                     <% }} %>
                 </div>
+                
                 <p class="film-year-genre">
-                    <%= film.getAnno() %> - <%= film.getGeneri() %>
+                    <%= film.getAnno() %> - <%= displayGeneri %>
                 </p>
+                
                 <p class="film-description"><%= film.getTrama() %></p>
-				<%
-				    boolean userHasReviewed = false;
-				    if (user != null && "RECENSORE".equals(user.getTipoUtente()) && recensioni != null) {
-				        for (RecensioneBean r : recensioni) {
-				            if (r.getEmail().equals(user.getEmail())) {
-				                userHasReviewed = true;
-				                break;
-				            }
-				        }
-				    }
-				%>
+                <%
+                    boolean userHasReviewed = false;
+                    if (user != null && "RECENSORE".equals(user.getTipoUtente()) && recensioni != null) {
+                        for (RecensioneBean r : recensioni) {
+                            if (r.getEmail().equals(user.getEmail())) {
+                                userHasReviewed = true;
+                                break;
+                            }
+                        }
+                    }
+                %>
                 <div class="rate-film">
-				    <% if (user != null && "RECENSORE".equals(user.getTipoUtente()) && (user.getNWarning() < 3)) { %>
-				        
-				        <% if (userHasReviewed) { %>
-				            <!-- Mostra un pulsante che fa uscire l’alert -->
-				            <button type="button" class="btn-rate" 
-				                    onclick="alert('Hai già recensito questo film!')">
-				                RATE IT
-				            </button>
-				        <% } else { %>
-				            <!-- Mostra un pulsante che apre il form -->
-				            <button type="button" class="btn-rate" id="btnRateFilm" onclick="showReviewForm()">
-				                RATE IT
-				            </button>
-				        <% } %>
-				
-				    <% } else { %>
-				        <button type="button" class="btn-rate" disabled>RATE IT</button>
-				    <% } %>
-				</div>
+                    <% if (user != null && "RECENSORE".equals(user.getTipoUtente()) && (user.getNWarning() < 3)) { %>
+                        
+                        <% if (userHasReviewed) { %>
+                            <button type="button" class="btn-rate" 
+                                    onclick="alert('Hai già recensito questo film!')">
+                                RATE IT
+                            </button>
+                        <% } else { %>
+                            <button type="button" class="btn-rate" id="btnRateFilm" onclick="showReviewForm()">
+                                RATE IT
+                            </button>
+                        <% } %>
+                
+                    <% } else { %>
+                        <button type="button" class="btn-rate" disabled>RATE IT</button>
+                    <% } %>
+                </div>
 
 
                 <% if (user != null && "GESTORE".equals(user.getTipoUtente())) { %>
                     <div class="manage-film">
-					    <button type="button" class="btn-delete" onclick="deleteFilm('<%= film.getIdFilm() %>')">Elimina Film</button>
-					    <button type="button" class="btn-modify" onclick="showModifyForm()">Modifica Informazioni Film</button>
-					</div>
+                        <button type="button" class="btn-delete" onclick="deleteFilm('<%= film.getIdFilm() %>')">Elimina Film</button>
+                        <button type="button" class="btn-modify" onclick="showModifyForm()">Modifica Informazioni Film</button>
+                    </div>
 
                 <% } %>
             </div>
@@ -179,7 +202,6 @@
     </div>
 </div>
 
-<!-- Overlay Form per la Pubblicazione della Recensione -->
 <div id="reviewOverlay" class="overlay">
     <div class="overlay-content">
         <span class="close-btn" onclick="hideReviewForm()">&times;</span>
@@ -212,7 +234,6 @@
     </div>
 </div>
 
-<!-- Overlay Form per la Modifica delle Informazioni del Film -->
 <div id="modifyOverlay" class="overlay">
     <div class="overlay-content">
         <span class="close-btn" onclick="hideModifyForm()">&times;</span>
@@ -230,38 +251,27 @@
                 <input type="number" id="annoFilm" name="annoFilm" value="<%= film.getAnno() %>" required />
 
                 <label for="generiFilm">Generi (Ctrl+Click per modificare la selezione):</label>
-				<select name="generiFilm" id="generiFilm" multiple required style="height: 120px; width: 100%; background-color: #555; color: white; border: 1px solid #ccc; padding: 5px;">
-				<%
-					// 1. Lista statica di tutti i generi presenti nel DB
-					String[] allGeneri = {
-						"Animazione", "Avventura", "Azione", "Biografico", "Commedia",
-						"Crimine", "Documentario", "Drammatico", "Epico", "Famiglia",
-						"Fantascienza", "Fantasy", "Giallo", "Guerra", "Horror",
-						"Mistero", "Musicale", "Noir", "Poliziesco", "Romantico",
-						"Sentimentale", "Sportivo", "Storico", "Thriller", "Western"
-					};
+                <select name="generiFilm" id="generiFilm" multiple required style="height: 120px; width: 100%; background-color: #555; color: white; border: 1px solid #ccc; padding: 5px;">
+                <%
+                    // FIX: Lista statica e confronto con lista 'nomiGeneriAttuali' calcolata in alto
+                    String[] allGeneri = {
+                        "Animazione", "Avventura", "Azione", "Biografico", "Commedia",
+                        "Crimine", "Documentario", "Drammatico", "Epico", "Famiglia",
+                        "Fantascienza", "Fantasy", "Giallo", "Guerra", "Horror",
+                        "Mistero", "Musicale", "Noir", "Poliziesco", "Romantico",
+                        "Sentimentale", "Sportivo", "Storico", "Thriller", "Western"
+                    };
 
-					// 2. Recupero la stringa dei generi attuali del film (es: "Azione, Fantascienza")
-					String currentGeneriStr = film.getGeneri();
-					if (currentGeneriStr == null) currentGeneriStr = "";
-
-					// 3. Creo una lista per verificare facilmente la presenza
-					// Rimuovo spazi extra con trim() per sicurezza
-					java.util.List<String> currentGeneriList = new java.util.ArrayList<>();
-					for(String s : currentGeneriStr.split(",")) {
-						currentGeneriList.add(s.trim());
-					}
-
-					// 4. Genero le option, aggiungendo 'selected' se il film ha quel genere
-					for (String g : allGeneri) {
-						String isSelected = currentGeneriList.contains(g) ? "selected" : "";
-				%>
-					<option value="<%= g %>" <%= isSelected %>><%= g %></option>
-				<%
-					}
-				%>
-				</select>
-				
+                    for (String g : allGeneri) {
+                        // Verifico se il genere è presente nella lista recuperata dalla sessione
+                        String isSelected = (nomiGeneriAttuali.contains(g)) ? "selected" : "";
+                %>
+                    <option value="<%= g %>" <%= isSelected %>><%= g %></option>
+                <%
+                    }
+                %>
+                </select>
+                
                 <label for="tramaFilm">Trama:</label>
                 <textarea id="tramaFilm" name="tramaFilm" rows="4" required><%= film.getTrama() %></textarea>
 
