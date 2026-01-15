@@ -50,7 +50,7 @@ public class ProfileServlet extends HttpServlet {
         	List<String> generi = catalogoService.getAllGeneri();
         	session.setAttribute("allGenres", generi);
         	
-        	List<String> userGenres = ProfileService.GetInteressi(visitedUser.getEmail());
+        	List<String> userGenres = ProfileService.getPreferenze(visitedUser.getEmail());
         	session.setAttribute("userGenres", userGenres);
         	request.getRequestDispatcher("/WEB-INF/jsp/profile.jsp").forward(request, response);	
         } else {

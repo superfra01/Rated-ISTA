@@ -10,6 +10,7 @@ import model.DAO.UtenteDAO;
 import model.DAO.PreferenzaDAO;
 import model.Entity.UtenteBean;
 import utilities.PasswordUtility;
+import model.Entity.InteresseBean;
 import model.Entity.PreferenzaBean;
 import model.Entity.RecensioneBean;
 
@@ -75,11 +76,16 @@ public class ProfileService {
     	return users;
     }
     
-    public List<String> GetInteressi(final String email){
+    public List<String> getPreferenze(final String email){
     	List<PreferenzaBean> preferenze = PreferenzaDAO.findByEmail(email);
     	List<String> preferenzeString = new ArrayList<String>();
     	for(PreferenzaBean b : preferenze)
     		preferenzeString.add(b.getNomeGenere());
     	return preferenzeString;
+    }
+    
+    public void addPreferenza(final String email, final String genere) {
+    	PreferenzaBean preferenza = new PreferenzaBean(email, genere);
+    	PreferenzaDAO.save(preferenza);
     }
 }

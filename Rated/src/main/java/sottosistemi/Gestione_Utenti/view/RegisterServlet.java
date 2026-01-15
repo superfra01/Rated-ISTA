@@ -1,9 +1,12 @@
 package sottosistemi.Gestione_Utenti.view;
 
 import model.DAO.GenereDAO;
+import model.Entity.InteresseBean;
+import model.Entity.PreferenzaBean;
 import model.Entity.UtenteBean;
 import sottosistemi.Gestione_Catalogo.service.CatalogoService;
 import sottosistemi.Gestione_Utenti.service.AutenticationService;
+import sottosistemi.Gestione_Utenti.service.ProfileService;
 import utilities.FieldValidator;
 
 import java.io.IOException;
@@ -24,10 +27,12 @@ import javax.servlet.http.Part;
 public class RegisterServlet extends HttpServlet {
 	private static final long serialVersionUID = 1879879L;
 	private AutenticationService authService;
+	private ProfileService profService;
 
     @Override
     public void init() {
         authService = new AutenticationService();
+        profService = new ProfileService();
     }
 
     @Override
@@ -49,6 +54,8 @@ public class RegisterServlet extends HttpServlet {
     	final String confirmPassword = request.getParameter("confirm_password");
     	final String biography = request.getParameter("biography");
     	
+    	final String[] generi= request.getParameterValues("genres");
+    	
     	byte[] icon = null; // Riassegnata
     	
     	final Part filePart = request.getPart("profile_icon");
@@ -64,6 +71,11 @@ public class RegisterServlet extends HttpServlet {
             password.equals(confirmPassword)) {
 
             final UtenteBean utente = authService.register(username, email, password, biography, icon);
+            
+            for(String genere : generi) {
+            	profService.addPreferenza(email, genere);
+            	
+            }
 
             if (utente != null) {
                 response.sendRedirect(request.getContextPath() + "/login"); // Redirect to login after successful registration
