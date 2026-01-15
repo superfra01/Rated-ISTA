@@ -1,7 +1,10 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page import="java.util.List" %>
+<%@ page import="java.util.ArrayList" %>
+<%@ page import="java.util.HashMap" %>
 <%@ page import="model.Entity.UtenteBean" %>
 <%@ page import="model.Entity.RecensioneBean" %>
+<%@ page import="model.Entity.FilmBean" %>
 <%@ include file="header.jsp" %>
 
 <%
@@ -9,6 +12,15 @@
     UtenteBean currentUser = (UtenteBean) session.getAttribute("user");
     List<RecensioneBean> recensioni = (List<RecensioneBean>) session.getAttribute("recensioni");
     HashMap<Integer, FilmBean> filmMap = (HashMap<Integer, FilmBean>) session.getAttribute("films");
+
+    // Recupero liste generi per il form di modifica
+    // Il backend dovrà popolare "allGenres" (tutti i generi disponibili) e "userGenres" (quelli dell'utente)
+    List<String> allGenres = (List<String>) session.getAttribute("allGenres");
+    List<String> userGenres = (List<String>) session.getAttribute("userGenres");
+
+    // Evito NullPointer se il backend non ha ancora passato i dati
+    if (allGenres == null) allGenres = new ArrayList<>();
+    if (userGenres == null) userGenres = new ArrayList<>();
 
     int reputationScore = 0;
     if (recensioni != null) {
@@ -29,7 +41,7 @@
     <meta charset="UTF-8">
     <title>Profilo di <%= visitedUser.getUsername() %></title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-	<link rel="icon" type="image/x-icon" href="${pageContext.request.contextPath}/static/images/favicon.ico">
+    <link rel="icon" type="image/x-icon" href="${pageContext.request.contextPath}/static/images/favicon.ico">
     <link rel="stylesheet" href="static/css/Profile.css">
     <script src="static/scripts/profileScripts.js" defer></script>
 </head>
@@ -46,23 +58,31 @@
                 }
             }
         %>
-        <% if (visitedUser.getTipoUtente().equals("RECENSORE")&&visitedUser.getIcona()!=null) { %>
+        <% if (visitedUser.getTipoUtente().equals("RECENSORE") && visitedUser.getIcona() != null) { %>
         <img src="data:image/png;base64,<%= iconaBase64 %>" alt="User Icon" />
-		<%} %>
+        <% } %>
         <div>
             <div class="username"><%= visitedUser.getUsername() %></div>
             <div class="biografia"><%= visitedUser.getBiografia() %></div>
             <div class="reputation">Reputation Score: <%= reputationScore %></div>
+            <% if (!userGenres.isEmpty()) { %>
+            <div class="user-genres-display">
+                <i class="fas fa-tags"></i>
+                <% for(String g : userGenres) { %>
+                    <span class="genre-tag"><%= g %></span>
+                <% } %>
+            </div>
+            <% } %>
         </div>
     </div>
 
     <% if (isProfileOwner) { %>
     <div class="buttons-container">
         <button onclick="openOverlay('changePasswordOverlay')">Cambia Password</button>
-        <%if(user.getTipoUtente().equals("RECENSORE")){ %>
-        <button onclick="openOverlay('changeProfileOverlay')">Modifica Profilo</button>
-        <%} %>
-        <!-- Pulsante di Logout -->
+        <% if(currentUser.getTipoUtente().equals("RECENSORE")){ %>
+            <button onclick="openOverlay('changeProfileOverlay')">Modifica Profilo</button>
+            <button onclick="openOverlay('changeGenresOverlay')">Modifica Generi</button>
+        <% } %>
         <form method="get" action="<%= request.getContextPath() %>/logout" style="display: inline;">
             <button type="submit">Logout</button>
         </form>
@@ -115,7 +135,7 @@
     <div class="modal">
         <button class="close-modal" onclick="closeOverlay('changePasswordOverlay')">&times;</button>
         <h2>Cambia Password</h2>
-        <form method="post" action="<%= request.getContextPath() %>/passwordModify">
+        <form method="post" action="<%= request.getContextPath() %>/passwordModify" onsubmit="return validatePasswordChangeForm()">
             <input type="hidden" name="operationType" value="PasswordModify" />
             <input type="hidden" name="email" value="<%= visitedUser.getEmail() %>" />
 
@@ -136,7 +156,7 @@
     <div class="modal">
         <button class="close-modal" onclick="closeOverlay('changeProfileOverlay')">&times;</button>
         <h2>Modifica Profilo</h2>
-        <form method="post" action="<%= request.getContextPath() %>/profileModify" enctype="multipart/form-data">
+        <form method="post" action="<%= request.getContextPath() %>/profileModify" enctype="multipart/form-data" onsubmit="return validateProfileForm()">
             <input type="hidden" name="operationType" value="ProfileModify" />
 
             <label for="username">Username</label>
@@ -162,6 +182,40 @@
         </form>
     </div>
 </div>
+
+<div class="overlay" id="changeGenresOverlay">
+    <div class="modal modal-wide"> <button class="close-modal" onclick="closeOverlay('changeGenresOverlay')">&times;</button>
+        <h2>Modifica Generi Preferiti</h2>
+        <p style="color: #C4C4C4; font-size: 13px; margin-bottom: 15px;">Seleziona i generi che ti interessano:</p>
+        
+        <form method="post" action="<%= request.getContextPath() %>/genresModify">
+            <input type="hidden" name="operationType" value="GenresModify" />
+            <input type="hidden" name="email" value="<%= visitedUser.getEmail() %>" />
+
+            <div class="genres-grid">
+                <% 
+                if (allGenres != null && !allGenres.isEmpty()) {
+                    for (String genere : allGenres) { 
+                        // Controllo se l'utente ha già questo genere tra i preferiti
+                        boolean isSelected = userGenres.contains(genere);
+                %>
+                <label class="genre-item">
+                    <input type="checkbox" name="selectedGenres" value="<%= genere %>" <%= isSelected ? "checked" : "" %> />
+                    <span><%= genere %></span>
+                </label>
+                <% 
+                    } 
+                } else {
+                %>
+                    <p>Nessun genere disponibile nel sistema.</p>
+                <% } %>
+            </div>
+
+            <button type="submit" style="margin-top: 20px;">Salva Preferenze</button>
+        </form>
+    </div>
+</div>
+
 <% } %>
 
 </body>
