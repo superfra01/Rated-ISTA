@@ -93,6 +93,25 @@ public class GenereDAO {
 
         return generi;
     }
+    
+    public List<String> findAllString() {
+        final String query = "SELECT * FROM Genere ORDER BY Nome";
+        final List<String> generi = new ArrayList<String>();
+
+        try (final Connection connection = dataSource.getConnection();
+             final PreparedStatement ps = connection.prepareStatement(query);
+             final ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                generi.add(rs.getString("Nome"));
+            }
+
+        } catch (final SQLException e) {
+            e.printStackTrace();
+        }
+
+        return generi;
+    }
 
     public void delete(final String nome) {
         final String query = "DELETE FROM Genere WHERE Nome = ?";

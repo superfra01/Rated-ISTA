@@ -1,11 +1,14 @@
 package sottosistemi.Gestione_Utenti.view;
 
+import model.DAO.GenereDAO;
 import model.Entity.UtenteBean;
+import sottosistemi.Gestione_Catalogo.service.CatalogoService;
 import sottosistemi.Gestione_Utenti.service.AutenticationService;
 import utilities.FieldValidator;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
@@ -13,6 +16,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import javax.servlet.http.Part;
 
 @WebServlet("/register")
@@ -28,7 +32,12 @@ public class RegisterServlet extends HttpServlet {
 
     @Override
     public void doGet(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException, IOException {
-        req.getRequestDispatcher("/WEB-INF/jsp/register.jsp").forward(req, resp);
+    	final HttpSession session = req.getSession(true);
+    	CatalogoService catalogoService = new CatalogoService();
+    	List<String> generi = catalogoService.getAllGeneri();
+    	session.setAttribute("genres", generi);
+    	req.getRequestDispatcher("/WEB-INF/jsp/register.jsp").forward(req, resp);
+        
     }
 
     @Override

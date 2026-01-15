@@ -1,29 +1,36 @@
 package sottosistemi.Gestione_Utenti.service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 import javax.sql.DataSource;
 
 import model.DAO.UtenteDAO;
+import model.DAO.PreferenzaDAO;
 import model.Entity.UtenteBean;
 import utilities.PasswordUtility;
+import model.Entity.PreferenzaBean;
 import model.Entity.RecensioneBean;
 
 public class ProfileService {
     public final UtenteDAO UtenteDAO; // Reso final
+    public final PreferenzaDAO PreferenzaDAO;
 
     public ProfileService() {
         this.UtenteDAO = new UtenteDAO();
+        this.PreferenzaDAO = new PreferenzaDAO();
     }
     
     //test
     public ProfileService(final DataSource dataSource) { // Parametro final
         this.UtenteDAO = new UtenteDAO(dataSource);
+        this.PreferenzaDAO = new PreferenzaDAO(dataSource);
     }
     
-    public ProfileService(final UtenteDAO utenteDAO) { // Parametro final
+    public ProfileService(final UtenteDAO utenteDAO, final PreferenzaDAO PreferenzaDAO) { // Parametro final
         this.UtenteDAO = utenteDAO;
+        this.PreferenzaDAO = PreferenzaDAO;
     }
     
     public UtenteBean ProfileUpdate(final String username, final String email, final String password, final String biografia, final byte[] icon) { // Parametri final
@@ -66,5 +73,13 @@ public class ProfileService {
     		users.put(email, username);
     	}
     	return users;
+    }
+    
+    public List<String> GetInteressi(final String email){
+    	List<PreferenzaBean> preferenze = PreferenzaDAO.findByEmail(email);
+    	List<String> preferenzeString = new ArrayList<String>();
+    	for(PreferenzaBean b : preferenze)
+    		preferenzeString.add(b.getNomeGenere());
+    	return preferenzeString;
     }
 }

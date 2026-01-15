@@ -9,6 +9,7 @@ import integration.DatabaseSetupForTest;
 import sottosistemi.Gestione_Catalogo.service.CatalogoService;
 import model.DAO.FilmDAO;
 import model.DAO.FilmGenereDAO;
+import model.DAO.GenereDAO;
 import model.Entity.FilmBean;
 
 import javax.sql.DataSource;
@@ -56,7 +57,7 @@ public class CatalogoServiceIntegrationTest {
         
         // Ora testDataSource NON è null
         filmDAO = new FilmDAO(testDataSource);
-        catalogoService = new CatalogoService(new FilmDAO(), new FilmGenereDAO());
+        catalogoService = new CatalogoService(new FilmDAO(), new FilmGenereDAO(), new GenereDAO());
     }
 
     @Test

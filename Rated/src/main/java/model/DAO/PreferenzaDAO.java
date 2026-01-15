@@ -27,6 +27,14 @@ public class PreferenzaDAO {
             throw new RuntimeException("Error initializing DataSource: " + e.getMessage());
         }
     }
+    
+    public PreferenzaDAO(final DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
+    
+    protected PreferenzaDAO(final boolean testMode) {
+        // Vuoto: non fa nulla, niente DB!
+    }
 
     public void save(final PreferenzaBean preferenza) {
         final String selectQuery = "SELECT 1 FROM Preferenza WHERE email = ? AND Nome_Genere = ?";

@@ -2,6 +2,7 @@ package sottosistemi.Gestione_Catalogo.service;
 
 import model.DAO.FilmDAO;
 import model.DAO.FilmGenereDAO;
+import model.DAO.GenereDAO;
 import model.Entity.FilmBean;
 import model.Entity.FilmGenereBean;
 import model.Entity.RecensioneBean;
@@ -14,16 +15,19 @@ import java.util.jar.Attributes.Name;
 public class CatalogoService {
     private final FilmDAO FilmDAO; // Reso final
     private final FilmGenereDAO FilmGenereDAO;
+    private final GenereDAO GenereDAO;
     
     public CatalogoService() {
         this.FilmDAO = new FilmDAO();
         this.FilmGenereDAO = new FilmGenereDAO();
+        this.GenereDAO = new GenereDAO();
     }
     
     // Costruttore per il test o configurazioni personalizzate
-    public CatalogoService(final FilmDAO filmDAO, final FilmGenereDAO FilmGenereDAO) { // Parametro final
+    public CatalogoService(final FilmDAO filmDAO, final FilmGenereDAO FilmGenereDAO, final GenereDAO GenereDAO) { // Parametro final
         this.FilmDAO = filmDAO;
         this.FilmGenereDAO = FilmGenereDAO;
+        this.GenereDAO = GenereDAO;
     }
     
     public List<FilmBean> getFilms(){
@@ -115,6 +119,10 @@ public class CatalogoService {
  
     	return FilmGenereDAO.findByIdFilm(idFilm);
         
+    }
+    
+    public List<String> getAllGeneri(){
+    	return GenereDAO.findAllString();
     }
     
 }

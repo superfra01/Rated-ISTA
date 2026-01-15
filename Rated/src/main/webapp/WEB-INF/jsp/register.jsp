@@ -42,7 +42,7 @@
                         <% 
                             // Recupero la lista come List<String> (come in profile.jsp)
                             // Il backend dovrà fare: request.setAttribute("genres", listaDiStringhe);
-                            List<String> genresList = (List<String>) request.getAttribute("genres");
+                            List<String> genresList = (List<String>) session.getAttribute("genres");
 
                             if (genresList != null && !genresList.isEmpty()) {
                                 for (String g : genresList) { 

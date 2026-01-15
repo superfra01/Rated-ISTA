@@ -45,7 +45,13 @@ public class ProfileServlet extends HttpServlet {
         	final CatalogoService CatalogoService = new CatalogoService();
         	final HashMap<Integer, FilmBean> FilmMap = CatalogoService.getFilms(recensioni);
         	session.setAttribute("films", FilmMap);
+        
+        	CatalogoService catalogoService = new CatalogoService();
+        	List<String> generi = catalogoService.getAllGeneri();
+        	session.setAttribute("allGenres", generi);
         	
+        	List<String> userGenres = ProfileService.GetInteressi(visitedUser.getEmail());
+        	session.setAttribute("userGenres", userGenres);
         	request.getRequestDispatcher("/WEB-INF/jsp/profile.jsp").forward(request, response);	
         } else {
         	response.setStatus(HttpServletResponse.SC_BAD_REQUEST);

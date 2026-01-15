@@ -1,5 +1,6 @@
 package benchmark;
 
+import model.DAO.PreferenzaDAO;
 import model.DAO.UtenteDAO;
 import model.Entity.RecensioneBean;
 import model.Entity.UtenteBean;
@@ -35,6 +36,7 @@ public class ProfileServiceBenchmark {
 
     @Setup(Level.Trial)
     public void setup() {
+        final PreferenzaDAO mockPreferenzaDAO = new PreferenzaDAO(true) {};
         // 1. Creiamo il Mock DAO usando il costruttore "sicuro" (true)
         final UtenteDAO mockDao = new UtenteDAO(true) { // <--- IMPORTANTE: true
             @Override
@@ -57,8 +59,9 @@ public class ProfileServiceBenchmark {
             }
         };
 
+
         // 2. INIEZIONE TRAMITE COSTRUTTORE
-        this.service = new ProfileService(mockDao);
+        this.service = new ProfileService(mockDao, mockPreferenzaDAO);
 
         // 3. Prepariamo la lista per testare il ciclo getUsers
         this.listaRecensioni = new ArrayList<>();

@@ -7,6 +7,7 @@ import static org.mockito.Mockito.*;
 
 import model.DAO.FilmDAO;
 import model.DAO.FilmGenereDAO;
+import model.DAO.GenereDAO;
 import model.Entity.FilmBean;
 import model.Entity.RecensioneBean;
 import sottosistemi.Gestione_Catalogo.service.CatalogoService;
@@ -24,15 +25,17 @@ class CatalogoServiceTest {
     private CatalogoService catalogoService;
     private FilmDAO mockFilmDAO;
     private FilmGenereDAO mockFilmGenereDAO;
+    private GenereDAO mockGenereDAO;
 
     @BeforeEach
     void setUp() {
         // Mock di FilmDAO
         mockFilmDAO = mock(FilmDAO.class);
         mockFilmGenereDAO = mock(FilmGenereDAO.class);
+        mockGenereDAO = mock(GenereDAO.class);
 
         // Inizializza il servizio con il DAO mockato tramite il costruttore
-        catalogoService = new CatalogoService(mockFilmDAO, mockFilmGenereDAO);
+        catalogoService = new CatalogoService(mockFilmDAO, mockFilmGenereDAO, mockGenereDAO);
     }
 
     @Test
