@@ -11,7 +11,6 @@ public class FilmBean implements Serializable {
     private String nome;
     private int anno;
     private int durata;
-    private String generi;
     private String regista;
     private String attori;
     private int valutazione;
@@ -23,20 +22,25 @@ public class FilmBean implements Serializable {
         nome = "";
         anno = 0;
         durata = 0;
-        generi = "";
         regista = "";
         attori = "";
         valutazione = 1;
-        trama ="";
+        trama = "";
     }
 
-    public FilmBean(final int idFilm, final byte[] locandina, final String nome, final int anno, final int durata, final String generi, final String regista, final String attori, final String trama) {
+    public FilmBean(final int idFilm,
+                    final byte[] locandina,
+                    final String nome,
+                    final int anno,
+                    final int durata,
+                    final String regista,
+                    final String attori,
+                    final String trama) {
         this.idFilm = idFilm;
         this.locandina = locandina;
         this.nome = nome;
         this.anno = anno;
         this.durata = durata;
-        this.generi = generi;
         this.regista = regista;
         this.attori = attori;
         this.valutazione = 1;
@@ -83,14 +87,6 @@ public class FilmBean implements Serializable {
         this.durata = durata;
     }
 
-    public String getGeneri() {
-        return generi;
-    }
-
-    public void setGeneri(final String generi) {
-        this.generi = generi;
-    }
-
     public String getRegista() {
         return regista;
     }
@@ -106,19 +102,3 @@ public class FilmBean implements Serializable {
     public void setAttori(final String attori) {
         this.attori = attori;
     }
-    public int getValutazione() {
-        return valutazione;
-    }
-
-    public void setValutazione(final int valutazione) {
-        this.valutazione = valutazione;
-    }
-    
-    public String getTrama() {
-        return trama;
-    }
-
-    public void setTrama(final String trama) {
-        this.trama = trama;
-    }
-}
