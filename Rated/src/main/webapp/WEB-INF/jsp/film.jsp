@@ -152,7 +152,7 @@
                 
                 <div class="film-meta-details">
                     <p class="film-year-genre">
-                        <strong><%= film.getAnno() %></strong> | <%= displayGeneri %>
+                        <strong><%= film.getAnno() %></strong><%= displayGeneri %>
                     </p>
                     
                     <p><strong>Durata:</strong> <%= film.getDurata() %> min</p>
