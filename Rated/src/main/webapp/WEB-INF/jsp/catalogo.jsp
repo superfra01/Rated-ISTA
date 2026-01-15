@@ -127,8 +127,34 @@
             <label for="durataFilm">Durata (min):</label>
             <input type="number" name="durataFilm" id="durataFilm" required />
 
-            <label for="generiFilm">Generi:</label>
-            <input type="text" name="generiFilm" id="generiFilm" required />
+			<label for="generiFilm">Generi (Ctrl+Click per selezionarne più di uno):</label>
+			<select name="generiFilm" id="generiFilm" multiple required>
+				<option value="Animazione">Animazione</option>
+				<option value="Avventura">Avventura</option>
+				<option value="Azione">Azione</option>
+				<option value="Biografico">Biografico</option>
+				<option value="Commedia">Commedia</option>
+				<option value="Crimine">Crimine</option>
+				<option value="Documentario">Documentario</option>
+				<option value="Drammatico">Drammatico</option>
+				<option value="Epico">Epico</option>
+				<option value="Famiglia">Famiglia</option>
+				<option value="Fantascienza">Fantascienza</option>
+				<option value="Fantasy">Fantasy</option>
+				<option value="Giallo">Giallo</option>
+				<option value="Guerra">Guerra</option>
+				<option value="Horror">Horror</option>
+				<option value="Mistero">Mistero</option>
+				<option value="Musicale">Musicale</option>
+				<option value="Noir">Noir</option>
+				<option value="Poliziesco">Poliziesco</option>
+				<option value="Romantico">Romantico</option>
+				<option value="Sentimentale">Sentimentale</option>
+				<option value="Sportivo">Sportivo</option>
+				<option value="Storico">Storico</option>
+				<option value="Thriller">Thriller</option>
+				<option value="Western">Western</option>
+			</select>
 
             <label for="registaFilm">Regista:</label>
             <input type="text" name="registaFilm" id="registaFilm" required />
