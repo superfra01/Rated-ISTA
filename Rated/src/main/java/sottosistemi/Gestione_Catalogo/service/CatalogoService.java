@@ -6,6 +6,7 @@ import model.Entity.FilmBean;
 import model.Entity.FilmGenereBean;
 import model.Entity.RecensioneBean;
 
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.jar.Attributes.Name;
@@ -109,4 +110,11 @@ public class CatalogoService {
     public void removeFilm(final int idFilm) { // Parametro final
     	FilmDAO.delete(idFilm);
     }
+    
+    public List<FilmGenereBean> getGeneri(final int idFilm) {
+ 
+    	return FilmGenereDAO.findByIdFilm(idFilm);
+        
+    }
+    
 }
