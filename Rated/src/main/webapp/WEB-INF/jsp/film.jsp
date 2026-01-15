@@ -31,12 +31,8 @@
     HashMap<String, ValutazioneBean> valutazioni = (HashMap<String, ValutazioneBean>) session.getAttribute("valutazioni");
 
     // --- GESTIONE GENERI ---
-    // Recupero la lista di FilmGenereBean salvata dalla Servlet con la chiave "Generi"
     List<FilmGenereBean> listaGeneri = (List<FilmGenereBean>) session.getAttribute("Generi");
     
-    // Preparo due variabili:
-    // 1. displayGeneri: una stringa formattata per la visualizzazione (es: "Azione, Avventura")
-    // 2. nomiGeneriAttuali: una lista di stringhe per verificare la presenza nel form di modifica
     String displayGeneri = "Nessun genere";
     List<String> nomiGeneriAttuali = new ArrayList<>();
 
@@ -44,8 +40,8 @@
         StringBuilder sb = new StringBuilder();
         for (FilmGenereBean g : listaGeneri) {
             if (sb.length() > 0) sb.append(", ");
-            sb.append(g.getNomeGenere()); // Aggiungo alla stringa
-            nomiGeneriAttuali.add(g.getNomeGenere()); // Aggiungo alla lista di appoggio
+            sb.append(g.getNomeGenere());
+            nomiGeneriAttuali.add(g.getNomeGenere());
         }
         displayGeneri = sb.toString();
     }
@@ -68,10 +64,9 @@
                     int stelle = r.getValutazione();
                     ValutazioneBean val = (valutazioni != null) ? valutazioni.get(emailRecensore) : null;
 
-                    // Ricavo lo username da visualizzare
                     String usernameRecensore = (users != null && users.containsKey(emailRecensore))
                         ? users.get(emailRecensore)
-                        : emailRecensore; // fallback all'email se non trovato
+                        : emailRecensore;
             %>
 
             <div class="review-card">
@@ -143,6 +138,7 @@
                     alt="Locandina di <%= film.getNome() %>" />
 
                 <h2 class="film-title"><%= film.getNome() %></h2>
+                
                 <div class="review-stars">
                     <%
                     int stelleFilm = film.getValutazione();
@@ -154,11 +150,18 @@
                     <% }} %>
                 </div>
                 
-                <p class="film-year-genre">
-                    <%= film.getAnno() %> - <%= displayGeneri %>
-                </p>
-                
+                <div class="film-meta-details">
+                    <p class="film-year-genre">
+                        <strong><%= film.getAnno() %></strong> | <%= displayGeneri %>
+                    </p>
+                    
+                    <p><strong>Durata:</strong> <%= film.getDurata() %> min</p>
+                    <p><strong>Regista:</strong> <%= film.getRegista() %></p>
+                    <p><strong>Cast:</strong> <%= film.getAttori() %></p>
+                </div>
+
                 <p class="film-description"><%= film.getTrama() %></p>
+                
                 <%
                     boolean userHasReviewed = false;
                     if (user != null && "RECENSORE".equals(user.getTipoUtente()) && recensioni != null) {
@@ -253,7 +256,6 @@
                 <label for="generiFilm">Generi (Ctrl+Click per modificare la selezione):</label>
                 <select name="generiFilm" id="generiFilm" multiple required style="height: 120px; width: 100%; background-color: #555; color: white; border: 1px solid #ccc; padding: 5px;">
                 <%
-                    // FIX: Lista statica e confronto con lista 'nomiGeneriAttuali' calcolata in alto
                     String[] allGeneri = {
                         "Animazione", "Avventura", "Azione", "Biografico", "Commedia",
                         "Crimine", "Documentario", "Drammatico", "Epico", "Famiglia",
@@ -263,7 +265,6 @@
                     };
 
                     for (String g : allGeneri) {
-                        // Verifico se il genere è presente nella lista recuperata dalla sessione
                         String isSelected = (nomiGeneriAttuali.contains(g)) ? "selected" : "";
                 %>
                     <option value="<%= g %>" <%= isSelected %>><%= g %></option>
