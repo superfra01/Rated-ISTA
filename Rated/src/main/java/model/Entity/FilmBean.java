@@ -102,3 +102,21 @@ public class FilmBean implements Serializable {
     public void setAttori(final String attori) {
         this.attori = attori;
     }
+
+    public int getValutazione() {
+        return valutazione;
+    }
+
+    public void setValutazione(int valutazione) {
+        this.valutazione = valutazione;
+    }
+    
+    public String getTrama() {
+        return trama;
+    }
+
+    public void setTrama(String trama) {
+        this.trama = trama;
+    }
+
+}
