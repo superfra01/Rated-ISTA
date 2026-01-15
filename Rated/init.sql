@@ -26,7 +26,6 @@ CREATE TABLE Film (
     Nome VARCHAR(255) NOT NULL,
     Anno YEAR NOT NULL,
     Durata INT NOT NULL,
-    Generi VARCHAR(255),
     Regista VARCHAR(255),
     Trama VARCHAR(255),
     Valutazione INT DEFAULT 1 CHECK (Valutazione BETWEEN 1 AND 5),
