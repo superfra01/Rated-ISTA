@@ -229,9 +229,39 @@
                 <label for="annoFilm">Anno:</label>
                 <input type="number" id="annoFilm" name="annoFilm" value="<%= film.getAnno() %>" required />
 
-                <label for="generiFilm">Generi:</label>
-                <input type="text" id="generiFilm" name="generiFilm" value="<%= film.getGeneri() %>" required />
+                <label for="generiFilm">Generi (Ctrl+Click per modificare la selezione):</label>
+				<select name="generiFilm" id="generiFilm" multiple required style="height: 120px; width: 100%; background-color: #555; color: white; border: 1px solid #ccc; padding: 5px;">
+				<%
+					// 1. Lista statica di tutti i generi presenti nel DB
+					String[] allGeneri = {
+						"Animazione", "Avventura", "Azione", "Biografico", "Commedia",
+						"Crimine", "Documentario", "Drammatico", "Epico", "Famiglia",
+						"Fantascienza", "Fantasy", "Giallo", "Guerra", "Horror",
+						"Mistero", "Musicale", "Noir", "Poliziesco", "Romantico",
+						"Sentimentale", "Sportivo", "Storico", "Thriller", "Western"
+					};
 
+					// 2. Recupero la stringa dei generi attuali del film (es: "Azione, Fantascienza")
+					String currentGeneriStr = film.getGeneri();
+					if (currentGeneriStr == null) currentGeneriStr = "";
+
+					// 3. Creo una lista per verificare facilmente la presenza
+					// Rimuovo spazi extra con trim() per sicurezza
+					java.util.List<String> currentGeneriList = new java.util.ArrayList<>();
+					for(String s : currentGeneriStr.split(",")) {
+						currentGeneriList.add(s.trim());
+					}
+
+					// 4. Genero le option, aggiungendo 'selected' se il film ha quel genere
+					for (String g : allGeneri) {
+						String isSelected = currentGeneriList.contains(g) ? "selected" : "";
+				%>
+					<option value="<%= g %>" <%= isSelected %>><%= g %></option>
+				<%
+					}
+				%>
+				</select>
+				
                 <label for="tramaFilm">Trama:</label>
                 <textarea id="tramaFilm" name="tramaFilm" rows="4" required><%= film.getTrama() %></textarea>
 
