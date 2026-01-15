@@ -111,7 +111,7 @@ CREATE TABLE Film_Genere (
 -- 1. Generi
 INSERT IGNORE INTO Genere (Nome) VALUES 
 ('Azione'), ('Avventura'), ('Animazione'), ('Biografico'), ('Commedia'), 
-('Crimine'), ('Documentario'), ('Drammatico'), ('Epico'), ('Erotico'), 
+('Crimine'), ('Documentario'), ('Drammatico'), ('Epico'), 
 ('Famiglia'), ('Fantascienza'), ('Fantasy'), ('Giallo'), ('Guerra'), 
 ('Horror'), ('Musicale'), ('Mistero'), ('Noir'), ('Poliziesco'), 
 ('Romantico'), ('Sentimentale'), ('Sportivo'), ('Storico'), ('Thriller'), ('Western');
