@@ -146,16 +146,41 @@ body {
     margin-bottom: 5px;
 }
 
-.film-year-genre {
-    font-size: 14px;
-    color: #ccc;
+/* --- NUOVO STILE AGGIUNTO PER I DETTAGLI (Regista, Cast, ecc) --- */
+.film-meta-details {
+    width: 100%;
     margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #444; /* Linea separatrice sottile */
 }
+
+.film-meta-details p {
+    margin: 6px 0;
+    font-size: 14px;
+    color: #ccc; /* Testo dei dati in grigio chiaro */
+    line-height: 1.4;
+}
+
+.film-meta-details strong {
+    color: #fff; /* Etichette (Regista:, Cast:) in bianco */
+    font-weight: 600;
+    margin-right: 5px;
+}
+
+.film-year-genre {
+    font-size: 15px;
+    color: #ff4c4c; /* Risalta l'anno e il genere con il colore accent */
+    margin-bottom: 10px;
+    margin-top: 0;
+    font-weight: bold;
+}
+/* ------------------------------------------------------------- */
 
 .film-description {
     font-size: 14px;
     margin-bottom: 20px;
-    line-height: 1.4;
+    line-height: 1.5;
+    color: #ddd;
 }
 
 /* Pulsante RATE IT */
