@@ -45,6 +45,18 @@
         }
         displayGeneri = sb.toString();
     }
+
+    // --- VERIFICA PRELIMINARE SE L'UTENTE HA RECENSITO ---
+    // Lo calcoliamo qui in alto perché serve sia per i pulsanti Watchlist/Visto sia per il Rate It
+    boolean userHasReviewed = false;
+    if (user != null && "RECENSORE".equals(user.getTipoUtente()) && recensioni != null) {
+        for (RecensioneBean r : recensioni) {
+            if (r.getEmail().equals(user.getEmail())) {
+                userHasReviewed = true;
+                break;
+            }
+        }
+    }
 %>
 
 <div class="page-container">
@@ -161,18 +173,42 @@
                 </div>
 
                 <p class="film-description"><%= film.getTrama() %></p>
+
+                <%-- --- NUOVA SEZIONE PULSANTI LISTE (WATCHLIST / VISTO) --- --%>
+                <% if (user != null && "RECENSORE".equals(user.getTipoUtente())) { %>
+                    <div class="user-lists-actions">
+                        
+                        <%-- Pulsante Watchlist --%>
+                        <button type="button" 
+                                class="btn-list-action btn-watchlist" 
+                                id="btnWatchlist"
+                                <%= userHasReviewed ? "disabled title='Hai già recensito (e visto) questo film'" : "onclick=\"toggleUserList('" + film.getIdFilm() + "', 'watchlist', this)\"" %>
+                        >
+                            <% if(userHasReviewed) { %>
+                                <i class="fas fa-ban"></i> Watchlist (Visto)
+                            <% } else { %>
+                                <i class="fas fa-bookmark"></i> Aggiungi alla Watchlist
+                            <% } %>
+                        </button>
+
+                        <%-- Pulsante Watched --%>
+                        <%-- Se ha recensito, è automaticamente Visto e attivo, ma disabilitiamo il toggle per coerenza --%>
+                        <button type="button" 
+                                class="btn-list-action btn-watched <%= userHasReviewed ? "active" : "" %>" 
+                                id="btnWatched"
+                                <%= userHasReviewed ? "disabled title='Recensione presente: segnato automaticamente come visto'" : "onclick=\"toggleUserList('" + film.getIdFilm() + "', 'watched', this)\"" %>
+                        >
+                            <% if(userHasReviewed) { %>
+                                <i class="fas fa-check-double"></i> Visto (Recensito)
+                            <% } else { %>
+                                <i class="fas fa-check-circle"></i> Segna come Visto
+                            <% } %>
+                        </button>
+                    
+                    </div>
+                <% } %>
+                <%-- -------------------------------------------------------- --%>
                 
-                <%
-                    boolean userHasReviewed = false;
-                    if (user != null && "RECENSORE".equals(user.getTipoUtente()) && recensioni != null) {
-                        for (RecensioneBean r : recensioni) {
-                            if (r.getEmail().equals(user.getEmail())) {
-                                userHasReviewed = true;
-                                break;
-                            }
-                        }
-                    }
-                %>
                 <div class="rate-film">
                     <% if (user != null && "RECENSORE".equals(user.getTipoUtente()) && (user.getNWarning() < 3)) { %>
                         
@@ -231,6 +267,10 @@
                     <input type="radio" id="star1" name="valutazione" value="1" />
                     <label for="star1" title="1 stella"><i class="fas fa-star"></i></label>
                 </div>
+
+                <p style="font-size: 12px; color: #ccc; margin-top: 10px;">
+                    *Pubblicando la recensione, il film verrà automaticamente aggiunto alla lista dei film visti.
+                </p>
 
                 <button type="submit" class="btn-submit">Pubblica</button>
             </form>

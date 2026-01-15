@@ -212,6 +212,77 @@ body {
     text-align: left; /* Trama allineata a sinistra */
 }
 
+/* --- STILI PULSANTI LISTE (WATCHLIST/VISTO) --- */
+.user-lists-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #444;
+}
+
+.btn-list-action {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    padding: 8px 15px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    background-color: transparent;
+}
+
+/* Gestione stato Disabled per i pulsanti lista */
+.btn-list-action:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+    border-color: #555;
+    color: #aaa;
+    background-color: #333;
+}
+.btn-list-action:disabled:hover {
+    background-color: #333; /* Nessun effetto hover */
+    color: #aaa;
+}
+/* Eccezione: se è disabilitato ma attivo (es. Visto perché recensito), mantiene il colore */
+.btn-list-action.active:disabled {
+    opacity: 0.8; 
+    border-color: transparent;
+}
+
+
+/* Bottone Watchlist (Blu/Ciano style) */
+.btn-watchlist {
+    color: #4fc3f7;
+    border-color: #4fc3f7;
+}
+
+.btn-watchlist:hover,
+.btn-watchlist.active {
+    background-color: #4fc3f7;
+    color: #292929;
+}
+
+/* Bottone Watched (Verde style) */
+.btn-watched {
+    color: #81c784;
+    border-color: #81c784;
+}
+
+.btn-watched:hover, 
+.btn-watched.active {
+    background-color: #81c784;
+    color: #292929;
+}
+
+/* ----------------------------------------------------- */
+
 /* Pulsante RATE IT */
 .rate-film {
     margin-top: 10px;

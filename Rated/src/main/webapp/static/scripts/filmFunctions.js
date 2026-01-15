@@ -22,12 +22,72 @@ function voteReview(idFilm, emailRecensore, valutazione) {
         });
 }
 
+// --- NUOVA FUNZIONE PER GESTIONE LISTE (WATCHLIST/VISTO) ---
+function toggleUserList(idFilm, listType, buttonElement) {
+    // listType dovrebbe essere 'watchlist' o 'watched'
+    
+    const formData = new URLSearchParams();
+    formData.append("idFilm", idFilm);
+    formData.append("listType", listType);
+
+    // Chiamata backend (simulata/inventata)
+    fetch("ManageUserLists", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: formData.toString()
+    })
+    .then(response => {
+        if (response.ok) {
+            // Toggle visuale della classe 'active'
+            buttonElement.classList.toggle("active");
+            
+            // --- LOGICA AGGIORNAMENTO UI E MUTUA ESCLUSIONE ---
+            const icon = buttonElement.querySelector("i");
+            const btnWatchlist = document.querySelector(".btn-watchlist");
+            const btnWatched = document.querySelector(".btn-watched");
+
+            // Aggiornamento testi/icone del bottone cliccato
+            if (buttonElement.classList.contains("active")) {
+                if(listType === 'watchlist') {
+                    buttonElement.innerHTML = '<i class="fas fa-check"></i> In Watchlist';
+                    // Se aggiungo alla Watchlist, rimuovo da Watched (se presente)
+                    if(btnWatched && btnWatched.classList.contains("active")) {
+                         btnWatched.classList.remove("active");
+                         btnWatched.innerHTML = '<i class="fas fa-check-circle"></i> Segna come Visto';
+                    }
+                } else {
+                    // List Type == Watched
+                    buttonElement.innerHTML = '<i class="fas fa-check-double"></i> Visto';
+                    // Se aggiungo a Visto, rimuovo da Watchlist (se presente)
+                    if(btnWatchlist && btnWatchlist.classList.contains("active")) {
+                         btnWatchlist.classList.remove("active");
+                         btnWatchlist.innerHTML = '<i class="fas fa-bookmark"></i> Aggiungi alla Watchlist';
+                    }
+                }
+            } else {
+                 // Caso disattivazione
+                 if(listType === 'watchlist') {
+                    buttonElement.innerHTML = '<i class="fas fa-bookmark"></i> Aggiungi alla Watchlist';
+                } else {
+                    buttonElement.innerHTML = '<i class="fas fa-check-circle"></i> Segna come Visto';
+                }
+            }
+        } else {
+            alert("Impossibile aggiornare la lista. Riprova.");
+        }
+    })
+    .catch(error => {
+        console.error("Errore chiamata liste:", error);
+        alert("Errore di connessione.");
+    });
+}
+// -----------------------------------------------------------
+
 function showReviewForm() {
     // Mostra l'overlay
     document.getElementById('reviewOverlay').style.display = 'flex';
 
     // Disabilita il bottone "RATE IT" dopo il primo click
-    // (se hai messo l'ID "btnRateFilm" nel JSP)
     const rateButton = document.getElementById('btnRateFilm');
     if (rateButton) {
         rateButton.disabled = true;
