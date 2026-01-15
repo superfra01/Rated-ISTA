@@ -1,6 +1,7 @@
 package sottosistemi.Gestione_Catalogo.view;
 
 import model.Entity.FilmBean;
+import model.Entity.FilmGenereBean;
 import model.Entity.RecensioneBean;
 import model.Entity.UtenteBean;
 import model.Entity.ValutazioneBean;
@@ -40,6 +41,9 @@ public class VisualizzaFilmServlet extends HttpServlet {
     	
     	final FilmBean film = CatalogoService.getFilm(idFilm); // Locale final
     	session.setAttribute("film", film);
+    	
+    	final List<FilmGenereBean> generi = CatalogoService.getGeneri(film.getIdFilm()); // Locale final
+		session.setAttribute("Generi", generi);
     	
     	final List<RecensioneBean> recensioni = RecensioniService.GetRecensioni(idFilm); // Locale final
     	session.setAttribute("recensioni", recensioni);
