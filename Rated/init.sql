@@ -3,6 +3,11 @@ DROP DATABASE IF EXISTS RatedDB;
 CREATE DATABASE RatedDB;
 USE RatedDB;
 
+-- 1. Tabella Dizionario dei Generi (Opzionale ma consigliata per standardizzare)
+CREATE TABLE Genere (
+    Nome VARCHAR(50) NOT NULL PRIMARY KEY
+);
+
 -- Tabella Utente_Registrato
 CREATE TABLE Utente_Registrato (
     email VARCHAR(255) NOT NULL PRIMARY KEY,
@@ -64,6 +69,71 @@ CREATE TABLE Report (
     FOREIGN KEY (email_Recensore, ID_Film) REFERENCES Recensione(email, ID_Film) ON DELETE CASCADE
 );
 
+-- Tabella Visto (Film che l'utente ha visto)
+CREATE TABLE Visto (
+    email VARCHAR(255) NOT NULL,
+    ID_Film INT NOT NULL,
+    PRIMARY KEY (email, ID_Film),
+    FOREIGN KEY (email) REFERENCES Utente_Registrato(email) ON DELETE CASCADE,
+    FOREIGN KEY (ID_Film) REFERENCES Film(ID_Film) ON DELETE CASCADE
+);
+
+-- Tabella Interesse (Film che l'utente vuole vedere o no)
+CREATE TABLE Interesse (
+    email VARCHAR(255) NOT NULL,
+    ID_Film INT NOT NULL,
+    interesse BOOLEAN NOT NULL
+    PRIMARY KEY (email, ID_Film),
+    FOREIGN KEY (email) REFERENCES Utente_Registrato(email) ON DELETE CASCADE,
+    FOREIGN KEY (ID_Film) REFERENCES Film(ID_Film) ON DELETE CASCADE
+);
+
+-- Tabella Preferenza (Collega Utente e Genere)
+CREATE TABLE Preferenza (
+    email VARCHAR(255) NOT NULL,
+    Nome_Genere VARCHAR(50) NOT NULL,
+    PRIMARY KEY (email, Nome_Genere),
+    FOREIGN KEY (email) REFERENCES Utente_Registrato(email) ON DELETE CASCADE,
+    FOREIGN KEY (Nome_Genere) REFERENCES Genere(Nome) ON DELETE CASCADE
+);
+
+-- Tabella di collegamento tra Film e Genere (Relazione Molti-a-Molti)
+CREATE TABLE Film_Genere (
+    ID_Film INT NOT NULL,
+    Nome_Genere VARCHAR(50) NOT NULL,
+    PRIMARY KEY (ID_Film, Nome_Genere),
+    FOREIGN KEY (ID_Film) REFERENCES Film(ID_Film) ON DELETE CASCADE,
+    FOREIGN KEY (Nome_Genere) REFERENCES Genere(Nome) ON DELETE CASCADE
+);
+
+-- Inserimento di una lista completa di generi
+INSERT IGNORE INTO Genere (Nome) VALUES 
+('Azione'),
+('Avventura'),
+('Animazione'),
+('Biografico'),
+('Commedia'),
+('Crimine'),
+('Documentario'),
+('Drammatico'),
+('Epico'),
+('Erotico'),
+('Famiglia'),
+('Fantascienza'),
+('Fantasy'),
+('Giallo'),
+('Guerra'),
+('Horror'),
+('Musicale'),
+('Mistero'),
+('Noir'),
+('Poliziesco'),
+('Romantico'),
+('Sentimentale'),
+('Sportivo'),
+('Storico'),
+('Thriller'),
+('Western');
 
 -- Inserimento utenti "speciali"
 INSERT INTO Utente_Registrato (email, Icona, username, Password, Tipo_Utente, N_Warning, Biografia) VALUES
