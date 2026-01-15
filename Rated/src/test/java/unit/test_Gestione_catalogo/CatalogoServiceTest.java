@@ -6,6 +6,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.*;
 
 import model.DAO.FilmDAO;
+import model.DAO.FilmGenereDAO;
 import model.Entity.FilmBean;
 import model.Entity.RecensioneBean;
 import sottosistemi.Gestione_Catalogo.service.CatalogoService;
@@ -22,14 +23,16 @@ class CatalogoServiceTest {
 
     private CatalogoService catalogoService;
     private FilmDAO mockFilmDAO;
+    private FilmGenereDAO mockFilmGenereDAO;
 
     @BeforeEach
     void setUp() {
         // Mock di FilmDAO
         mockFilmDAO = mock(FilmDAO.class);
+        mockFilmGenereDAO = mock(FilmGenereDAO.class);
 
         // Inizializza il servizio con il DAO mockato tramite il costruttore
-        catalogoService = new CatalogoService(mockFilmDAO);
+        catalogoService = new CatalogoService(mockFilmDAO, mockFilmGenereDAO);
     }
 
     @Test
@@ -56,7 +59,7 @@ class CatalogoServiceTest {
         final String nome = "Film Test";
         final int anno = 2023;
         final int durata = 120;
-        final String generi = "Azione";
+        final String[] generi = new String[]{"Azione"};
         final String regista = "Regista Test";
         final String attori = "Attore Test";
         final byte[] locandina = new byte[]{1, 2, 3};
@@ -122,7 +125,7 @@ class CatalogoServiceTest {
         int durata = 120;
         String titolo = "Titolo Modificato";
         int anno = 2022;
-        String generi = "Drammatico";
+        String generi[] = new String[]{"Drammatico"};
         byte[] image = "path/to/image.jpg".getBytes();
         String regista = "Regista Modificato";
         String attori = "Attori Modificati";
