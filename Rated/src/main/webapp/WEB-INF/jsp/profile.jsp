@@ -192,7 +192,7 @@
         <h2>Modifica Generi Preferiti</h2>
         <p style="color: #C4C4C4; font-size: 13px; margin-bottom: 15px;">Seleziona i generi che ti interessano:</p>
         
-        <form method="post" action="<%= request.getContextPath() %>/genresModify">
+        <form method="post" action="<%= request.getContextPath() %>/ModificaPreferenzeServlet">
             <input type="hidden" name="operationType" value="GenresModify" />
             <input type="hidden" name="email" value="<%= visitedUser.getEmail() %>" />
 

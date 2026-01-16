@@ -24,7 +24,7 @@ public class SegnaComeVistoServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         // 1. Verifica Sessione e Utente (Autenticazione)
         HttpSession session = request.getSession();
-        UtenteBean utenteSessione = (UtenteBean) session.getAttribute("utente");
+        UtenteBean utenteSessione = (UtenteBean) session.getAttribute("user");
 
         if (utenteSessione == null) {
             response.sendRedirect("login.jsp");

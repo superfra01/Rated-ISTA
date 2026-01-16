@@ -23,7 +23,7 @@ public class ModificaPreferenzeServlet extends HttpServlet {
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();
-        UtenteBean utenteSessione = (UtenteBean) session.getAttribute("utente");
+        UtenteBean utenteSessione = (UtenteBean) session.getAttribute("user");
 
         // 1. Controllo Autenticazione: L'utente è loggato?
         if (utenteSessione == null) {

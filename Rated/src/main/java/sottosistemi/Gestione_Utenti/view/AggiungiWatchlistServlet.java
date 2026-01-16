@@ -32,7 +32,7 @@ public class AggiungiWatchlistServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         // 1. Verifica Sessione e Utente
         HttpSession session = request.getSession();
-        UtenteBean utenteSessione = (UtenteBean) session.getAttribute("utente");
+        UtenteBean utenteSessione = (UtenteBean) session.getAttribute("user");
 
         if (utenteSessione == null) {
             response.sendRedirect("login.jsp");
