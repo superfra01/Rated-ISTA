@@ -139,7 +139,7 @@ public class VistoDAO {
 
 
 
-    public List<FilmBean> doRetrieveFilmsByUtente(String username) throws SQLException {
+    public List<FilmBean> doRetrieveFilmsByUtente(String username){
         List<FilmBean> films = new ArrayList<>();
         
         // Join: Film -> Visto -> Utente_Registrato (per filtrare via username)
@@ -172,7 +172,10 @@ public class VistoDAO {
                     films.add(film);
                 }
             }
-        }
+        } catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
         return films;
     }
 }

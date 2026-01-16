@@ -173,7 +173,7 @@ public class InteresseDAO {
     }
     
 
-    public List<FilmBean> doRetrieveFilmsByUtente(String username) throws SQLException {
+    public List<FilmBean> doRetrieveFilmsByUtente(String username){
         List<FilmBean> films = new ArrayList<>();
         
         // Join: Film -> Interesse -> Utente_Registrato (per filtrare via username)
@@ -208,7 +208,10 @@ public class InteresseDAO {
                     films.add(film);
                 }
             }
-        }
+        } catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
         return films;
     }
 }

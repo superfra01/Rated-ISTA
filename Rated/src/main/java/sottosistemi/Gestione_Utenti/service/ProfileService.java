@@ -13,6 +13,7 @@ import model.DAO.VistoDAO;
 import model.Entity.UtenteBean;
 import model.Entity.VistoBean;
 import utilities.PasswordUtility;
+import model.Entity.FilmBean;
 import model.Entity.InteresseBean;
 import model.Entity.PreferenzaBean;
 import model.Entity.RecensioneBean;
@@ -150,5 +151,17 @@ public class ProfileService {
                 }
             }
         }
+    }
+    public List<FilmBean> retrieveWatchedFilms(final String username) {
+
+    	return VistoDAO.doRetrieveFilmsByUtente(username);
+        
+    }
+
+
+    public List<FilmBean> retrieveWatchlist(final String username1) {
+        
+        return this.InteresseDAO.doRetrieveFilmsByUtente(username1);
+
     }
 }

@@ -58,6 +58,19 @@ public class VisualizzaFilmServlet extends HttpServlet {
     		final String email = user.getEmail(); // Locale final
         	final HashMap<String, ValutazioneBean> valutazioni = RecensioniService.GetValutazioni(idFilm, email); // Locale final
         	session.setAttribute("valutazioni", valutazioni);
+        	
+        	List<FilmBean> watchedList = ProfileService.retrieveWatchedFilms(user.getUsername());
+        	if(watchedList.contains(film)) {
+        		session.setAttribute("watched", true);
+        	}else
+        		session.setAttribute("watched", false);
+        		
+        	
+        	List<FilmBean> watchlist = ProfileService.retrieveWatchlist(user.getUsername());
+        	if(watchlist.contains(film)) {
+        		session.setAttribute("inwatchlist", true);
+        	}else
+        		session.setAttribute("watched", false);
     	}
     	
         request.getRequestDispatcher("/WEB-INF/jsp/film.jsp").forward(request, response);
