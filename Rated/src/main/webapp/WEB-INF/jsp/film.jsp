@@ -44,14 +44,16 @@
     // Controllo presenza in Watchlist
     if (film != null) {
         for (FilmBean f : watchlist) {
-            if (f.getIdFilm().equals(film.getIdFilm())) {
+            // CORRETTO: Uso == perché getIdFilm restituisce un int primitivo
+            if (f.getIdFilm() == film.getIdFilm()) {
                 isInWatchlist = true;
                 break;
             }
         }
         // Controllo presenza in Watched List
         for (FilmBean f : watchedList) {
-            if (f.getIdFilm().equals(film.getIdFilm())) {
+            // CORRETTO: Uso == perché getIdFilm restituisce un int primitivo
+            if (f.getIdFilm() == film.getIdFilm()) {
                 isInWatched = true;
                 break;
             }
@@ -220,7 +222,6 @@
                         </button>
 
                         <%-- Pulsante Watched --%>
-                        <%-- Se ha recensito, è disabilitato e fisso su "Recensito". Altrimenti gestisce "Segna come visto/Rimuovi da visti" --%>
                         <button type="button" 
                                 class="btn-list-action btn-watched <%= (isInWatched || userHasReviewed) ? "active" : "" %>" 
                                 id="btnWatched"
