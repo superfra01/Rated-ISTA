@@ -10,9 +10,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import model.DAO.InteresseDAO;
-import model.Entity.InteresseBean;
 import model.Entity.UtenteBean;
+import sottosistemi.Gestione_Utenti.service.ProfileService;
 
 /**
  * Servlet implementation class AggiungiWatchlistServlet
@@ -25,22 +24,33 @@ public class AggiungiWatchlistServlet extends HttpServlet {
         super();
     }
 
-
-    
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        
+        // Redirige al catalogo se si tenta un accesso diretto via GET
+        response.sendRedirect("catalogo.jsp");
     }
+
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         // 1. Verifica Sessione e Utente
         HttpSession session = request.getSession();
-        UtenteBean utente = (UtenteBean) session.getAttribute("utente");
+        UtenteBean utenteSessione = (UtenteBean) session.getAttribute("utente");
 
-        if (utente == null) {
+        if (utenteSessione == null) {
             response.sendRedirect("login.jsp");
             return;
         }
 
-        // 2. Recupera parametri
+        // 2. Controllo di Sicurezza (Ownership Check)
+        // Recuperiamo l'email (o username) inviata dal form, se presente
+        String emailTarget = request.getParameter("emailUtente");
+
+        // Se il parametro 'emailUtente' è stato inviato, DEVE coincidere con l'utente in sessione.
+        // Se non coincide, qualcuno sta provando a manipolare la richiesta (IDOR).
+        if (emailTarget != null && !emailTarget.isEmpty() && !emailTarget.equals(utenteSessione.getEmail())) {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN, "Accesso negato: Non puoi modificare la watchlist di un altro utente.");
+            return;
+        }
+
+        // 3. Recupera parametri del film
         String filmIdStr = request.getParameter("filmId");
         int filmId = -1;
         
@@ -52,20 +62,18 @@ public class AggiungiWatchlistServlet extends HttpServlet {
             e.printStackTrace();
         }
 
-        // 3. Chiama il Service (Business Logic)
+        // 4. Chiama il Service (Business Logic)
         if (filmId != -1) {
             ProfileService profileService = new ProfileService();
-            try {
-
-                profileService.aggiungiAllaWatchlist(utente.getEmail(), filmId);
+            
+            // Utilizziamo l'oggetto utenteSessione per garantire che l'operazione
+            // venga effettuata sull'account autenticato
+            profileService.aggiungiAllaWatchlist(utenteSessione.getEmail(), filmId);
                 
-            } catch (SQLException e) {
-                e.printStackTrace();
-                // Opzionale: Gestione errore
-            }
+            
         }
 
-        // 4. Reindirizzamento (ritorna alla pagina precedente o al film)
+        // 5. Reindirizzamento (ritorna alla pagina precedente o al film)
         String referer = request.getHeader("Referer");
         if (referer != null && !referer.isEmpty()) {
             response.sendRedirect(referer);
@@ -73,6 +81,4 @@ public class AggiungiWatchlistServlet extends HttpServlet {
             response.sendRedirect("VisualizzaFilmServlet?filmId=" + filmId);
         }
     }
-
-    
 }

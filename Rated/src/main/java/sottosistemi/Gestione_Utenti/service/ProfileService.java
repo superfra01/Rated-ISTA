@@ -124,4 +124,31 @@ public class ProfileService {
         // Salva nel database
         VistoDAO.save(visto);
     }
+    
+    public void aggiornaPreferenzeUtente(String email, String[] idGeneri){
+        
+
+        // 1. Elimina TUTTE le preferenze precedenti per questo utente
+        // Questo garantisce che se l'utente deseleziona tutto, il DB rifletta lo stato vuoto
+        PreferenzaDAO.deleteByEmail(email);
+
+        // 2. Se ci sono nuovi generi selezionati, inseriscili uno per uno
+        if (idGeneri != null && idGeneri.length > 0) {
+            for (String idGenereStr : idGeneri) {
+                try {
+                    int idGenere = Integer.parseInt(idGenereStr);
+                    
+                    PreferenzaBean preferenza = new PreferenzaBean();
+                    preferenza.setEmail(email);
+                    preferenza.setNomeGenere(idGenereStr);;
+                    
+                    PreferenzaDAO.save(preferenza);
+                    
+                } catch (NumberFormatException e) {
+                    // Logga l'errore ma continua con gli altri generi
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
 }

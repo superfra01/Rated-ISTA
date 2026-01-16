@@ -22,16 +22,28 @@ public class SegnaComeVistoServlet extends HttpServlet {
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        // 1. Verifica Sessione e Utente
+        // 1. Verifica Sessione e Utente (Autenticazione)
         HttpSession session = request.getSession();
-        UtenteBean utente = (UtenteBean) session.getAttribute("utente");
+        UtenteBean utenteSessione = (UtenteBean) session.getAttribute("utente");
 
-        if (utente == null) {
+        if (utenteSessione == null) {
             response.sendRedirect("login.jsp");
             return;
         }
 
-        // 2. Recupera parametri
+        // 2. Controllo Autorizzazione (Check Ownership)
+        // Recuperiamo l'identificativo dell'utente che la richiesta dichiara di voler modificare
+        String emailTarget = request.getParameter("emailUtente");
+
+        // Se il parametro è presente, DEVE corrispondere all'utente loggato
+        if (emailTarget != null && !emailTarget.isEmpty() && !emailTarget.equals(utenteSessione.getEmail())) {
+            // Tentativo di IDOR (Insecure Direct Object Reference):
+            // L'utente loggato sta provando a modificare i dati di un altro utente
+            response.sendError(HttpServletResponse.SC_FORBIDDEN, "Operazione non consentita: non puoi agire per conto di altri utenti.");
+            return;
+        }
+
+        // 3. Recupera parametri del film
         String filmIdStr = request.getParameter("filmId");
         int filmId = -1;
 
@@ -43,19 +55,17 @@ public class SegnaComeVistoServlet extends HttpServlet {
             e.printStackTrace();
         }
 
-        // 3. Chiama il Service
+        // 4. Chiama il Service
         if (filmId != -1) {
             ProfileService profileService = new ProfileService();
-            try {
-                // Passa lo username (o email) e l'id del film
-                profileService.aggiungiFilmVisto(utente.getUsername(), filmId);
-            } catch (SQLException e) {
-                e.printStackTrace();
-                // Gestione errore (es. log o messaggio utente)
-            }
+            
+            // Utilizziamo sempre l'oggetto della sessione per garantire che l'operazione
+            // venga eseguita sull'account autenticato
+            profileService.aggiungiFilmVisto(utenteSessione.getEmail(), filmId);
+            
         }
 
-        // 4. Reindirizzamento alla pagina precedente
+        // 5. Reindirizzamento alla pagina precedente
         String referer = request.getHeader("Referer");
         if (referer != null && !referer.isEmpty()) {
             response.sendRedirect(referer);
