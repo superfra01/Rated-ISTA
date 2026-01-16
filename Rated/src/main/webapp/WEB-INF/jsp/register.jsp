@@ -41,7 +41,6 @@
                     <div id="genresContainer" class="genres-container">
                         <% 
                             // Recupero la lista come List<String> (come in profile.jsp)
-                            // Il backend dovrà fare: request.setAttribute("genres", listaDiStringhe);
                             List<String> genresList = (List<String>) session.getAttribute("genres");
 
                             if (genresList != null && !genresList.isEmpty()) {
