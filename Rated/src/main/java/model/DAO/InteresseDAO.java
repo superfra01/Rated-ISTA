@@ -27,6 +27,10 @@ public class InteresseDAO {
             throw new RuntimeException("Error initializing DataSource: " + e.getMessage());
         }
     }
+    
+    public InteresseDAO(final DataSource testDataSource) { // Parametro final
+        dataSource = testDataSource;
+    }
 
     public void save(final InteresseBean interesseBean) {
         final String selectQuery = "SELECT 1 FROM Interesse WHERE email = ? AND ID_Film = ?";

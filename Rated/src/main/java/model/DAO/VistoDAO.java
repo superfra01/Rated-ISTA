@@ -27,7 +27,11 @@ public class VistoDAO {
             throw new RuntimeException("Error initializing DataSource: " + e.getMessage());
         }
     }
-
+    
+    public VistoDAO(final DataSource testDataSource) { // Parametro final
+        dataSource = testDataSource;
+    }
+    
     public void save(final VistoBean visto) {
         final String selectQuery = "SELECT 1 FROM Visto WHERE email = ? AND ID_Film = ?";
         final String insertQuery = "INSERT INTO Visto (email, ID_Film) VALUES (?, ?)";

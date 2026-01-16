@@ -8,7 +8,10 @@ import javax.sql.DataSource;
 
 import model.DAO.UtenteDAO;
 import model.DAO.PreferenzaDAO;
+import model.DAO.InteresseDAO;
+import model.DAO.VistoDAO;
 import model.Entity.UtenteBean;
+import model.Entity.VistoBean;
 import utilities.PasswordUtility;
 import model.Entity.InteresseBean;
 import model.Entity.PreferenzaBean;
@@ -17,21 +20,29 @@ import model.Entity.RecensioneBean;
 public class ProfileService {
     public final UtenteDAO UtenteDAO; // Reso final
     public final PreferenzaDAO PreferenzaDAO;
+    public final InteresseDAO InteresseDAO;
+    public final VistoDAO VistoDAO;
 
     public ProfileService() {
         this.UtenteDAO = new UtenteDAO();
         this.PreferenzaDAO = new PreferenzaDAO();
+        this.InteresseDAO = new InteresseDAO();
+        this.VistoDAO = new VistoDAO();
     }
     
     //test
     public ProfileService(final DataSource dataSource) { // Parametro final
         this.UtenteDAO = new UtenteDAO(dataSource);
         this.PreferenzaDAO = new PreferenzaDAO(dataSource);
+        this.InteresseDAO = new InteresseDAO(dataSource);
+        this.VistoDAO = new VistoDAO(dataSource);
     }
     
-    public ProfileService(final UtenteDAO utenteDAO, final PreferenzaDAO PreferenzaDAO) { // Parametro final
+    public ProfileService(final UtenteDAO utenteDAO, final PreferenzaDAO PreferenzaDAO, final InteresseDAO InteresseDAO, final VistoDAO VistoDAO) { // Parametro final
         this.UtenteDAO = utenteDAO;
         this.PreferenzaDAO = PreferenzaDAO;
+        this.InteresseDAO = InteresseDAO;
+        this.VistoDAO = VistoDAO;
     }
     
     public UtenteBean ProfileUpdate(final String username, final String email, final String password, final String biografia, final byte[] icon) { // Parametri final
@@ -87,5 +98,30 @@ public class ProfileService {
     public void addPreferenza(final String email, final String genere) {
     	PreferenzaBean preferenza = new PreferenzaBean(email, genere);
     	PreferenzaDAO.save(preferenza);
+    }
+    
+    public void aggiungiAllaWatchlist(String email, int filmId){
+
+        InteresseBean interesse = new InteresseBean();
+
+        // Configurazione del bean
+        interesse.setEmail(email);
+        interesse.setIdFilm(filmId);
+        
+        // Imposta true per indicare che è una "Watchlist" (o interesse positivo)
+        interesse.setInteresse(true);
+
+        // Chiama il DAO per il salvataggio
+        InteresseDAO.save(interesse);
+    }
+    
+    public void aggiungiFilmVisto(String email, int filmId){
+        
+        VistoBean visto = new VistoBean();
+        visto.setEmail(email);
+        visto.setIdFilm(filmId);
+
+        // Salva nel database
+        VistoDAO.save(visto);
     }
 }
