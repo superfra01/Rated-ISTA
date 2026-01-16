@@ -1,3 +1,5 @@
+// filmFunctions.js
+
 function voteReview(idFilm, emailRecensore, valutazione) {
     const formData = new URLSearchParams();
     formData.append("idFilm", idFilm);
@@ -9,22 +11,21 @@ function voteReview(idFilm, emailRecensore, valutazione) {
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: formData.toString()
     })
-        .then(response => {
-            if (response.ok) {
-                window.location.reload();
-            } else {
-                alert("Errore durante la votazione. Riprova più tardi.");
-            }
-        })
-        .catch(error => {
-            console.error("Errore nella richiesta:", error);
+    .then(response => {
+        if (response.ok) {
+            window.location.reload();
+        } else {
             alert("Errore durante la votazione. Riprova più tardi.");
-        });
+        }
+    })
+    .catch(error => {
+        console.error("Errore nella richiesta:", error);
+        alert("Errore durante la votazione. Riprova più tardi.");
+    });
 }
 
-// --- FUNZIONE GESTIONE LISTE AGGIORNATA ---
+// --- FUNZIONE GESTIONE LISTE CORRETTA ---
 function toggleUserList(idFilm, listType, buttonElement) {
-    // Determiniamo la servlet corretta in base al tipo di lista
     let urlServlet = "";
     if (listType === 'watchlist') {
         urlServlet = "AggiungiWatchlistServlet";
@@ -33,10 +34,8 @@ function toggleUserList(idFilm, listType, buttonElement) {
     }
 
     const formData = new URLSearchParams();
-    // Utilizziamo "filmId" per coincidere con request.getParameter("filmId") nelle Servlet
     formData.append("filmId", idFilm); 
 
-    // Chiamata al backend
     fetch(urlServlet, {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -44,15 +43,13 @@ function toggleUserList(idFilm, listType, buttonElement) {
     })
     .then(response => {
         if (response.ok) {
-            // Toggle visuale della classe 'active'
-            buttonElement.classList.toggle("active");
+            // Eseguiamo il cambio UI SOLO se il server ha risposto 200 OK
             
-            // --- LOGICA AGGIORNAMENTO UI INDIPENDENTE ---
-            // Le liste non sono più mutuamente esclusive.
-            // Aggiorniamo solo il testo del bottone premuto.
-
+            // 1. Toggle della classe 'active'
+            buttonElement.classList.toggle("active");
             const isActive = buttonElement.classList.contains("active");
 
+            // 2. Aggiornamento del testo e dell'icona
             if(listType === 'watchlist') {
                 if (isActive) {
                     buttonElement.innerHTML = '<i class="fas fa-minus-circle"></i> Rimuovi dalla Watchlist';
@@ -66,9 +63,9 @@ function toggleUserList(idFilm, listType, buttonElement) {
                     buttonElement.innerHTML = '<i class="fas fa-check-circle"></i> Segna come Visto';
                 }
             }
-
         } else {
-            alert("Impossibile aggiornare la lista. Riprova.");
+            // Gestione errore server (es. 403, 500)
+            alert("Impossibile aggiornare la lista. Errore del server.");
         }
     })
     .catch(error => {
@@ -78,10 +75,7 @@ function toggleUserList(idFilm, listType, buttonElement) {
 }
 
 function showReviewForm() {
-    // Mostra l'overlay
     document.getElementById('reviewOverlay').style.display = 'flex';
-
-    // Disabilita il bottone "RATE IT" dopo il primo click
     const rateButton = document.getElementById('btnRateFilm');
     if (rateButton) {
         rateButton.disabled = true;
@@ -114,19 +108,16 @@ function validateReviewForm() {
 
 function deleteFilm(idFilm) {
     if (confirm("Sei sicuro di voler eliminare questo film? Questa azione non può essere annullata.")) {
-        // Crea un form temporaneo
         const form = document.createElement('form');
         form.method = 'POST';
         form.action = 'deleteFilm';
 
-        // Aggiungi l'input nascosto
         const input = document.createElement('input');
         input.type = 'hidden';
         input.name = 'idFilm';
         input.value = idFilm;
         form.appendChild(input);
 
-        // Aggiungi il form al body e sottometti
         document.body.appendChild(form);
         form.submit();
     }
@@ -143,16 +134,16 @@ function reportReview(idFilm, emailRecensore) {
             headers: { "Content-Type": "application/x-www-form-urlencoded" },
             body: formData.toString()
         })
-            .then(response => {
-                if (response.ok) {
-                    alert("Recensione segnalata con successo.");
-                } else {
-                    alert("Errore durante la segnalazione. Riprova più tardi.");
-                }
-            })
-            .catch(error => {
-                console.error("Errore nella richiesta:", error);
+        .then(response => {
+            if (response.ok) {
+                alert("Recensione segnalata con successo.");
+            } else {
                 alert("Errore durante la segnalazione. Riprova più tardi.");
-            });
+            }
+        })
+        .catch(error => {
+            console.error("Errore nella richiesta:", error);
+            alert("Errore durante la segnalazione. Riprova più tardi.");
+        });
     }
 }

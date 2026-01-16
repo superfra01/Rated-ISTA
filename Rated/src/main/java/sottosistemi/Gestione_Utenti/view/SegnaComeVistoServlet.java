@@ -1,8 +1,6 @@
 package sottosistemi.Gestione_Utenti.view;
 
 import java.io.IOException;
-import java.sql.SQLException;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -20,26 +18,22 @@ public class SegnaComeVistoServlet extends HttpServlet {
     public SegnaComeVistoServlet() {
         super();
     }
+
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        response.sendRedirect("catalogo.jsp");
+    }
+    
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        // 1. Verifica Sessione e Utente (Autenticazione)
+        // 1. Verifica Sessione e Utente
         HttpSession session = request.getSession();
         UtenteBean utenteSessione = (UtenteBean) session.getAttribute("user");
 
         if (utenteSessione == null) {
-            response.sendRedirect("login.jsp");
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return;
         }
 
-        // 2. Controllo Autorizzazione (Check Ownership)
-        String emailTarget = request.getParameter("emailUtente");
-
-        // Se il parametro è presente, DEVE corrispondere all'utente loggato
-        if (emailTarget != null && !emailTarget.isEmpty() && !emailTarget.equals(utenteSessione.getEmail())) {
-            response.sendError(HttpServletResponse.SC_FORBIDDEN, "Operazione non consentita: non puoi agire per conto di altri utenti.");
-            return;
-        }
-
-        // 3. Recupera parametri del film
+        // 2. Recupera parametri del film
         String filmIdStr = request.getParameter("filmId");
         int filmId = -1;
 
@@ -49,9 +43,11 @@ public class SegnaComeVistoServlet extends HttpServlet {
             }
         } catch (NumberFormatException e) {
             e.printStackTrace();
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            return;
         }
 
-        // 4. Chiama il Service (Logica Toggle)
+        // 3. Logica Service
         if (filmId != -1) {
             ProfileService profileService = new ProfileService();
             
@@ -59,25 +55,19 @@ public class SegnaComeVistoServlet extends HttpServlet {
             boolean giaVisto = profileService.isFilmVisto(utenteSessione.getEmail(), filmId);
             
             if (giaVisto) {
-                // Se lo ha già visto, rimuovi la visualizzazione
                 profileService.rimuoviFilmVisto(utenteSessione.getEmail(), filmId);
+                // Aggiorna sessione: NON visto
+                session.setAttribute("watched", false);
             } else {
-                // Se non lo ha visto, aggiungi la visualizzazione
                 profileService.aggiungiFilmVisto(utenteSessione.getEmail(), filmId);
+                // Aggiorna sessione: VISTO
+                session.setAttribute("watched", true);
             }
-        }
-
-        // 5. Reindirizzamento alla pagina precedente
-        String referer = request.getHeader("Referer");
-        if (referer != null && !referer.isEmpty()) {
-            response.sendRedirect(referer);
+            
+            // 4. Risposta OK per AJAX (Nessun Redirect)
+            response.setStatus(HttpServletResponse.SC_OK);
         } else {
-            response.sendRedirect("VisualizzaFilmServlet?filmId=" + filmId);
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         }
-    }
-
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        // Impedisce chiamate GET dirette per operazioni di scrittura
-        response.sendRedirect("catalogo.jsp");
     }
 }

@@ -1,8 +1,6 @@
 package sottosistemi.Gestione_Utenti.view;
 
 import java.io.IOException;
-import java.sql.SQLException;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -10,13 +8,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import model.Entity.FilmBean;
 import model.Entity.UtenteBean;
 import sottosistemi.Gestione_Utenti.service.ProfileService;
 
-/**
- * Servlet implementation class AggiungiWatchlistServlet
- */
 @WebServlet("/AggiungiWatchlistServlet")
 public class AggiungiWatchlistServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
@@ -26,7 +20,6 @@ public class AggiungiWatchlistServlet extends HttpServlet {
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        // Redirige al catalogo se si tenta un accesso diretto via GET
         response.sendRedirect("catalogo.jsp");
     }
 
@@ -36,51 +29,45 @@ public class AggiungiWatchlistServlet extends HttpServlet {
         UtenteBean utenteSessione = (UtenteBean) session.getAttribute("user");
 
         if (utenteSessione == null) {
-            response.sendRedirect("login.jsp");
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // 401 Unauthorized
             return;
         }
 
-        // 2. Controllo di Sicurezza (Ownership Check)
-        // Recuperiamo l'email (o username) inviata dal form, se presente
-        String emailTarget = utenteSessione.getEmail();
+        // 2. Recupera ID film dalla REQUEST (inviato dal JS)
+        String filmIdStr = request.getParameter("filmId");
+        int filmId = -1;
 
-        // Se il parametro 'emailUtente' è stato inviato, DEVE coincidere con l'utente in sessione.
-        if (emailTarget != null && !emailTarget.isEmpty() && !emailTarget.equals(utenteSessione.getEmail())) {
-            response.sendError(HttpServletResponse.SC_FORBIDDEN, "Accesso negato: Non puoi modificare la watchlist di un altro utente.");
+        try {
+            if (filmIdStr != null && !filmIdStr.isEmpty()) {
+                filmId = Integer.parseInt(filmIdStr);
+            }
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
 
-        // 3. Recupera parametri del film
-        FilmBean film = (FilmBean) session.getAttribute("film");
-        
-        // Verifica che l'oggetto film sia presente in sessione
-        if (film == null) {
-            response.sendRedirect("catalogo.jsp"); // O gestisci l'errore diversamente
-            return;
-        }
-        
-        int filmId = film.getIdFilm();
-
-        // 4. Chiama il Service (Business Logic)
+        // 3. Logica Service
         if (filmId != -1) {
             ProfileService profileService = new ProfileService();
             
-            // Logica Toggle: Controlla se esiste, se sì rimuove, altrimenti aggiunge
+            // Controlla lo stato attuale nel DB
             boolean isPresent = profileService.isFilmInWatchlist(utenteSessione.getEmail(), filmId);
             
             if (isPresent) {
                 profileService.rimuoviDallaWatchlist(utenteSessione.getEmail(), filmId);
+                // Aggiorna la sessione: ora NON è più in watchlist
+                session.setAttribute("inwatchlist", false);
             } else {
                 profileService.aggiungiAllaWatchlist(utenteSessione.getEmail(), filmId);
+                // Aggiorna la sessione: ora È in watchlist
+                session.setAttribute("inwatchlist", true);
             }
-        }
-
-        // 5. Reindirizzamento (ritorna alla pagina precedente o al film)
-        String referer = request.getHeader("Referer");
-        if (referer != null && !referer.isEmpty()) {
-            response.sendRedirect(referer);
+            
+            // 4. Risposta OK per AJAX (Nessun Redirect)
+            response.setStatus(HttpServletResponse.SC_OK);
         } else {
-            response.sendRedirect("VisualizzaFilmServlet?filmId=" + filmId);
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         }
     }
 }
