@@ -33,7 +33,9 @@ function toggleUserList(idFilm, listType, buttonElement) {
     }
 
     const formData = new URLSearchParams();
-    formData.append("idFilm", idFilm);
+    // *** MODIFICA EFFETTUATA QUI ***
+    // Prima era "idFilm", ora è "filmId" per coincidere con request.getParameter("filmId") nelle Servlet
+    formData.append("filmId", idFilm); 
 
     // Chiamata al backend usando la servlet specifica
     fetch(urlServlet, {
