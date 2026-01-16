@@ -33,11 +33,10 @@ function toggleUserList(idFilm, listType, buttonElement) {
     }
 
     const formData = new URLSearchParams();
-    // *** MODIFICA EFFETTUATA QUI ***
-    // Prima era "idFilm", ora è "filmId" per coincidere con request.getParameter("filmId") nelle Servlet
+    // Utilizziamo "filmId" per coincidere con request.getParameter("filmId") nelle Servlet
     formData.append("filmId", idFilm); 
 
-    // Chiamata al backend usando la servlet specifica
+    // Chiamata al backend
     fetch(urlServlet, {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -48,36 +47,26 @@ function toggleUserList(idFilm, listType, buttonElement) {
             // Toggle visuale della classe 'active'
             buttonElement.classList.toggle("active");
             
-            // --- LOGICA AGGIORNAMENTO UI E MUTUA ESCLUSIONE ---
-            const btnWatchlist = document.querySelector(".btn-watchlist");
-            const btnWatched = document.querySelector(".btn-watched");
+            // --- LOGICA AGGIORNAMENTO UI INDIPENDENTE ---
+            // Le liste non sono più mutuamente esclusive.
+            // Aggiorniamo solo il testo del bottone premuto.
 
-            // Aggiornamento testi/icone del bottone cliccato
-            if (buttonElement.classList.contains("active")) {
-                if(listType === 'watchlist') {
-                    buttonElement.innerHTML = '<i class="fas fa-check"></i> In Watchlist';
-                    // Se aggiungo alla Watchlist, rimuovo da Watched (se presente)
-                    if(btnWatched && btnWatched.classList.contains("active")) {
-                         btnWatched.classList.remove("active");
-                         btnWatched.innerHTML = '<i class="fas fa-check-circle"></i> Segna come Visto';
-                    }
+            const isActive = buttonElement.classList.contains("active");
+
+            if(listType === 'watchlist') {
+                if (isActive) {
+                    buttonElement.innerHTML = '<i class="fas fa-minus-circle"></i> Rimuovi dalla Watchlist';
                 } else {
-                    // List Type == Watched
-                    buttonElement.innerHTML = '<i class="fas fa-check-double"></i> Visto';
-                    // Se aggiungo a Visto, rimuovo da Watchlist (se presente)
-                    if(btnWatchlist && btnWatchlist.classList.contains("active")) {
-                         btnWatchlist.classList.remove("active");
-                         btnWatchlist.innerHTML = '<i class="fas fa-bookmark"></i> Aggiungi alla Watchlist';
-                    }
-                }
-            } else {
-                 // Caso disattivazione
-                 if(listType === 'watchlist') {
                     buttonElement.innerHTML = '<i class="fas fa-bookmark"></i> Aggiungi alla Watchlist';
+                }
+            } else if (listType === 'watched') {
+                if (isActive) {
+                    buttonElement.innerHTML = '<i class="fas fa-times-circle"></i> Rimuovi da Visti';
                 } else {
                     buttonElement.innerHTML = '<i class="fas fa-check-circle"></i> Segna come Visto';
                 }
             }
+
         } else {
             alert("Impossibile aggiornare la lista. Riprova.");
         }

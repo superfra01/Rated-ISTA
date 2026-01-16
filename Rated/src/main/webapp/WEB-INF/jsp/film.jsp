@@ -30,6 +30,34 @@
     UtenteBean user = (UtenteBean) session.getAttribute("user");
     HashMap<String, ValutazioneBean> valutazioni = (HashMap<String, ValutazioneBean>) session.getAttribute("valutazioni");
 
+    // --- RECUPERO LISTE UTENTE (WATCHLIST / VISTI) ---
+    // Recuperiamo le liste per sapere se il film è già presente e settare lo stato dei bottoni
+    List<FilmBean> watchedList = (List<FilmBean>) session.getAttribute("watchedList");
+    List<FilmBean> watchlist = (List<FilmBean>) session.getAttribute("watchlist");
+
+    if (watchedList == null) watchedList = new ArrayList<>();
+    if (watchlist == null) watchlist = new ArrayList<>();
+
+    boolean isInWatchlist = false;
+    boolean isInWatched = false;
+
+    // Controllo presenza in Watchlist
+    if (film != null) {
+        for (FilmBean f : watchlist) {
+            if (f.getIdFilm().equals(film.getIdFilm())) {
+                isInWatchlist = true;
+                break;
+            }
+        }
+        // Controllo presenza in Watched List
+        for (FilmBean f : watchedList) {
+            if (f.getIdFilm().equals(film.getIdFilm())) {
+                isInWatched = true;
+                break;
+            }
+        }
+    }
+
     // --- GESTIONE GENERI ---
     List<FilmGenereBean> listaGeneri = (List<FilmGenereBean>) session.getAttribute("Generi");
     
@@ -47,7 +75,6 @@
     }
 
     // --- VERIFICA PRELIMINARE SE L'UTENTE HA RECENSITO ---
-    // Lo calcoliamo qui in alto perché serve sia per i pulsanti Watchlist/Visto sia per il Rate It
     boolean userHasReviewed = false;
     if (user != null && "RECENSORE".equals(user.getTipoUtente()) && recensioni != null) {
         for (RecensioneBean r : recensioni) {
@@ -174,32 +201,35 @@
 
                 <p class="film-description"><%= film.getTrama() %></p>
 
-                <%-- --- NUOVA SEZIONE PULSANTI LISTE (WATCHLIST / VISTO) --- --%>
+                <%-- --- SEZIONE PULSANTI LISTE (WATCHLIST / VISTO) --- --%>
                 <% if (user != null && "RECENSORE".equals(user.getTipoUtente())) { %>
                     <div class="user-lists-actions">
                         
                         <%-- Pulsante Watchlist --%>
                         <button type="button" 
-                                class="btn-list-action btn-watchlist" 
+                                class="btn-list-action btn-watchlist <%= isInWatchlist ? "active" : "" %>" 
                                 id="btnWatchlist"
-                                <%= userHasReviewed ? "disabled title='Hai già recensito (e visto) questo film'" : "onclick=\"toggleUserList('" + film.getIdFilm() + "', 'watchlist', this)\"" %>
+                                <%= userHasReviewed ? "onclick=\"alert('Hai recensito questo film, ma puoi comunque rimuoverlo dalla watchlist se lo desideri.')\"" : "" %>
+                                onclick="toggleUserList('<%= film.getIdFilm() %>', 'watchlist', this)"
                         >
-                            <% if(userHasReviewed) { %>
-                                <i class="fas fa-ban"></i> Watchlist (Visto)
+                            <% if(isInWatchlist) { %>
+                                <i class="fas fa-minus-circle"></i> Rimuovi dalla Watchlist
                             <% } else { %>
                                 <i class="fas fa-bookmark"></i> Aggiungi alla Watchlist
                             <% } %>
                         </button>
 
                         <%-- Pulsante Watched --%>
-                        <%-- Se ha recensito, è automaticamente Visto e attivo, ma disabilitiamo il toggle per coerenza --%>
+                        <%-- Se ha recensito, è disabilitato e fisso su "Recensito". Altrimenti gestisce "Segna come visto/Rimuovi da visti" --%>
                         <button type="button" 
-                                class="btn-list-action btn-watched <%= userHasReviewed ? "active" : "" %>" 
+                                class="btn-list-action btn-watched <%= (isInWatched || userHasReviewed) ? "active" : "" %>" 
                                 id="btnWatched"
                                 <%= userHasReviewed ? "disabled title='Recensione presente: segnato automaticamente come visto'" : "onclick=\"toggleUserList('" + film.getIdFilm() + "', 'watched', this)\"" %>
                         >
                             <% if(userHasReviewed) { %>
                                 <i class="fas fa-check-double"></i> Visto (Recensito)
+                            <% } else if (isInWatched) { %>
+                                <i class="fas fa-times-circle"></i> Rimuovi da Visti
                             <% } else { %>
                                 <i class="fas fa-check-circle"></i> Segna come Visto
                             <% } %>
