@@ -22,16 +22,21 @@ function voteReview(idFilm, emailRecensore, valutazione) {
         });
 }
 
-// --- NUOVA FUNZIONE PER GESTIONE LISTE (WATCHLIST/VISTO) ---
+// --- FUNZIONE GESTIONE LISTE AGGIORNATA ---
 function toggleUserList(idFilm, listType, buttonElement) {
-    // listType dovrebbe essere 'watchlist' o 'watched'
-    
+    // Determiniamo la servlet corretta in base al tipo di lista
+    let urlServlet = "";
+    if (listType === 'watchlist') {
+        urlServlet = "AggiungiWatchlistServlet";
+    } else if (listType === 'watched') {
+        urlServlet = "SegnaComeVistoServlet";
+    }
+
     const formData = new URLSearchParams();
     formData.append("idFilm", idFilm);
-    formData.append("listType", listType);
 
-    // Chiamata backend (simulata/inventata)
-    fetch("ManageUserLists", {
+    // Chiamata al backend usando la servlet specifica
+    fetch(urlServlet, {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: formData.toString()
@@ -42,7 +47,6 @@ function toggleUserList(idFilm, listType, buttonElement) {
             buttonElement.classList.toggle("active");
             
             // --- LOGICA AGGIORNAMENTO UI E MUTUA ESCLUSIONE ---
-            const icon = buttonElement.querySelector("i");
             const btnWatchlist = document.querySelector(".btn-watchlist");
             const btnWatched = document.querySelector(".btn-watched");
 
@@ -81,7 +85,6 @@ function toggleUserList(idFilm, listType, buttonElement) {
         alert("Errore di connessione.");
     });
 }
-// -----------------------------------------------------------
 
 function showReviewForm() {
     // Mostra l'overlay
