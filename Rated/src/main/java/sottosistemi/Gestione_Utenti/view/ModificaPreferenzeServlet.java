@@ -36,7 +36,7 @@ public class ModificaPreferenzeServlet extends HttpServlet {
         String targetEmail = request.getParameter("email"); 
         
         // Recupera i generi selezionati (checkboxes con name="generi")
-        String[] generiSelezionati = request.getParameterValues("generi");
+        String[] generiSelezionati = request.getParameterValues("selectedGenres");
 
         // 2. Controllo Autorizzazione: Chi fa la richiesta è il proprietario dell'account?
         // Se targetUsername è null, assumiamo che l'utente voglia modificare se stesso (fallback sicuro)
@@ -62,7 +62,7 @@ public class ModificaPreferenzeServlet extends HttpServlet {
            
 
         // 4. Redirect al profilo
-        response.sendRedirect("ProfileServlet"); // O "profile.jsp" se non passi per una servlet di visualizzazione
+        response.sendRedirect("profile?visitedUser="+utenteSessione.getUsername()); // O "profile.jsp" se non passi per una servlet di visualizzazione
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

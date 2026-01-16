@@ -132,11 +132,11 @@ public class ProfileService {
         // Questo garantisce che se l'utente deseleziona tutto, il DB rifletta lo stato vuoto
         PreferenzaDAO.deleteByEmail(email);
 
+        	
         // 2. Se ci sono nuovi generi selezionati, inseriscili uno per uno
         if (idGeneri != null && idGeneri.length > 0) {
             for (String idGenereStr : idGeneri) {
                 try {
-                    int idGenere = Integer.parseInt(idGenereStr);
                     
                     PreferenzaBean preferenza = new PreferenzaBean();
                     preferenza.setEmail(email);
