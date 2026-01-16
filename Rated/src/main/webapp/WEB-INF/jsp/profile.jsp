@@ -73,10 +73,10 @@
             <% } %>
             
             <div style="margin-top: 15px;">
-                 <button onclick="window.location.href='userFilms.jsp'" style="background-color: #555; font-size: 0.9rem;">
-                    <i class="fas fa-film"></i> Film Utente
-                 </button>
-            </div>
+			    <button onclick="window.location.href='${pageContext.request.contextPath}/userFilms?username=<%= visitedUser.getUsername() %>'" style="background-color: #555; font-size: 0.9rem;">
+			        <i class="fas fa-film"></i> Film Utente
+			    </button>
+			</div>
         </div>
     </div>
 

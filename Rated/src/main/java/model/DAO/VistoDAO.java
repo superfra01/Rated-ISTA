@@ -12,6 +12,7 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
 
+import model.Entity.FilmBean;
 import model.Entity.VistoBean;
 
 public class VistoDAO {
@@ -133,5 +134,45 @@ public class VistoDAO {
         } catch (final SQLException e) {
             e.printStackTrace();
         }
+    }
+    
+
+
+
+    public List<FilmBean> doRetrieveFilmsByUtente(String username) throws SQLException {
+        List<FilmBean> films = new ArrayList<>();
+        
+        // Join: Film -> Visto -> Utente_Registrato (per filtrare via username)
+        String query = "SELECT f.ID_Film, f.Nome, f.Anno, f.Durata, f.Regista, f.Trama, f.Valutazione, f.Attori, f.Locandina " +
+                       "FROM Film f " +
+                       "JOIN Visto v ON f.ID_Film = v.ID_Film " +
+                       "JOIN Utente_Registrato u ON v.email = u.email " +
+                       "WHERE u.username = ?";
+
+        try (Connection con = dataSource.getConnection();
+             PreparedStatement ps = con.prepareStatement(query)) {
+
+            ps.setString(1, username);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    FilmBean film = new FilmBean();
+                    
+                    // Mapping esatto basato sulla CREATE TABLE Film
+                    film.setIdFilm(rs.getInt("ID_Film"));
+                    film.setNome(rs.getString("Nome"));
+                    film.setAnno(rs.getInt("Anno"));       // DB: YEAR -> Bean: int
+                    film.setDurata(rs.getInt("Durata"));
+                    film.setRegista(rs.getString("Regista"));
+                    film.setTrama(rs.getString("Trama"));  // DB: Trama -> Bean: setTrama
+                    film.setValutazione(rs.getInt("Valutazione"));
+                    film.setAttori(rs.getString("Attori"));
+                    film.setLocandina(rs.getBytes("Locandina"));
+
+                    films.add(film);
+                }
+            }
+        }
+        return films;
     }
 }

@@ -12,6 +12,7 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
 
+import model.Entity.FilmBean;
 import model.Entity.InteresseBean;
 
 public class InteresseDAO {
@@ -169,5 +170,45 @@ public class InteresseDAO {
         } catch (final SQLException e) {
             e.printStackTrace();
         }
+    }
+    
+
+    public List<FilmBean> doRetrieveFilmsByUtente(String username) throws SQLException {
+        List<FilmBean> films = new ArrayList<>();
+        
+        // Join: Film -> Interesse -> Utente_Registrato (per filtrare via username)
+        // Nota: Assumo che tu voglia solo i film dove 'interesse' è true, 
+        // se la tabella contiene anche i "non interessato" (anche se dalla struttura sembra una tabella di associazione pura).
+        String query = "SELECT f.ID_Film, f.Nome, f.Anno, f.Durata, f.Regista, f.Trama, f.Valutazione, f.Attori, f.Locandina " +
+                       "FROM Film f " +
+                       "JOIN Interesse i ON f.ID_Film = i.ID_Film " +
+                       "JOIN Utente_Registrato u ON i.email = u.email " +
+                       "WHERE u.username = ? AND i.interesse = true"; // Aggiunto check booleano se necessario
+
+        try (Connection con = dataSource.getConnection();
+             PreparedStatement ps = con.prepareStatement(query)) {
+
+            ps.setString(1, username);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    FilmBean film = new FilmBean();
+                    
+                    // Mapping esatto
+                    film.setIdFilm(rs.getInt("ID_Film"));
+                    film.setNome(rs.getString("Nome"));
+                    film.setAnno(rs.getInt("Anno"));
+                    film.setDurata(rs.getInt("Durata"));
+                    film.setRegista(rs.getString("Regista"));
+                    film.setTrama(rs.getString("Trama"));
+                    film.setValutazione(rs.getInt("Valutazione"));
+                    film.setAttori(rs.getString("Attori"));
+                    film.setLocandina(rs.getBytes("Locandina"));
+
+                    films.add(film);
+                }
+            }
+        }
+        return films;
     }
 }

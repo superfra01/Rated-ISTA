@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import model.Entity.FilmBean;
 import model.Entity.UtenteBean;
 import sottosistemi.Gestione_Utenti.service.ProfileService;
 
@@ -41,7 +42,7 @@ public class AggiungiWatchlistServlet extends HttpServlet {
 
         // 2. Controllo di Sicurezza (Ownership Check)
         // Recuperiamo l'email (o username) inviata dal form, se presente
-        String emailTarget = request.getParameter("emailUtente");
+        String emailTarget = utenteSessione.getEmail();
 
         // Se il parametro 'emailUtente' è stato inviato, DEVE coincidere con l'utente in sessione.
         // Se non coincide, qualcuno sta provando a manipolare la richiesta (IDOR).
@@ -51,16 +52,10 @@ public class AggiungiWatchlistServlet extends HttpServlet {
         }
 
         // 3. Recupera parametri del film
-        String filmIdStr = request.getParameter("filmId");
-        int filmId = -1;
+        FilmBean film = (FilmBean) session.getAttribute("film");
+        int filmId = film.getIdFilm();
         
-        try {
-            if (filmIdStr != null && !filmIdStr.isEmpty()) {
-                filmId = Integer.parseInt(filmIdStr);
-            }
-        } catch (NumberFormatException e) {
-            e.printStackTrace();
-        }
+        
 
         // 4. Chiama il Service (Business Logic)
         if (filmId != -1) {
@@ -69,7 +64,7 @@ public class AggiungiWatchlistServlet extends HttpServlet {
             // Utilizziamo l'oggetto utenteSessione per garantire che l'operazione
             // venga effettuata sull'account autenticato
             profileService.aggiungiAllaWatchlist(utenteSessione.getEmail(), filmId);
-                
+            
             
         }
 
