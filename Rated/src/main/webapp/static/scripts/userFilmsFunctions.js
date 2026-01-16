@@ -3,8 +3,12 @@
  * @param {string} type - 'watched' oppure 'watchlist'
  */
 function switchList(type) {
-    // Ottiene l'URL corrente senza parametri
-    const baseUrl = window.location.href.split('?')[0];
-    // Ricarica la pagina con il nuovo parametro
-    window.location.href = baseUrl + "?listType=" + type;
+    // Crea un oggetto URL basato sull'indirizzo corrente
+    const currentUrl = new URL(window.location.href);
+    
+    // Aggiorna o aggiunge il parametro 'listType' mantenendo 'username'
+    currentUrl.searchParams.set("listType", type);
+    
+    // Reindirizza al nuovo URL
+    window.location.href = currentUrl.toString();
 }
