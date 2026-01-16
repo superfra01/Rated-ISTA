@@ -19,55 +19,53 @@ public class AggiungiWatchlistServlet extends HttpServlet {
         super();
     }
 
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        response.sendRedirect("catalogo.jsp");
-    }
-
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        // 1. Verifica Sessione e Utente
+        response.setContentType("text/plain");
+        response.setCharacterEncoding("UTF-8");
+        
         HttpSession session = request.getSession();
         UtenteBean utenteSessione = (UtenteBean) session.getAttribute("user");
 
         if (utenteSessione == null) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // 401 Unauthorized
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().write("Devi effettuare il login.");
             return;
         }
 
-        // 2. Recupera ID film dalla REQUEST (inviato dal JS)
+        // 1. Recupera ID dal parametro della request (inviato dal JS)
         String filmIdStr = request.getParameter("filmId");
         int filmId = -1;
-
+        
         try {
             if (filmIdStr != null && !filmIdStr.isEmpty()) {
                 filmId = Integer.parseInt(filmIdStr);
             }
         } catch (NumberFormatException e) {
-            e.printStackTrace();
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().write("ID Film non valido.");
             return;
         }
 
-        // 3. Logica Service
         if (filmId != -1) {
             ProfileService profileService = new ProfileService();
             
-            // Controlla lo stato attuale nel DB
             boolean isPresent = profileService.isFilmInWatchlist(utenteSessione.getEmail(), filmId);
             
             if (isPresent) {
                 profileService.rimuoviDallaWatchlist(utenteSessione.getEmail(), filmId);
-                // Aggiorna la sessione: ora NON è più in watchlist
-                session.setAttribute("inwatchlist", false);
             } else {
                 profileService.aggiungiAllaWatchlist(utenteSessione.getEmail(), filmId);
-                // Aggiorna la sessione: ora È in watchlist
-                session.setAttribute("inwatchlist", true);
             }
             
-            // 4. Risposta OK per AJAX (Nessun Redirect)
+            // Successo
             response.setStatus(HttpServletResponse.SC_OK);
         } else {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().write("Impossibile identificare il film.");
         }
+    }
+    
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        response.sendRedirect("catalogo.jsp");
     }
 }

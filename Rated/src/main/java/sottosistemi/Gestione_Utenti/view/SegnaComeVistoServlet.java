@@ -1,8 +1,6 @@
 package sottosistemi.Gestione_Utenti.view;
 
 import java.io.IOException;
-import java.sql.SQLException;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -22,24 +20,20 @@ public class SegnaComeVistoServlet extends HttpServlet {
     public SegnaComeVistoServlet() {
         super();
     }
+
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        // 1. Verifica Sessione e Utente
+        response.setContentType("text/plain");
+        response.setCharacterEncoding("UTF-8");
+
         HttpSession session = request.getSession();
         UtenteBean utenteSessione = (UtenteBean) session.getAttribute("user");
 
         if (utenteSessione == null) {
-            response.sendRedirect("login.jsp");
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().write("Utente non loggato.");
             return;
         }
 
-        // 2. Controllo Autorizzazione
-        String emailTarget = request.getParameter("emailUtente");
-        if (emailTarget != null && !emailTarget.isEmpty() && !emailTarget.equals(utenteSessione.getEmail())) {
-            response.sendError(HttpServletResponse.SC_FORBIDDEN, "Operazione non consentita.");
-            return;
-        }
-
-        // 3. Recupera parametri del film
         String filmIdStr = request.getParameter("filmId");
         int filmId = -1;
         try {
@@ -47,46 +41,42 @@ public class SegnaComeVistoServlet extends HttpServlet {
                 filmId = Integer.parseInt(filmIdStr);
             }
         } catch (NumberFormatException e) {
-            e.printStackTrace();
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().write("ID Film non valido.");
+            return;
         }
 
-        // 4. Logica di Business tramite Service
         if (filmId != -1) {
             ProfileService profileService = new ProfileService();
             RecensioniService recensioniService = new RecensioniService();
             
-            // Verifica stato attuale
             boolean giaVisto = profileService.isFilmVisto(utenteSessione.getEmail(), filmId);
             
             if (giaVisto) {
-                // PRIMA di rimuovere, usa RecensioniService per verificare se esiste una recensione
-                // Nota: Assumiamo che RecensioniService abbia un metodo per recuperare la recensione specifica
+                // Controllo se esiste recensione prima di rimuovere
                 RecensioneBean recensione = recensioniService.getRecensione(filmId, utenteSessione.getEmail());
                 
                 if (recensione != null) {
-                    // BLOCCO: L'utente ha una recensione attiva per questo film
-                    session.setAttribute("errorMessage", "Impossibile rimuovere dai 'Visti': hai scritto una recensione per questo film. Elimina prima la recensione.");
+                    // ERRORE: Non si può rimuovere dai visti se c'è una recensione
+                    response.setStatus(HttpServletResponse.SC_CONFLICT); // 409 Conflict
+                    response.getWriter().write("Non puoi rimuovere il film dai 'Visti' perché hai scritto una recensione. Elimina prima la recensione.");
+                    return;
                 } else {
-                    // PROCEDI: Nessuna recensione, rimozione sicura
                     profileService.rimuoviFilmVisto(utenteSessione.getEmail(), filmId);
                 }
             } else {
-                // Aggiungi ai visti
                 profileService.aggiungiFilmVisto(utenteSessione.getEmail(), filmId);
             }
-        }
-
-        // 5. Redirect
-        String referer = request.getHeader("Referer");
-        if (referer != null && !referer.isEmpty()) {
-            response.sendRedirect(referer);
+            
+            // Successo
+            response.setStatus(HttpServletResponse.SC_OK);
         } else {
-            response.sendRedirect("VisualizzaFilmServlet?filmId=" + filmId);
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().write("Film ID mancante.");
         }
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        // Impedisce chiamate GET dirette per operazioni di scrittura
         response.sendRedirect("catalogo.jsp");
     }
 }

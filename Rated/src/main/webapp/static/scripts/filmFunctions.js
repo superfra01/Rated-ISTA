@@ -1,5 +1,3 @@
-// filmFunctions.js
-
 function voteReview(idFilm, emailRecensore, valutazione) {
     const formData = new URLSearchParams();
     formData.append("idFilm", idFilm);
@@ -20,7 +18,7 @@ function voteReview(idFilm, emailRecensore, valutazione) {
     })
     .catch(error => {
         console.error("Errore nella richiesta:", error);
-        alert("Errore durante la votazione. Riprova più tardi.");
+        alert("Errore durante la votazione.");
     });
 }
 
@@ -41,15 +39,12 @@ function toggleUserList(idFilm, listType, buttonElement) {
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: formData.toString()
     })
-    .then(response => {
+    .then(async response => {
         if (response.ok) {
-            // Eseguiamo il cambio UI SOLO se il server ha risposto 200 OK
-            
-            // 1. Toggle della classe 'active'
+            // SUCCESS: Aggiorna la UI
             buttonElement.classList.toggle("active");
             const isActive = buttonElement.classList.contains("active");
 
-            // 2. Aggiornamento del testo e dell'icona
             if(listType === 'watchlist') {
                 if (isActive) {
                     buttonElement.innerHTML = '<i class="fas fa-minus-circle"></i> Rimuovi dalla Watchlist';
@@ -64,22 +59,21 @@ function toggleUserList(idFilm, listType, buttonElement) {
                 }
             }
         } else {
-            // Gestione errore server (es. 403, 500)
-            alert("Impossibile aggiornare la lista. Errore del server.");
+            // ERROR: Leggi il messaggio inviato dalla Servlet
+            const errorMessage = await response.text();
+            alert(errorMessage || "Impossibile aggiornare la lista.");
         }
     })
     .catch(error => {
         console.error("Errore chiamata liste:", error);
-        alert("Errore di connessione.");
+        alert("Errore di connessione al server.");
     });
 }
 
 function showReviewForm() {
     document.getElementById('reviewOverlay').style.display = 'flex';
     const rateButton = document.getElementById('btnRateFilm');
-    if (rateButton) {
-        rateButton.disabled = true;
-    }
+    if (rateButton) rateButton.disabled = true;
 }
 
 function hideReviewForm() {
@@ -111,13 +105,11 @@ function deleteFilm(idFilm) {
         const form = document.createElement('form');
         form.method = 'POST';
         form.action = 'deleteFilm';
-
         const input = document.createElement('input');
         input.type = 'hidden';
         input.name = 'idFilm';
         input.value = idFilm;
         form.appendChild(input);
-
         document.body.appendChild(form);
         form.submit();
     }
@@ -135,15 +127,9 @@ function reportReview(idFilm, emailRecensore) {
             body: formData.toString()
         })
         .then(response => {
-            if (response.ok) {
-                alert("Recensione segnalata con successo.");
-            } else {
-                alert("Errore durante la segnalazione. Riprova più tardi.");
-            }
+            if (response.ok) alert("Recensione segnalata con successo.");
+            else alert("Errore durante la segnalazione.");
         })
-        .catch(error => {
-            console.error("Errore nella richiesta:", error);
-            alert("Errore durante la segnalazione. Riprova più tardi.");
-        });
+        .catch(error => console.error(error));
     }
 }
