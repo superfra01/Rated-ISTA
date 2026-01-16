@@ -164,4 +164,15 @@ public class ProfileService {
         return this.InteresseDAO.doRetrieveFilmsByUtente(username1);
 
     }
+    
+    public boolean isFilmInWatchlist(String email, int filmId) {
+        InteresseDAO interesseDAO = new InteresseDAO();
+            return interesseDAO.findByEmailAndIdFilm(email, filmId) != null;
+
+    }
+
+    public void rimuoviDallaWatchlist(String email, int filmId) {
+        InteresseDAO interesseDAO = new InteresseDAO();
+        interesseDAO.delete(email, filmId);
+    }
 }

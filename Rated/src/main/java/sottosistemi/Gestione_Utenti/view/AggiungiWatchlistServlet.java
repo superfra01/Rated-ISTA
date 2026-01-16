@@ -45,7 +45,6 @@ public class AggiungiWatchlistServlet extends HttpServlet {
         String emailTarget = utenteSessione.getEmail();
 
         // Se il parametro 'emailUtente' è stato inviato, DEVE coincidere con l'utente in sessione.
-        // Se non coincide, qualcuno sta provando a manipolare la richiesta (IDOR).
         if (emailTarget != null && !emailTarget.isEmpty() && !emailTarget.equals(utenteSessione.getEmail())) {
             response.sendError(HttpServletResponse.SC_FORBIDDEN, "Accesso negato: Non puoi modificare la watchlist di un altro utente.");
             return;
@@ -53,19 +52,27 @@ public class AggiungiWatchlistServlet extends HttpServlet {
 
         // 3. Recupera parametri del film
         FilmBean film = (FilmBean) session.getAttribute("film");
+        
+        // Verifica che l'oggetto film sia presente in sessione
+        if (film == null) {
+            response.sendRedirect("catalogo.jsp"); // O gestisci l'errore diversamente
+            return;
+        }
+        
         int filmId = film.getIdFilm();
-        
-        
 
         // 4. Chiama il Service (Business Logic)
         if (filmId != -1) {
             ProfileService profileService = new ProfileService();
             
-            // Utilizziamo l'oggetto utenteSessione per garantire che l'operazione
-            // venga effettuata sull'account autenticato
-            profileService.aggiungiAllaWatchlist(utenteSessione.getEmail(), filmId);
+            // Logica Toggle: Controlla se esiste, se sì rimuove, altrimenti aggiunge
+            boolean isPresent = profileService.isFilmInWatchlist(utenteSessione.getEmail(), filmId);
             
-            
+            if (isPresent) {
+                profileService.rimuoviDallaWatchlist(utenteSessione.getEmail(), filmId);
+            } else {
+                profileService.aggiungiAllaWatchlist(utenteSessione.getEmail(), filmId);
+            }
         }
 
         // 5. Reindirizzamento (ritorna alla pagina precedente o al film)
