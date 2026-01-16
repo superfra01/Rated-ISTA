@@ -20,7 +20,6 @@ public class SegnaComeVistoServlet extends HttpServlet {
     public SegnaComeVistoServlet() {
         super();
     }
-
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         // 1. Verifica Sessione e Utente (Autenticazione)
         HttpSession session = request.getSession();
@@ -32,13 +31,10 @@ public class SegnaComeVistoServlet extends HttpServlet {
         }
 
         // 2. Controllo Autorizzazione (Check Ownership)
-        // Recuperiamo l'identificativo dell'utente che la richiesta dichiara di voler modificare
         String emailTarget = request.getParameter("emailUtente");
 
         // Se il parametro è presente, DEVE corrispondere all'utente loggato
         if (emailTarget != null && !emailTarget.isEmpty() && !emailTarget.equals(utenteSessione.getEmail())) {
-            // Tentativo di IDOR (Insecure Direct Object Reference):
-            // L'utente loggato sta provando a modificare i dati di un altro utente
             response.sendError(HttpServletResponse.SC_FORBIDDEN, "Operazione non consentita: non puoi agire per conto di altri utenti.");
             return;
         }
@@ -55,14 +51,20 @@ public class SegnaComeVistoServlet extends HttpServlet {
             e.printStackTrace();
         }
 
-        // 4. Chiama il Service
+        // 4. Chiama il Service (Logica Toggle)
         if (filmId != -1) {
             ProfileService profileService = new ProfileService();
             
-            // Utilizziamo sempre l'oggetto della sessione per garantire che l'operazione
-            // venga eseguita sull'account autenticato
-            profileService.aggiungiFilmVisto(utenteSessione.getEmail(), filmId);
+            // Verifica se l'utente ha già visto il film
+            boolean giaVisto = profileService.isFilmVisto(utenteSessione.getEmail(), filmId);
             
+            if (giaVisto) {
+                // Se lo ha già visto, rimuovi la visualizzazione
+                profileService.rimuoviFilmVisto(utenteSessione.getEmail(), filmId);
+            } else {
+                // Se non lo ha visto, aggiungi la visualizzazione
+                profileService.aggiungiFilmVisto(utenteSessione.getEmail(), filmId);
+            }
         }
 
         // 5. Reindirizzamento alla pagina precedente

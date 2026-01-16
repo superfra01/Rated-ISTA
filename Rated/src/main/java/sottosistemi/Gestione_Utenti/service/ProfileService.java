@@ -175,4 +175,23 @@ public class ProfileService {
         InteresseDAO interesseDAO = new InteresseDAO();
         interesseDAO.delete(email, filmId);
     }
+    
+ // Inserire dentro ProfileService.java
+
+    /**
+     * Verifica se un film è presente nella lista dei visti dell'utente.
+     */
+    public boolean isFilmVisto(String email, int filmId) {
+        model.DAO.VistoDAO vistoDAO = new model.DAO.VistoDAO();
+        return vistoDAO.findByEmailAndIdFilm(email, filmId) != null;
+    }
+
+    /**
+     * Rimuove un film dalla lista dei visti dell'utente.
+     */
+    public void rimuoviFilmVisto(String email, int filmId) {
+        model.DAO.VistoDAO vistoDAO = new model.DAO.VistoDAO();
+        vistoDAO.delete(email, filmId);
+
+    }
 }
