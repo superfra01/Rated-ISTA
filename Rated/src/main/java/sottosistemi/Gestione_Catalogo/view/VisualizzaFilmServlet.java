@@ -70,7 +70,7 @@ public class VisualizzaFilmServlet extends HttpServlet {
         	if(watchlist.contains(film)) {
         		session.setAttribute("inwatchlist", true);
         	}else
-        		session.setAttribute("watched", false);
+        		session.setAttribute("inwatchlist", false);
     	}
     	
         request.getRequestDispatcher("/WEB-INF/jsp/film.jsp").forward(request, response);
