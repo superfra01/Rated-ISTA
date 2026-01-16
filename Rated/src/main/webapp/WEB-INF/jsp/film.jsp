@@ -30,35 +30,13 @@
     UtenteBean user = (UtenteBean) session.getAttribute("user");
     HashMap<String, ValutazioneBean> valutazioni = (HashMap<String, ValutazioneBean>) session.getAttribute("valutazioni");
 
-    // --- RECUPERO LISTE UTENTE (WATCHLIST / VISTI) ---
-    // Recuperiamo le liste per sapere se il film è già presente e settare lo stato dei bottoni
-    List<FilmBean> watchedList = (List<FilmBean>) session.getAttribute("watchedList");
-    List<FilmBean> watchlist = (List<FilmBean>) session.getAttribute("watchlist");
+    // La servlet "VisualizzaFilmServlet" ha già calcolato se il film è nelle liste
+    Boolean watchedSession = (Boolean) session.getAttribute("watched");
+    Boolean watchlistSession = (Boolean) session.getAttribute("inwatchlist");
 
-    if (watchedList == null) watchedList = new ArrayList<>();
-    if (watchlist == null) watchlist = new ArrayList<>();
-
-    boolean isInWatchlist = false;
-    boolean isInWatched = false;
-
-    // Controllo presenza in Watchlist
-    if (film != null) {
-        for (FilmBean f : watchlist) {
-            // CORRETTO: Uso == perché getIdFilm restituisce un int primitivo
-            if (f.getIdFilm() == film.getIdFilm()) {
-                isInWatchlist = true;
-                break;
-            }
-        }
-        // Controllo presenza in Watched List
-        for (FilmBean f : watchedList) {
-            // CORRETTO: Uso == perché getIdFilm restituisce un int primitivo
-            if (f.getIdFilm() == film.getIdFilm()) {
-                isInWatched = true;
-                break;
-            }
-        }
-    }
+    // Gestione null safety (default false se l'attributo non esiste)
+    boolean isInWatched = (watchedSession != null) ? watchedSession : false;
+    boolean isInWatchlist = (watchlistSession != null) ? watchlistSession : false;
 
     // --- GESTIONE GENERI ---
     List<FilmGenereBean> listaGeneri = (List<FilmGenereBean>) session.getAttribute("Generi");
@@ -77,6 +55,7 @@
     }
 
     // --- VERIFICA PRELIMINARE SE L'UTENTE HA RECENSITO ---
+    // Serve per bloccare il bottone "Watched" (se hai recensito, l'hai visto per forza)
     boolean userHasReviewed = false;
     if (user != null && "RECENSORE".equals(user.getTipoUtente()) && recensioni != null) {
         for (RecensioneBean r : recensioni) {
@@ -93,7 +72,7 @@
         
         <div class="left-column">
             <div class="sort-bar">
-                </div>
+            </div>
 
             <% if (recensioni != null && !recensioni.isEmpty()) {
                 HashMap<String, String> users = (HashMap<String, String>) session.getAttribute("users");
@@ -167,13 +146,15 @@
             <div class="film-details">
                 <%
                     String LocandinaBase64 = "";
-                    if (film.getLocandina() != null) {
-                        byte[] iconaBytes = film.getLocandina() ;
+                    if (film != null && film.getLocandina() != null) {
+                        byte[] iconaBytes = film.getLocandina();
                         if (iconaBytes.length > 0) {
                             LocandinaBase64 = Base64.getEncoder().encodeToString(iconaBytes);
                         }
                     }
                 %>
+                
+                <% if (film != null) { %>
                 <img class="film-poster" 
                      src="<%= LocandinaBase64.isEmpty() ? request.getContextPath() + "/static/images/RATED_icon.png" : "data:image/png;base64," + LocandinaBase64 %>" 
                     alt="Locandina di <%= film.getNome() %>" />
@@ -193,7 +174,7 @@
                 
                 <div class="film-meta-details">
                     <p class="film-year-genre">
-                        <strong><%= film.getAnno() %></strong><%= displayGeneri %>
+                        <strong><%= film.getAnno() %></strong> <%= displayGeneri %>
                     </p>
                     
                     <p><strong>Durata:</strong> <%= film.getDurata() %> min</p>
@@ -238,7 +219,6 @@
                     
                     </div>
                 <% } %>
-                <%-- -------------------------------------------------------- --%>
                 
                 <div class="rate-film">
                     <% if (user != null && "RECENSORE".equals(user.getTipoUtente()) && (user.getNWarning() < 3)) { %>
@@ -265,13 +245,18 @@
                         <button type="button" class="btn-delete" onclick="deleteFilm('<%= film.getIdFilm() %>')">Elimina Film</button>
                         <button type="button" class="btn-modify" onclick="showModifyForm()">Modifica Informazioni Film</button>
                     </div>
-
                 <% } %>
+
+                <% } else { %>
+                    <p>Errore: Dati del film non disponibili.</p>
+                <% } %>
+
             </div>
         </div>
     </div>
 </div>
 
+<% if (film != null) { %>
 <div id="reviewOverlay" class="overlay">
     <div class="overlay-content">
         <span class="close-btn" onclick="hideReviewForm()">&times;</span>
@@ -360,6 +345,7 @@
             </form>
     </div>
 </div>
+<% } %>
 
 </body>
 </html>
