@@ -14,11 +14,9 @@
     HashMap<Integer, FilmBean> filmMap = (HashMap<Integer, FilmBean>) session.getAttribute("films");
 
     // Recupero liste generi per il form di modifica
-    // Il backend dovrà popolare "allGenres" (tutti i generi disponibili) e "userGenres" (quelli dell'utente)
     List<String> allGenres = (List<String>) session.getAttribute("allGenres");
     List<String> userGenres = (List<String>) session.getAttribute("userGenres");
 
-    // Evito NullPointer se il backend non ha ancora passato i dati
     if (allGenres == null) allGenres = new ArrayList<>();
     if (userGenres == null) userGenres = new ArrayList<>();
 
@@ -73,6 +71,12 @@
                 <% } %>
             </div>
             <% } %>
+            
+            <div style="margin-top: 15px;">
+                 <button onclick="window.location.href='userFilms.jsp'" style="background-color: #555; font-size: 0.9rem;">
+                    <i class="fas fa-film"></i> Film Utente
+                 </button>
+            </div>
         </div>
     </div>
 
@@ -196,7 +200,6 @@
                 <% 
                 if (allGenres != null && !allGenres.isEmpty()) {
                     for (String genere : allGenres) { 
-                        // Controllo se l'utente ha già questo genere tra i preferiti
                         boolean isSelected = userGenres.contains(genere);
                 %>
                 <label class="genre-item">
@@ -215,7 +218,6 @@
         </form>
     </div>
 </div>
-
 <% } %>
 
 </body>
