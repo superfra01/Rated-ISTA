@@ -53,7 +53,7 @@ public class RecensioneDAO {
     }
 
     public RecensioneBean findById(final String email, final int idFilm) { // Parametri final
-        final String query = "SELECT Titolo, Contenuto, Valutazione, N_Like, N_DisLike, N_Reports, email, ID_Film FROM Recensione WHERE email = ? AND ID_Film = ?";
+        final String query = "SELECT * FROM Recensione WHERE email = ? AND ID_Film = ?";
         try (final Connection connection = dataSource.getConnection();
              final PreparedStatement ps = connection.prepareStatement(query)) {
             ps.setString(1, email);
@@ -79,7 +79,7 @@ public class RecensioneDAO {
     }
     
     public List<RecensioneBean> findByIdFilm(final int idFilm) { // Parametro final
-        final String query = "SELECT Titolo, Contenuto, Valutazione, N_Like, N_DisLike, N_Reports, email, ID_Film FROM Recensione WHERE ID_Film = ?";
+        final String query = "SELECT * FROM Recensione WHERE ID_Film = ?";
         final List<RecensioneBean> recensioni = new ArrayList<>();
         try (final Connection connection = dataSource.getConnection();
              final PreparedStatement ps = connection.prepareStatement(query)) {
@@ -105,7 +105,7 @@ public class RecensioneDAO {
     }
 
     public List<RecensioneBean> findAll() {
-        final String query = "SELECT Titolo, Contenuto, Valutazione, N_Like, N_DisLike, N_Reports, email, ID_Film FROM Recensione";
+        final String query = "SELECT * FROM Recensione";
         final List<RecensioneBean> recensioni = new ArrayList<>();
         try (final Connection connection = dataSource.getConnection();
              final PreparedStatement ps = connection.prepareStatement(query);
@@ -129,7 +129,7 @@ public class RecensioneDAO {
     }
     
     public List<RecensioneBean> findByUser(final String email) { // Parametro final
-        final String query = "SELECT Titolo, Contenuto, Valutazione, N_Like, N_DisLike, N_Reports, email, ID_Film FROM Recensione WHERE email = ?";
+        final String query = "SELECT * FROM Recensione WHERE email = ?";
         final List<RecensioneBean> recensioni = new ArrayList<>();
         try (final Connection connection = dataSource.getConnection();
              final PreparedStatement ps = connection.prepareStatement(query)) {
@@ -183,4 +183,6 @@ public class RecensioneDAO {
             e.printStackTrace();
         }
     }
+    
+    
 }

@@ -42,7 +42,7 @@ public class LoginServlet extends HttpServlet {
 			if (utente != null) {
 				final HttpSession session = request.getSession(true);
 				session.setAttribute("user", utente);
-				response.sendRedirect(request.getContextPath() + "/?loginSuccess=true");
+				response.sendRedirect(request.getContextPath() + "/");
 			} else {
 				// Imposta un attributo di errore e inoltra la richiesta alla JSP
 				request.setAttribute("loginError", "Email o password non valide.");

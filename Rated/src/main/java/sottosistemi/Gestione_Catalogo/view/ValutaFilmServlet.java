@@ -2,6 +2,7 @@ package sottosistemi.Gestione_Catalogo.view;
 
 import model.Entity.UtenteBean;
 import sottosistemi.Gestione_Recensioni.service.RecensioniService;
+import sottosistemi.Gestione_Utenti.service.ProfileService;
 
 import java.io.IOException;
 
@@ -16,10 +17,13 @@ import javax.servlet.http.HttpSession;
 public class ValutaFilmServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private RecensioniService RecensioniService;
+	private ProfileService ProfileService;
 
     @Override
     public void init() {
         RecensioniService = new RecensioniService();
+        ProfileService = new ProfileService();
+        
     }
 
     @Override
@@ -38,6 +42,9 @@ public class ValutaFilmServlet extends HttpServlet {
     	final int valutazione = Integer.parseInt(request.getParameter("valutazione")); // Locale final
 
     	RecensioniService.addRecensione(user.getEmail(), idFilm, recensione, titolo, valutazione);
+    	if(ProfileService.isFilmVisto(user.getEmail(), idFilm)==false)
+    		ProfileService.aggiungiFilmVisto(user.getEmail(), idFilm);
+    	
     	
     	response.sendRedirect(request.getContextPath() + "/film?idFilm="+idFilm);
     }

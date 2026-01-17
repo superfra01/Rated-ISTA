@@ -1,6 +1,8 @@
 package benchmark;
 
 import model.DAO.FilmDAO;
+import model.DAO.FilmGenereDAO;
+import model.DAO.GenereDAO;
 import model.Entity.FilmBean;
 import model.Entity.RecensioneBean;
 import sottosistemi.Gestione_Catalogo.service.CatalogoService;
@@ -29,6 +31,8 @@ public class CatalogoServiceBenchmark {
 
     @Setup(Level.Trial)
     public void setup() {
+    	FilmGenereDAO filmGenereDAO = new FilmGenereDAO();
+    	GenereDAO GenereDAO = new GenereDAO();
         // 1. CREIAMO IL MOCK DI FILM DAO
         final FilmDAO mockDao = new FilmDAO(true) {
             
@@ -71,7 +75,7 @@ public class CatalogoServiceBenchmark {
         };
 
         // 2. INIEZIONE DEL MOCK NEL SERVICE
-        this.service = new CatalogoService(mockDao);
+        this.service = new CatalogoService(mockDao, filmGenereDAO, GenereDAO);
 
         // 3. PREPARAZIONE DATI PER I TEST
         this.listaRecensioniTest = new ArrayList<>();

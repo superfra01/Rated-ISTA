@@ -1,6 +1,7 @@
 package sottosistemi.Gestione_Catalogo.view;
 
 import model.Entity.FilmBean;
+import model.Entity.FilmGenereBean;
 import sottosistemi.Gestione_Catalogo.service.CatalogoService;
 
 import java.io.IOException;
@@ -29,6 +30,14 @@ public class VisualizzaCatalogoServlet extends HttpServlet {
 
     	final List<FilmBean> films = CatalogoService.getFilms(); // Locale final
     	session.setAttribute("films", films);
+    	for(FilmBean film: films) {
+    		final List<FilmGenereBean> generi = CatalogoService.getGeneri(film.getIdFilm()); // Locale final
+    		session.setAttribute(film.getIdFilm()+"Generi", generi);
+    	}
+    		
+    	
+    	
+    	
     	
         request.getRequestDispatcher("/WEB-INF/jsp/catalogo.jsp").forward(request, response);
     }
