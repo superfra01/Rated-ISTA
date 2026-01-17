@@ -6,6 +6,7 @@ import model.DAO.GenereDAO;
 import model.Entity.FilmBean;
 import model.Entity.FilmGenereBean;
 import model.Entity.RecensioneBean;
+import model.Entity.UtenteBean;
 
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -123,6 +124,14 @@ public class CatalogoService {
     
     public List<String> getAllGeneri(){
     	return GenereDAO.findAllString();
+    }
+    
+ // Aggiungi questo metodo in CatalogoService.java
+
+    public List<FilmBean> getFilmCompatibili(UtenteBean utente) {
+        // Il Service delega al DAO l'esecuzione della query complessa
+        FilmDAO filmDAO = new FilmDAO();
+        return filmDAO.doRetrieveConsigliati(utente.getEmail());
     }
     
 }
