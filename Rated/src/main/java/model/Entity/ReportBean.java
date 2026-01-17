@@ -16,7 +16,7 @@ public class ReportBean implements Serializable {
         idFilm = 0;
     }
 
-    public ReportBean(String email, String emailRecensore, int idFilm) {
+    public ReportBean(final String email, final String emailRecensore, final int idFilm) {
         this.email = email;
         this.emailRecensore = emailRecensore;
         this.idFilm = idFilm;
@@ -26,7 +26,7 @@ public class ReportBean implements Serializable {
         return email;
     }
 
-    public void setEmail(String email) {
+    public void setEmail(final String email) {
         this.email = email;
     }
 
@@ -34,7 +34,7 @@ public class ReportBean implements Serializable {
         return emailRecensore;
     }
 
-    public void setEmailRecensore(String emailRecensore) {
+    public void setEmailRecensore(final String emailRecensore) {
         this.emailRecensore = emailRecensore;
     }
 
@@ -42,7 +42,7 @@ public class ReportBean implements Serializable {
         return idFilm;
     }
 
-    public void setIdFilm(int idFilm) {
+    public void setIdFilm(final int idFilm) {
         this.idFilm = idFilm;
     }
 }

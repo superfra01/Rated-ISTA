@@ -25,23 +25,23 @@ class CatalogoServiceTest {
         // Mock di FilmDAO
         mockFilmDAO = mock(FilmDAO.class);
 
-        // Inizializza il servizio con il DAO mockato
+        // Inizializza il servizio con il DAO mockato tramite il costruttore
         catalogoService = new CatalogoService(mockFilmDAO);
     }
 
     @Test
     void testGetFilms() {
         // Simula una lista di film
-        List<FilmBean> mockFilms = new ArrayList<>();
-        FilmBean film1 = new FilmBean();
-        FilmBean film2 = new FilmBean();
+        final List<FilmBean> mockFilms = new ArrayList<>();
+        final FilmBean film1 = new FilmBean();
+        final FilmBean film2 = new FilmBean();
         mockFilms.add(film1);
         mockFilms.add(film2);
 
         when(mockFilmDAO.findAll()).thenReturn(mockFilms);
 
         // Esegui il metodo
-        List<FilmBean> result = catalogoService.getFilms();
+        final List<FilmBean> result = catalogoService.getFilms();
 
         // Verifica
         assertEquals(2, result.size());
@@ -50,14 +50,14 @@ class CatalogoServiceTest {
 
     @Test
     void testAggiungiFilm() {
-        String nome = "Film Test";
-        int anno = 2023;
-        int durata = 120;
-        String generi = "Azione";
-        String regista = "Regista Test";
-        String attori = "Attore Test";
-        byte[] locandina = new byte[]{1, 2, 3};
-        String trama = "Trama del film.";
+        final String nome = "Film Test";
+        final int anno = 2023;
+        final int durata = 120;
+        final String generi = "Azione";
+        final String regista = "Regista Test";
+        final String attori = "Attore Test";
+        final byte[] locandina = new byte[]{1, 2, 3};
+        final String trama = "Trama del film.";
 
         // Esegui il metodo
         catalogoService.aggiungiFilm(nome, anno, durata, generi, regista, attori, locandina, trama);
@@ -68,7 +68,7 @@ class CatalogoServiceTest {
 
     @Test
     void testRimuoviFilm() {
-        FilmBean film = new FilmBean();
+        final FilmBean film = new FilmBean();
         film.setIdFilm(1);
 
         // Esegui il metodo
@@ -80,17 +80,17 @@ class CatalogoServiceTest {
 
     @Test
     void testRicercaFilm() {
-        String name = "Film Test";
+        final String name = "Film Test";
 
         // Simula una lista di film trovati
-        List<FilmBean> mockFilms = new ArrayList<>();
-        FilmBean film = new FilmBean();
+        final List<FilmBean> mockFilms = new ArrayList<>();
+        final FilmBean film = new FilmBean();
         mockFilms.add(film);
 
         when(mockFilmDAO.findByName(name)).thenReturn(mockFilms);
 
         // Esegui il metodo
-        List<FilmBean> result = catalogoService.ricercaFilm(name);
+        final List<FilmBean> result = catalogoService.ricercaFilm(name);
 
         // Verifica
         assertEquals(1, result.size());
@@ -99,14 +99,14 @@ class CatalogoServiceTest {
 
     @Test
     void testGetFilm() {
-        int idFilm = 1;
+        final int idFilm = 1;
 
         // Simula un film trovato
-        FilmBean film = new FilmBean();
+        final FilmBean film = new FilmBean();
         when(mockFilmDAO.findById(idFilm)).thenReturn(film);
 
         // Esegui il metodo
-        FilmBean result = catalogoService.getFilm(idFilm);
+        final FilmBean result = catalogoService.getFilm(idFilm);
 
         // Verifica
         assertSame(film, result);
@@ -114,15 +114,15 @@ class CatalogoServiceTest {
 
     @Test
     void testModifyFilm() {
-        int idFilm = 1;
-        int anno = 2023;
-        String attori = "Attore Test";
-        int durata = 120;
-        String generi = "Azione";
-        byte[] locandina = new byte[]{1, 2, 3};
-        String nome = "Film Test";
-        String regista = "Regista Test";
-        String trama = "Trama modificata.";
+        final int idFilm = 1;
+        final int anno = 2023;
+        final String attori = "Attore Test";
+        final int durata = 120;
+        final String generi = "Azione";
+        final byte[] locandina = new byte[]{1, 2, 3};
+        final String nome = "Film Test";
+        final String regista = "Regista Test";
+        final String trama = "Trama modificata.";
 
         // Esegui il metodo
         catalogoService.modifyFilm(idFilm, anno, attori, durata, generi, locandina, nome, regista, trama);
@@ -133,7 +133,7 @@ class CatalogoServiceTest {
 
     @Test
     void testRemoveFilm() {
-        int idFilm = 1;
+        final int idFilm = 1;
 
         // Esegui il metodo
         catalogoService.removeFilm(idFilm);
@@ -141,24 +141,24 @@ class CatalogoServiceTest {
         // Verifica
         verify(mockFilmDAO).delete(idFilm);
     }
+    
     @Test
     void testGetFilmsFromRecensioni() {
         // Crea una lista di recensioni
-        List<RecensioneBean> recensioni = new ArrayList<>();
-        RecensioneBean recensione1 = new RecensioneBean();
+        final List<RecensioneBean> recensioni = new ArrayList<>();
+        final RecensioneBean recensione1 = new RecensioneBean();
         recensione1.setIdFilm(1);
         recensioni.add(recensione1);
 
         // Simula un film corrispondente
-        FilmBean film = new FilmBean();
+        final FilmBean film = new FilmBean();
         when(mockFilmDAO.findById(1)).thenReturn(film);
 
         // Esegui il metodo
-        HashMap<Integer, FilmBean> result = catalogoService.getFilms(recensioni);
+        final HashMap<Integer, FilmBean> result = catalogoService.getFilms(recensioni);
 
         // Verifica
         assertEquals(1, result.size());
         assertSame(film, result.get(1));
     }
-
 }

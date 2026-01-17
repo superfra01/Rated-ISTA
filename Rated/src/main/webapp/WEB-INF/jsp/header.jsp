@@ -12,7 +12,7 @@
 <body>
     <header>
         <div class="logo">
-            <a href="<%= request.getContextPath() %>">
+            <a href="<%= request.getContextPath() %>/">
                 <span>RATED</span>
             </a>
         </div>

@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register</title>
-    <link rel="shortcut icon" href="static/images/RATED_icon.png">
+    <link rel="icon" type="image/x-icon" href="${pageContext.request.contextPath}/static/images/favicon.ico">
     <link rel="stylesheet" href="static/css/loginRegister.css">
     <script src="static/scripts/registerValidation.js" defer></script>
 </head>

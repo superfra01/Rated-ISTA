@@ -1,15 +1,11 @@
 package sottosistemi.Gestione_Utenti.view;
 
-
 import model.Entity.UtenteBean;
-import model.Entity.ValutazioneBean;
 import model.Entity.FilmBean;
 import model.Entity.RecensioneBean;
-import sottosistemi.Gestione_Utenti.service.AutenticationService;
 import sottosistemi.Gestione_Utenti.service.ProfileService;
 import sottosistemi.Gestione_Catalogo.service.CatalogoService;
 import sottosistemi.Gestione_Recensioni.service.RecensioniService;
-import utilities.FieldValidator;
 
 import java.io.IOException;
 import java.util.List;
@@ -26,36 +22,39 @@ import javax.servlet.http.HttpSession;
 public class ProfileServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	
-	ProfileService ProfileService; 
+	private ProfileService ProfileService; 
+
     @Override
     public void init() {
     	ProfileService = new ProfileService();
     }
 
     @Override
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    	HttpSession session = request.getSession(true);
-    	String userName = request.getParameter("visitedUser");
-    	UtenteBean visitedUser = ProfileService.findByUsername(userName);
+    public void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
+    	final HttpSession session = request.getSession(true);
+    	final String userName = request.getParameter("visitedUser");
+    	
+    	final UtenteBean visitedUser = ProfileService.findByUsername(userName);
         if(visitedUser!=null) {
         	session.setAttribute("visitedUser", visitedUser);
-        	RecensioniService RecensioniService = new RecensioniService();
-        	List<RecensioneBean> recensioni = RecensioniService.FindRecensioni(visitedUser.getEmail());
+        	
+        	final RecensioniService RecensioniService = new RecensioniService();
+        	final List<RecensioneBean> recensioni = RecensioniService.FindRecensioni(visitedUser.getEmail());
         	session.setAttribute("recensioni", recensioni);
-        	CatalogoService CatalogoService = new CatalogoService();
-        	HashMap<Integer, FilmBean> FilmMap = CatalogoService.getFilms(recensioni);
+        	
+        	final CatalogoService CatalogoService = new CatalogoService();
+        	final HashMap<Integer, FilmBean> FilmMap = CatalogoService.getFilms(recensioni);
         	session.setAttribute("films", FilmMap);
+        	
         	request.getRequestDispatcher("/WEB-INF/jsp/profile.jsp").forward(request, response);	
-        }else {
+        } else {
         	response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             response.getWriter().write("You can't access the profile page if you are not autenticated");
         }
-        
     }
 
     @Override
-    public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public void doPost(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
     	
-        
     }
 }

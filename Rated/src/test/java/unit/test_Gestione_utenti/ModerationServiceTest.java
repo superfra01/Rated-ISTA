@@ -1,23 +1,11 @@
 package unit.test_Gestione_utenti;
+
 import static org.junit.jupiter.api.Assertions.*;
-
-
 import static org.mockito.Mockito.*;
 
 import model.DAO.UtenteDAO;
 import model.Entity.UtenteBean;
 import sottosistemi.Gestione_Utenti.service.ModerationService;
-
-import javax.sql.DataSource;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
-
-import static org.mockito.Mockito.*;
-
-import model.DAO.UtenteDAO;
-import model.Entity.UtenteBean;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,16 +20,16 @@ class ModerationServiceTest {
         // Mock del DAO
         mockUtenteDAO = mock(UtenteDAO.class);
 
-        // Inietta il mock nel service
+        // Inietta il mock nel service tramite il costruttore
         moderationService = new ModerationService(mockUtenteDAO);
     }
 
     @Test
     void testWarn_UserExists() {
-        String email = "test@example.com";
+        final String email = "test@example.com";
 
         // Simula un utente esistente con un avvertimento iniziale
-        UtenteBean user = new UtenteBean();
+        final UtenteBean user = new UtenteBean();
         user.setEmail(email);
         user.setNWarning(1);
 
@@ -59,7 +47,7 @@ class ModerationServiceTest {
 
     @Test
     void testWarn_UserNotFound() {
-        String email = "nonexistent@example.com";
+        final String email = "nonexistent@example.com";
 
         // Simula che l'utente non esista
         when(mockUtenteDAO.findByEmail(email)).thenReturn(null);

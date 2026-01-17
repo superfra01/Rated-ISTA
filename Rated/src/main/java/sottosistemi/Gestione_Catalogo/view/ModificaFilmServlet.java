@@ -3,7 +3,6 @@ package sottosistemi.Gestione_Catalogo.view;
 import model.Entity.UtenteBean;
 import sottosistemi.Gestione_Catalogo.service.CatalogoService;
 
-
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -28,36 +27,35 @@ public class ModificaFilmServlet extends HttpServlet {
     }
 
     @Override
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException { // Parametri final
       
     }
 
     @Override
-    public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public void doPost(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException { // Parametri final
     	
-    	HttpSession session = request.getSession(true);
-    	UtenteBean user = (UtenteBean) session.getAttribute("user");
+    	final HttpSession session = request.getSession(true); // Locale final
+    	final UtenteBean user = (UtenteBean) session.getAttribute("user"); // Locale final
     	if(user.getTipoUtente().equals("GESTORE")) {
     		
-    		int idFilm = Integer.parseInt(request.getParameter("idFilm"));
-    		int anno = Integer.parseInt(request.getParameter("annoFilm"));
-    		String Attori = request.getParameter("attoriFilm");
-    		int durata = Integer.parseInt(request.getParameter("durataFilm"));
-    		String Generi = request.getParameter("generiFilm");
+    		final int idFilm = Integer.parseInt(request.getParameter("idFilm")); // Locale final
+    		final int anno = Integer.parseInt(request.getParameter("annoFilm")); // Locale final
+    		final String Attori = request.getParameter("attoriFilm"); // Locale final
+    		final int durata = Integer.parseInt(request.getParameter("durataFilm")); // Locale final
+    		final String Generi = request.getParameter("generiFilm"); // Locale final
     		
-    		String Nome = request.getParameter("nomeFilm");
-    		String Regista = request.getParameter("registaFilm");
-    		String Trama = request.getParameter("tramaFilm");
+    		final String Nome = request.getParameter("nomeFilm"); // Locale final
+    		final String Regista = request.getParameter("registaFilm"); // Locale final
+    		final String Trama = request.getParameter("tramaFilm"); // Locale final
     		
-    		byte[] locandina = null;
-    		Part filePart = request.getPart("locandinaFilm");
+    		byte[] locandina = null; // Riassegnata
+    		final Part filePart = request.getPart("locandinaFilm"); // Locale final
             if (filePart != null && filePart.getSize() > 0) {
-                try (InputStream inputStream = filePart.getInputStream()) {
+                try (final InputStream inputStream = filePart.getInputStream()) { // Risorsa final
                     locandina = inputStream.readAllBytes();
                 }
             }
             
-    		
     		CatalogoService.modifyFilm(idFilm, anno, Attori, durata, Generi, locandina, Nome, Regista, Trama);
     		response.sendRedirect(request.getContextPath() + "/film?idFilm=" + idFilm);
     	}else {
@@ -66,4 +64,3 @@ public class ModificaFilmServlet extends HttpServlet {
     	}
     }
 }
-

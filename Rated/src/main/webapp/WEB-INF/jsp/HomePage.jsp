@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rated - About Us</title>
+	<link rel="icon" type="image/x-icon" href="${pageContext.request.contextPath}/static/images/favicon.ico">
     <link rel="stylesheet" href="static/css/HomePage.css">
     <script src="static/scripts/homePageWarn.js" defer></script>
 </head>

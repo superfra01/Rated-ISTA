@@ -6,7 +6,6 @@ import utilities.FieldValidator;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Enumeration;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
@@ -28,38 +27,34 @@ public class RegisterServlet extends HttpServlet {
     }
 
     @Override
-    public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    public void doGet(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException, IOException {
         req.getRequestDispatcher("/WEB-INF/jsp/register.jsp").forward(req, resp);
     }
 
     @Override
-    public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public void doPost(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
 
-    	String username = request.getParameter("username");
-    	String email = request.getParameter("email");
-    	String password = request.getParameter("password");
-    	String confirmPassword = request.getParameter("confirm_password");
-    	String biography = request.getParameter("biography");
-    	byte[] icon = null;
+    	final String username = request.getParameter("username");
+    	final String email = request.getParameter("email");
+    	final String password = request.getParameter("password");
+    	final String confirmPassword = request.getParameter("confirm_password");
+    	final String biography = request.getParameter("biography");
     	
+    	byte[] icon = null; // Riassegnata
     	
-
-    	 Part filePart = request.getPart("profile_icon");
-         if (filePart != null && filePart.getSize() > 0) {
-             try (InputStream inputStream = filePart.getInputStream()) {
+    	final Part filePart = request.getPart("profile_icon");
+        if (filePart != null && filePart.getSize() > 0) {
+             try (final InputStream inputStream = filePart.getInputStream()) {
                  icon = inputStream.readAllBytes();
              }
-         }
-
-
+        }
 
         if (FieldValidator.validateUsername(username) &&
             FieldValidator.validateEmail(email) &&
             FieldValidator.validatePassword(password) &&
             password.equals(confirmPassword)) {
-        		
 
-            UtenteBean utente = authService.register(username, email, password, biography, icon);
+            final UtenteBean utente = authService.register(username, email, password, biography, icon);
 
             if (utente != null) {
                 response.sendRedirect(request.getContextPath() + "/login"); // Redirect to login after successful registration

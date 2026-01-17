@@ -18,22 +18,26 @@ public class RecensioneDAO {
 
     public RecensioneDAO() {
         try {
-            Context initCtx = new InitialContext();
-            Context envCtx = (Context) initCtx.lookup("java:comp/env");
+            final Context initCtx = new InitialContext();
+            final Context envCtx = (Context) initCtx.lookup("java:comp/env");
             this.dataSource = (DataSource) envCtx.lookup("jdbc/RatedDB");
-        } catch (NamingException e) {
+        } catch (final NamingException e) {
             throw new RuntimeException("Error initializing DataSource: " + e.getMessage());
         }
     }
 
-    public RecensioneDAO(DataSource testDataSource) {
-		dataSource= testDataSource;
+    public RecensioneDAO(final DataSource testDataSource) { // Parametro final
+		dataSource = testDataSource;
 	}
+    
+    protected RecensioneDAO(final boolean testMode) { // Parametro final
+        // Non fare nulla qui! Niente connessione al DB.
+    }
 
-	public void save(RecensioneBean recensione) {
-        String query = "INSERT INTO Recensione (titolo, contenuto, valutazione, N_Like, N_DisLike, N_Reports, email, ID_Film) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement ps = connection.prepareStatement(query)) {
+	public void save(final RecensioneBean recensione) { // Parametro final
+        final String query = "INSERT INTO Recensione (titolo, contenuto, valutazione, N_Like, N_DisLike, N_Reports, email, ID_Film) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        try (final Connection connection = dataSource.getConnection();
+             final PreparedStatement ps = connection.prepareStatement(query)) {
             ps.setString(1, recensione.getTitolo());
             ps.setString(2, recensione.getContenuto());
             ps.setInt(3, recensione.getValutazione());
@@ -43,20 +47,20 @@ public class RecensioneDAO {
             ps.setString(7, recensione.getEmail());
             ps.setInt(8, recensione.getIdFilm());
             ps.executeUpdate();
-        }catch (SQLException e) {
+        } catch (final SQLException e) {
             e.printStackTrace();
         }
     }
 
-    public RecensioneBean findById(String email, int idFilm)  {
-        String query = "SELECT * FROM Recensione WHERE email = ? AND ID_Film = ?";
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement ps = connection.prepareStatement(query)) {
+    public RecensioneBean findById(final String email, final int idFilm) { // Parametri final
+        final String query = "SELECT Titolo, Contenuto, Valutazione, N_Like, N_DisLike, N_Reports, email, ID_Film FROM Recensione WHERE email = ? AND ID_Film = ?";
+        try (final Connection connection = dataSource.getConnection();
+             final PreparedStatement ps = connection.prepareStatement(query)) {
             ps.setString(1, email);
             ps.setInt(2, idFilm);
-            try (ResultSet rs = ps.executeQuery()) {
+            try (final ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    RecensioneBean recensione = new RecensioneBean();
+                    final RecensioneBean recensione = new RecensioneBean();
                     recensione.setTitolo(rs.getString("titolo"));
                     recensione.setContenuto(rs.getString("contenuto"));
                     recensione.setValutazione(rs.getInt("valutazione"));
@@ -68,22 +72,21 @@ public class RecensioneDAO {
                     return recensione;
                 }
             }
-        }catch (SQLException e) {
+        } catch (final SQLException e) {
             e.printStackTrace();
         }
         return null;
     }
     
-    
-    public List<RecensioneBean> findByIdFilm(int idFilm) {
-        String query = "SELECT * FROM Recensione WHERE ID_Film = ?";
-        List<RecensioneBean> recensioni = new ArrayList<>();
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement ps = connection.prepareStatement(query)) {
+    public List<RecensioneBean> findByIdFilm(final int idFilm) { // Parametro final
+        final String query = "SELECT Titolo, Contenuto, Valutazione, N_Like, N_DisLike, N_Reports, email, ID_Film FROM Recensione WHERE ID_Film = ?";
+        final List<RecensioneBean> recensioni = new ArrayList<>();
+        try (final Connection connection = dataSource.getConnection();
+             final PreparedStatement ps = connection.prepareStatement(query)) {
             ps.setInt(1, idFilm);
-            try (ResultSet rs = ps.executeQuery()) {
+            try (final ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    RecensioneBean recensione = new RecensioneBean();
+                    final RecensioneBean recensione = new RecensioneBean();
                     recensione.setTitolo(rs.getString("titolo"));
                     recensione.setContenuto(rs.getString("contenuto"));
                     recensione.setValutazione(rs.getInt("valutazione"));
@@ -95,20 +98,20 @@ public class RecensioneDAO {
                     recensioni.add(recensione);
                 }
             }
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             e.printStackTrace();
         }
         return recensioni;
     }
 
     public List<RecensioneBean> findAll() {
-        String query = "SELECT * FROM Recensione";
-        List<RecensioneBean> recensioni = new ArrayList<>();
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement ps = connection.prepareStatement(query);
-             ResultSet rs = ps.executeQuery()) {
+        final String query = "SELECT Titolo, Contenuto, Valutazione, N_Like, N_DisLike, N_Reports, email, ID_Film FROM Recensione";
+        final List<RecensioneBean> recensioni = new ArrayList<>();
+        try (final Connection connection = dataSource.getConnection();
+             final PreparedStatement ps = connection.prepareStatement(query);
+             final ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
-                RecensioneBean recensione = new RecensioneBean();
+                final RecensioneBean recensione = new RecensioneBean();
                 recensione.setTitolo(rs.getString("titolo"));
                 recensione.setContenuto(rs.getString("contenuto"));
                 recensione.setValutazione(rs.getInt("valutazione"));
@@ -119,21 +122,21 @@ public class RecensioneDAO {
                 recensione.setIdFilm(rs.getInt("ID_Film"));
                 recensioni.add(recensione);
             }
-        }catch (SQLException e) {
+        } catch (final SQLException e) {
             e.printStackTrace();
         }
         return recensioni;
     }
     
-    public List<RecensioneBean> findByUser(String email) {
-        String query = "SELECT * FROM Recensione WHERE email = ?";
-        List<RecensioneBean> recensioni = new ArrayList<>();
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement ps = connection.prepareStatement(query)) {
+    public List<RecensioneBean> findByUser(final String email) { // Parametro final
+        final String query = "SELECT Titolo, Contenuto, Valutazione, N_Like, N_DisLike, N_Reports, email, ID_Film FROM Recensione WHERE email = ?";
+        final List<RecensioneBean> recensioni = new ArrayList<>();
+        try (final Connection connection = dataSource.getConnection();
+             final PreparedStatement ps = connection.prepareStatement(query)) {
             ps.setString(1, email);
-            try (ResultSet rs = ps.executeQuery()) {
+            try (final ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    RecensioneBean recensione = new RecensioneBean();
+                    final RecensioneBean recensione = new RecensioneBean();
                     recensione.setTitolo(rs.getString("titolo"));
                     recensione.setContenuto(rs.getString("contenuto"));
                     recensione.setValutazione(rs.getInt("valutazione"));
@@ -145,16 +148,16 @@ public class RecensioneDAO {
                     recensioni.add(recensione);
                 }
             }
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             e.printStackTrace();
         }
         return recensioni;
     }
     
-    public void update(RecensioneBean recensione) {
-        String query = "UPDATE Recensione SET titolo = ?, contenuto = ?, valutazione = ?, N_Like = ?, N_DisLike = ?, N_Reports = ? WHERE email = ? AND ID_Film = ?";
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement ps = connection.prepareStatement(query)) {
+    public void update(final RecensioneBean recensione) { // Parametro final
+        final String query = "UPDATE Recensione SET titolo = ?, contenuto = ?, valutazione = ?, N_Like = ?, N_DisLike = ?, N_Reports = ? WHERE email = ? AND ID_Film = ?";
+        try (final Connection connection = dataSource.getConnection();
+             final PreparedStatement ps = connection.prepareStatement(query)) {
             ps.setString(1, recensione.getTitolo());
             ps.setString(2, recensione.getContenuto());
             ps.setInt(3, recensione.getValutazione());
@@ -164,19 +167,19 @@ public class RecensioneDAO {
             ps.setString(7, recensione.getEmail());
             ps.setInt(8, recensione.getIdFilm());
             ps.executeUpdate();
-        }catch (SQLException e) {
+        } catch (final SQLException e) {
             e.printStackTrace();
         }
     }
 
-    public void delete(String email, int idFilm) {
-        String query = "DELETE FROM Recensione WHERE email = ? AND ID_Film = ?";
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement ps = connection.prepareStatement(query)) {
+    public void delete(final String email, final int idFilm) { // Parametri final
+        final String query = "DELETE FROM Recensione WHERE email = ? AND ID_Film = ?";
+        try (final Connection connection = dataSource.getConnection();
+             final PreparedStatement ps = connection.prepareStatement(query)) {
             ps.setString(1, email);
             ps.setInt(2, idFilm);
             ps.executeUpdate();
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             e.printStackTrace();
         }
     }

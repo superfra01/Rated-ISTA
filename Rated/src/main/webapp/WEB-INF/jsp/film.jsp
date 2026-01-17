@@ -11,6 +11,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Film</title>
+	<link rel="icon" type="image/x-icon" href="${pageContext.request.contextPath}/static/images/favicon.ico">
     <link rel="stylesheet" href="static/css/Film.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <script src="static/scripts/filmFunctions.js" defer></script>

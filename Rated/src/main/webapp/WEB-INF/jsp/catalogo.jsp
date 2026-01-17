@@ -24,16 +24,18 @@
     }
 %>
 
-<jsp:include page="header.jsp" />
-
 <!DOCTYPE html>
 <html lang="it">
 <head>
     <meta charset="UTF-8" />
     <title>Catalogo</title>
+	<link rel="icon" type="image/x-icon" href="${pageContext.request.contextPath}/static/images/favicon.ico">
     <link rel="stylesheet" href="static/css/Catalogo.css" />
     <script src="static/scripts/catalogoFunctions.js" defer></script>
 </head>
+
+<jsp:include page="header.jsp" />
+
 <body>
 
 <div class="catalog-container">
@@ -71,12 +73,12 @@
         %>
             <div class="film-card" onclick="window.location.href='<%= dettaglioUrl %>'">
                 <div class="film-poster">
-                    <img src="<%= film.getLocandina() != null
-                                    ? "data:image/jpeg;base64,"
-                                      + Base64.getEncoder().encodeToString(film.getLocandina())
-                                    : request.getContextPath() + "/images/RATED_icon.png"
-                              %>"
-                         alt="Locandina" />
+					<img src="<%= film.getLocandina() != null
+									? "data:image/jpeg;base64," + Base64.getEncoder().encodeToString(film.getLocandina())
+									: request.getContextPath() + "/static/images/RATED_icon.png" 
+							  %>"
+						alt="Locandina" />
+                    
                 </div>
                 <div class="film-info">
                     <h3><%= film.getNome() %></h3>

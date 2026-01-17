@@ -1,6 +1,5 @@
 package sottosistemi.Gestione_Catalogo.view;
 
-
 import model.Entity.FilmBean;
 import model.Entity.RecensioneBean;
 import model.Entity.UtenteBean;
@@ -35,38 +34,33 @@ public class VisualizzaFilmServlet extends HttpServlet {
     }
 
     @Override
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    	HttpSession session = request.getSession(true);
-    	int idFilm= Integer.parseInt(request.getParameter("idFilm"));
+    public void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException { // Parametri final
+    	final HttpSession session = request.getSession(true); // Locale final
+    	final int idFilm= Integer.parseInt(request.getParameter("idFilm")); // Locale final
     	
-    	FilmBean film = CatalogoService.getFilm(idFilm);
+    	final FilmBean film = CatalogoService.getFilm(idFilm); // Locale final
     	session.setAttribute("film", film);
     	
-    	List<RecensioneBean> recensioni = RecensioniService.GetRecensioni(idFilm);
+    	final List<RecensioneBean> recensioni = RecensioniService.GetRecensioni(idFilm); // Locale final
     	session.setAttribute("recensioni", recensioni);
     	
     	if(recensioni!= null) {
-    		HashMap<String, String> utenti = ProfileService.getUsers(recensioni);
+    		final HashMap<String, String> utenti = ProfileService.getUsers(recensioni); // Locale final
     		session.setAttribute("users", utenti);
     	}
     	
-    	UtenteBean user = (UtenteBean) session.getAttribute("user");
+    	final UtenteBean user = (UtenteBean) session.getAttribute("user"); // Locale final
     	if(user!=null) {
-    		String email = user.getEmail();
-        	HashMap<String, ValutazioneBean> valutazioni = RecensioniService.GetValutazioni(idFilm, email);
+    		final String email = user.getEmail(); // Locale final
+        	final HashMap<String, ValutazioneBean> valutazioni = RecensioniService.GetValutazioni(idFilm, email); // Locale final
         	session.setAttribute("valutazioni", valutazioni);
     	}
     	
-    	
-        
         request.getRequestDispatcher("/WEB-INF/jsp/film.jsp").forward(request, response);
-        
-        
     }
 
     @Override
-    public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public void doPost(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException { // Parametri final
     	
-        
     }
 }

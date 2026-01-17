@@ -10,15 +10,15 @@ public class DatabaseSetupForTest {
     // Modifica: Il metodo non è più void, ma restituisce un DataSource
     public static DataSource getH2DataSource() {
         try {
-            JdbcDataSource ds = new JdbcDataSource();
+            final JdbcDataSource ds = new JdbcDataSource();
             // Aggiunto MODE=MySQL per supportare tipi come YEAR e LONGBLOB
             ds.setURL("jdbc:h2:mem:RatedDB;DB_CLOSE_DELAY=-1;MODE=MySQL");
             ds.setUser("sa");
             ds.setPassword("");
 
             // Creazione dello schema (Tabelle)
-            try (Connection conn = ds.getConnection()) {
-                String schemaCreationScript = """
+            try (final Connection conn = ds.getConnection()) {
+                final String schemaCreationScript = """
                     -- 1. Tabella Utente_Registrato
                     CREATE TABLE IF NOT EXISTS Utente_Registrato (
                         email VARCHAR(255) NOT NULL PRIMARY KEY,

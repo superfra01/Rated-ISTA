@@ -26,7 +26,7 @@ public class RecensioneBean implements Serializable {
         idFilm = 0;
     }
 
-    public RecensioneBean(String titolo, String contenuto, int valutazione, int nLike, int nDislike, int nReports, String email, int idFilm) {
+    public RecensioneBean(final String titolo, final String contenuto, final int valutazione, final int nLike, final int nDislike, final int nReports, final String email, final int idFilm) {
         this.titolo = titolo;
         this.contenuto = contenuto;
         this.valutazione = valutazione;
@@ -41,7 +41,7 @@ public class RecensioneBean implements Serializable {
         return titolo;
     }
 
-    public void setTitolo(String titolo) {
+    public void setTitolo(final String titolo) {
         this.titolo = titolo;
     }
 
@@ -49,7 +49,7 @@ public class RecensioneBean implements Serializable {
         return contenuto;
     }
 
-    public void setContenuto(String contenuto) {
+    public void setContenuto(final String contenuto) {
         this.contenuto = contenuto;
     }
 
@@ -57,7 +57,7 @@ public class RecensioneBean implements Serializable {
         return valutazione;
     }
 
-    public void setValutazione(int valutazione) {
+    public void setValutazione(final int valutazione) {
         this.valutazione = valutazione;
     }
 
@@ -65,7 +65,7 @@ public class RecensioneBean implements Serializable {
         return nLike;
     }
 
-    public void setNLike(int nLike) {
+    public void setNLike(final int nLike) {
         this.nLike = nLike;
     }
 
@@ -73,7 +73,7 @@ public class RecensioneBean implements Serializable {
         return nDislike;
     }
 
-    public void setNDislike(int nDislike) {
+    public void setNDislike(final int nDislike) {
         this.nDislike = nDislike;
     }
 
@@ -81,7 +81,7 @@ public class RecensioneBean implements Serializable {
         return nReports;
     }
 
-    public void setNReports(int nReports) {
+    public void setNReports(final int nReports) {
         this.nReports = nReports;
     }
 
@@ -89,7 +89,7 @@ public class RecensioneBean implements Serializable {
         return email;
     }
 
-    public void setEmail(String email) {
+    public void setEmail(final String email) {
         this.email = email;
     }
 
@@ -97,7 +97,7 @@ public class RecensioneBean implements Serializable {
         return idFilm;
     }
 
-    public void setIdFilm(int idFilm) {
+    public void setIdFilm(final int idFilm) {
         this.idFilm = idFilm;
     }
 }

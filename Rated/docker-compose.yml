@@ -16,6 +16,7 @@ services:
       # Collega la cartella 'target' del tuo PC direttamente dentro Tomcat nel container.
       # Quando Maven aggiorna 'mia-app.war' sul PC, Docker lo vede subito.
       - ./target/rated-app.war:/usr/local/tomcat/webapps/ROOT.war
+      - ./server.xml:/usr/local/tomcat/conf/server.xml
     depends_on:
       - db_service
     networks:

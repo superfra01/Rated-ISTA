@@ -11,6 +11,7 @@
     <meta charset="UTF-8">
     <title>Area Moderatore</title>
     <!-- Link al CSS dedicato -->
+	<link rel="icon" type="image/x-icon" href="${pageContext.request.contextPath}/static/images/favicon.ico">
     <link rel="stylesheet" href="<%= request.getContextPath() %>/static/css/Moderator.css">
     <script src="static/scripts/moderatorScripts.js" defer></script>
 </head>

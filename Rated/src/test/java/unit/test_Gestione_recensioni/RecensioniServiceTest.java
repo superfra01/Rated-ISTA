@@ -1,11 +1,9 @@
 package unit.test_Gestione_recensioni;
 
-
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import model.DAO.FilmDAO;
@@ -36,16 +34,17 @@ class RecensioniServiceTest {
         mockReportDAO = mock(ReportDAO.class);
         mockFilmDAO = mock(FilmDAO.class);
 
+        // Inietta tutti i DAO mockati tramite il costruttore
         recensioniService = new RecensioniService(mockRecensioneDAO, mockValutazioneDAO, mockReportDAO, mockFilmDAO);
     }
 
     @Test
     void testAddRecensione() {
-        String email = "user@example.com";
-        int idFilm = 1;
-        String contenuto = "Great movie!";
-        String titolo = "My Review";
-        int valutazione = 5;
+        final String email = "user@example.com";
+        final int idFilm = 1;
+        final String contenuto = "Great movie!";
+        final String titolo = "My Review";
+        final int valutazione = 5;
 
         when(mockRecensioneDAO.findById(email, idFilm)).thenReturn(null);
         when(mockFilmDAO.findById(idFilm)).thenReturn(new FilmBean());
@@ -59,10 +58,10 @@ class RecensioniServiceTest {
 
     @Test
     void testDeleteRecensione() {
-        String email = "user@example.com";
-        int idFilm = 1;
+        final String email = "user@example.com";
+        final int idFilm = 1;
 
-        FilmBean film = new FilmBean();
+        final FilmBean film = new FilmBean();
         film.setIdFilm(idFilm);
         when(mockFilmDAO.findById(idFilm)).thenReturn(film);
         when(mockRecensioneDAO.findByIdFilm(idFilm)).thenReturn(new ArrayList<>());
@@ -77,12 +76,12 @@ class RecensioniServiceTest {
 
     @Test
     void testAddValutazione_New() {
-        String email = "user@example.com";
-        int idFilm = 1;
-        String emailRecensore = "reviewer@example.com";
-        boolean nuovaValutazione = true;
+        final String email = "user@example.com";
+        final int idFilm = 1;
+        final String emailRecensore = "reviewer@example.com";
+        final boolean nuovaValutazione = true;
 
-        RecensioneBean recensione = new RecensioneBean();
+        final RecensioneBean recensione = new RecensioneBean();
         recensione.setNLike(0);
         recensione.setNDislike(0);
         when(mockRecensioneDAO.findById(emailRecensore, idFilm)).thenReturn(recensione);
@@ -97,13 +96,13 @@ class RecensioniServiceTest {
 
     @Test
     void testFindRecensioni() {
-        String email = "user@example.com";
-        List<RecensioneBean> mockRecensioni = new ArrayList<>();
+        final String email = "user@example.com";
+        final List<RecensioneBean> mockRecensioni = new ArrayList<>();
         mockRecensioni.add(new RecensioneBean());
 
         when(mockRecensioneDAO.findByUser(email)).thenReturn(mockRecensioni);
 
-        List<RecensioneBean> result = recensioniService.FindRecensioni(email);
+        final List<RecensioneBean> result = recensioniService.FindRecensioni(email);
 
         assertEquals(1, result.size());
         assertSame(mockRecensioni, result);
@@ -111,17 +110,17 @@ class RecensioniServiceTest {
 
     @Test
     void testGetAllRecensioniSegnalate() {
-        List<RecensioneBean> allRecensioni = new ArrayList<>();
-        RecensioneBean recensione1 = new RecensioneBean();
+        final List<RecensioneBean> allRecensioni = new ArrayList<>();
+        final RecensioneBean recensione1 = new RecensioneBean();
         recensione1.setNReports(0);
-        RecensioneBean recensione2 = new RecensioneBean();
+        final RecensioneBean recensione2 = new RecensioneBean();
         recensione2.setNReports(1);
         allRecensioni.add(recensione1);
         allRecensioni.add(recensione2);
 
         when(mockRecensioneDAO.findAll()).thenReturn(allRecensioni);
 
-        List<RecensioneBean> result = recensioniService.GetAllRecensioniSegnalate();
+        final List<RecensioneBean> result = recensioniService.GetAllRecensioniSegnalate();
 
         assertEquals(1, result.size());
         assertSame(recensione2, result.get(0));
@@ -129,19 +128,17 @@ class RecensioniServiceTest {
 
     @Test
     void testReport() {
-        String email = "user@example.com";         // The user reporting the review
-        String emailRecensore = "reviewer@example.com"; // The author of the review
-        int idFilm = 1;
+        final String email = "user@example.com";        // The user reporting the review
+        final String emailRecensore = "reviewer@example.com"; // The author of the review
+        final int idFilm = 1;
 
-        // 1. Mock that the user hasn't reported this review yet (Existing code)
+        // 1. Mock that the user hasn't reported this review yet
         when(mockReportDAO.findById(email, emailRecensore, idFilm)).thenReturn(null);
 
         // 2. FIX: Mock the existence of the review being reported
-        // The service needs to fetch the review to increment the report count
-        RecensioneBean recensioneTarget = new RecensioneBean();
+        final RecensioneBean recensioneTarget = new RecensioneBean();
         recensioneTarget.setNReports(0); 
         
-        // Assuming the Service looks up the review by the author's email and film ID
         when(mockRecensioneDAO.findById(emailRecensore, idFilm)).thenReturn(recensioneTarget);
 
         // Action
@@ -150,7 +147,7 @@ class RecensioniServiceTest {
         // Verify
         verify(mockReportDAO).save(any(ReportBean.class));
         
-        // Optional: Verify that the review's report count was actually updated in the DB
+        // Verify that the review's report count was actually updated
         verify(mockRecensioneDAO).update(recensioneTarget); 
     }
 }

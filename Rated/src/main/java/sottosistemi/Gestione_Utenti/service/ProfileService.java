@@ -10,27 +10,29 @@ import model.Entity.UtenteBean;
 import utilities.PasswordUtility;
 import model.Entity.RecensioneBean;
 
-
-
 public class ProfileService {
-    public UtenteDAO UtenteDAO;
-    
+    public final UtenteDAO UtenteDAO; // Reso final
 
     public ProfileService() {
         this.UtenteDAO = new UtenteDAO();
-        
     }
+    
     //test
-    public ProfileService(DataSource dataSource) {
+    public ProfileService(final DataSource dataSource) { // Parametro final
         this.UtenteDAO = new UtenteDAO(dataSource);
     }
     
-    public UtenteBean ProfileUpdate(String username, String email, String password, String biografia, byte[] icon) {
+    public ProfileService(final UtenteDAO utenteDAO) { // Parametro final
+        this.UtenteDAO = utenteDAO;
+    }
+    
+    public UtenteBean ProfileUpdate(final String username, final String email, final String password, final String biografia, final byte[] icon) { // Parametri final
     	
-    	UtenteBean u= UtenteDAO.findByUsername(username);
-    	if(u!=null&& !(u.getEmail().equals(email)))
+    	final UtenteBean u = UtenteDAO.findByUsername(username); // Variabile locale final
+    	if(u != null && !(u.getEmail().equals(email)))
     		return null;
-    	UtenteBean user = UtenteDAO.findByEmail(email);
+    	
+    	final UtenteBean user = UtenteDAO.findByEmail(email); // Variabile locale final
     	user.setUsername(username);
     	user.setPassword(PasswordUtility.hashPassword(password));
     	user.setBiografia(biografia);
@@ -40,10 +42,10 @@ public class ProfileService {
     	return user;
     }
     
-    public UtenteBean PasswordUpdate(String email, String password) {
+    public UtenteBean PasswordUpdate(final String email, final String password) { // Parametri final
     	
-    	UtenteBean user = UtenteDAO.findByEmail(email);
-    	if(user==null)
+    	final UtenteBean user = UtenteDAO.findByEmail(email); // Variabile locale final
+    	if(user == null)
     		return null;
     	
     	user.setPassword(PasswordUtility.hashPassword(password));
@@ -52,18 +54,16 @@ public class ProfileService {
     	return user;
     }
     
-    
-    public UtenteBean findByUsername(String username) {
+    public UtenteBean findByUsername(final String username) { // Parametro final
     	return UtenteDAO.findByUsername(username);
     }
     
-    public HashMap<String, String> getUsers(List<RecensioneBean> recensioni){
-    	HashMap<String, String> users = new HashMap<String, String>();
-    	for(RecensioneBean recensione: recensioni) {
-    		String email = recensione.getEmail();
-    		String username = UtenteDAO.findByEmail(email).getUsername();
+    public HashMap<String, String> getUsers(final List<RecensioneBean> recensioni) { // Parametro final
+    	final HashMap<String, String> users = new HashMap<String, String>(); // Variabile locale final
+    	for(final RecensioneBean recensione: recensioni) { // Variabile loop final
+    		final String email = recensione.getEmail(); // Variabile locale final
+    		final String username = UtenteDAO.findByEmail(email).getUsername(); // Variabile locale final
     		users.put(email, username);
-    		
     	}
     	return users;
     }

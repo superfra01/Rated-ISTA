@@ -1,7 +1,5 @@
 package sottosistemi.Gestione_Recensioni.service;
 
-
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -16,30 +14,30 @@ import model.Entity.FilmBean;
 import model.DAO.ValutazioneDAO;
 
 public class RecensioniService {
-    public RecensioneDAO RecensioneDAO;
-    public ValutazioneDAO ValutazioneDAO;
-    public ReportDAO ReportDAO;
-    public FilmDAO FilmDAO;
-    
+    public final RecensioneDAO RecensioneDAO; // Reso final
+    public final ValutazioneDAO ValutazioneDAO; // Reso final
+    public final ReportDAO ReportDAO; // Reso final
+    public final FilmDAO FilmDAO; // Reso final
 
     public RecensioniService() {
         this.RecensioneDAO = new RecensioneDAO();
         this.ValutazioneDAO = new ValutazioneDAO();
         this.ReportDAO = new ReportDAO();
         this.FilmDAO = new FilmDAO();
-        
     }
- // Costruttore personalizzato per i test
-    public RecensioniService(RecensioneDAO recensioneDAO, ValutazioneDAO valutazioneDAO, ReportDAO reportDAO, FilmDAO filmDAO) {
+    
+    // Costruttore personalizzato per i test
+    public RecensioniService(final RecensioneDAO recensioneDAO, final ValutazioneDAO valutazioneDAO, final ReportDAO reportDAO, final FilmDAO filmDAO) { // Parametri final
         this.RecensioneDAO = recensioneDAO;
         this.ValutazioneDAO = valutazioneDAO;
         this.ReportDAO = reportDAO;
         this.FilmDAO = filmDAO;
     }
-    public synchronized void addValutazione(String email, int idFilm, String email_recensore, boolean nuovaValutazione) {
+    
+    public synchronized void addValutazione(final String email, final int idFilm, final String email_recensore, final boolean nuovaValutazione) { // Parametri final
         // Recupero la valutazione esistente, se presente
-        ValutazioneBean valutazioneEsistente = ValutazioneDAO.findById(email, email_recensore, idFilm);
-        RecensioneBean recensione = RecensioneDAO.findById(email_recensore, idFilm);
+        final ValutazioneBean valutazioneEsistente = ValutazioneDAO.findById(email, email_recensore, idFilm); // Locale final
+        final RecensioneBean recensione = RecensioneDAO.findById(email_recensore, idFilm); // Locale final
 
         if (recensione == null) {
             throw new IllegalArgumentException("Recensione non trovata.");
@@ -47,7 +45,7 @@ public class RecensioniService {
 
         // Gestione dei contatori in base alla valutazione corrente
         if (valutazioneEsistente != null) {
-            boolean valutazioneCorrente = valutazioneEsistente.isLikeDislike();
+            final boolean valutazioneCorrente = valutazioneEsistente.isLikeDislike(); // Locale final
 
             // Caso 1: L'utente ha cambiato la valutazione
             if (valutazioneCorrente != nuovaValutazione) {
@@ -73,7 +71,7 @@ public class RecensioniService {
         }
         // Caso 3: Nuova valutazione
         else {
-            ValutazioneBean nuovaValutazioneBean = new ValutazioneBean();
+            final ValutazioneBean nuovaValutazioneBean = new ValutazioneBean(); // Locale final
             nuovaValutazioneBean.setEmail(email);
             nuovaValutazioneBean.setEmailRecensore(email_recensore);
             nuovaValutazioneBean.setIdFilm(idFilm);
@@ -91,12 +89,12 @@ public class RecensioniService {
         RecensioneDAO.update(recensione);
     }
     
-    public synchronized void addRecensione(String email, int idFilm, String recensione, String titolo, int valutazione) {
+    public synchronized void addRecensione(final String email, final int idFilm, final String recensione, final String titolo, final int valutazione) { // Parametri final
         if (RecensioneDAO.findById(email, idFilm) != null)
             return;
 
         // Crea la nuova recensione
-        RecensioneBean nuovaRecensione = new RecensioneBean();
+        final RecensioneBean nuovaRecensione = new RecensioneBean();
         nuovaRecensione.setEmail(email);
         nuovaRecensione.setTitolo(titolo);
         nuovaRecensione.setIdFilm(idFilm);
@@ -105,32 +103,29 @@ public class RecensioniService {
         RecensioneDAO.save(nuovaRecensione);
 
         // Aggiorna la valutazione media del film
-        FilmBean film = FilmDAO.findById(idFilm);
-        List<RecensioneBean> recensioni = RecensioneDAO.findByIdFilm(idFilm);
+        final FilmBean film = FilmDAO.findById(idFilm);
+        final List<RecensioneBean> recensioni = RecensioneDAO.findByIdFilm(idFilm);
 
         if (recensioni.isEmpty()) {
             film.setValutazione(0); // Nessuna recensione: valutazione predefinita
         } else {
             int somma = 0;
-            for (RecensioneBean recensioneFilm : recensioni) {
+            for (final RecensioneBean recensioneFilm : recensioni) {
                 somma += recensioneFilm.getValutazione();
             }
-            int media = somma / recensioni.size();
+            final int media = somma / recensioni.size();
             film.setValutazione(media);
         }
 
         FilmDAO.update(film);
     }
 
-    public List<RecensioneBean> FindRecensioni(String email) {
-    	
-    	List<RecensioneBean> recensioni = RecensioneDAO.findByUser(email);
-    	
-    	
+    public List<RecensioneBean> FindRecensioni(final String email) { // Parametro final
+    	final List<RecensioneBean> recensioni = RecensioneDAO.findByUser(email);
     	return recensioni;
     }
     
-    public synchronized void deleteRecensione(String email, int ID_Film) {
+    public synchronized void deleteRecensione(final String email, final int ID_Film) { // Parametri final
         // Prima elimina i report associati
         ReportDAO.deleteReports(email, ID_Film);
 
@@ -141,18 +136,18 @@ public class RecensioniService {
         RecensioneDAO.delete(email, ID_Film);
 
         // Recupera il film e aggiorna la valutazione media
-        FilmBean film = FilmDAO.findById(ID_Film);
-        List<RecensioneBean> recensioni = RecensioneDAO.findByIdFilm(ID_Film);
+        final FilmBean film = FilmDAO.findById(ID_Film);
+        final List<RecensioneBean> recensioni = RecensioneDAO.findByIdFilm(ID_Film);
 
         if (recensioni.isEmpty()) {
             // Nessuna recensione rimasta: impostare valutazione al valore minimo consentito
             film.setValutazione(1); // Il valore 1 è il minimo consentito dal CHECK constraint
         } else {
             int somma = 0;
-            for (RecensioneBean recensionefilm : recensioni) {
+            for (final RecensioneBean recensionefilm : recensioni) {
                 somma += recensionefilm.getValutazione();
             }
-            int media = somma / recensioni.size();
+            final int media = somma / recensioni.size();
             film.setValutazione(media);
         }
 
@@ -160,60 +155,44 @@ public class RecensioniService {
         FilmDAO.update(film);
     }
 
-
-
-    
-    public void deleteReports(String email, int ID_Film) {
-    	RecensioneBean recensione = RecensioneDAO.findById(email, ID_Film);
+    public void deleteReports(final String email, final int ID_Film) { // Parametri final
+    	final RecensioneBean recensione = RecensioneDAO.findById(email, ID_Film);
     	recensione.setNReports(0);
     	RecensioneDAO.update(recensione);
     	
     	ReportDAO.deleteReports(email, ID_Film);
     }
     
-    public List<RecensioneBean> GetRecensioni(int ID_film){
-    	
+    public List<RecensioneBean> GetRecensioni(final int ID_film){ // Parametro final
     	return RecensioneDAO.findByIdFilm(ID_film);
-    	
     }
     
-    public HashMap<String, ValutazioneBean> GetValutazioni(int ID_film, String email){
-    	
+    public HashMap<String, ValutazioneBean> GetValutazioni(final int ID_film, final String email){ // Parametri final
     	return ValutazioneDAO.findByIdFilmAndEmail(ID_film, email);
-    	
     }
     
     public List<RecensioneBean> GetAllRecensioniSegnalate(){
-    	List<RecensioneBean> recensioni = RecensioneDAO.findAll();
-    	List<RecensioneBean> recensioniFiltered = new ArrayList<RecensioneBean>();
-    	for(RecensioneBean recensione : recensioni)
+    	final List<RecensioneBean> recensioni = RecensioneDAO.findAll();
+    	final List<RecensioneBean> recensioniFiltered = new ArrayList<RecensioneBean>();
+    	for(final RecensioneBean recensione : recensioni)
     		if(recensione.getNReports()!=0)
     			recensioniFiltered.add(recensione);
     	
-    		
-    	
     	return recensioniFiltered;
-    	
     }
     
-    public synchronized void report(String email, String emailRecensore,int idFilm) {
+    public synchronized void report(final String email, final String emailRecensore, final int idFilm) { // Parametri final
     	
-    	ReportBean report = new ReportBean();
+    	final ReportBean report = new ReportBean();
     	report.setEmailRecensore(emailRecensore);
     	report.setEmail(email);
     	report.setIdFilm(idFilm);
     	if(ReportDAO.findById(email, emailRecensore, idFilm)==null) {
     		
-    		RecensioneBean recensione = RecensioneDAO.findById(emailRecensore, idFilm);
+    		final RecensioneBean recensione = RecensioneDAO.findById(emailRecensore, idFilm);
     		recensione.setNReports(recensione.getNReports()+1);
     		RecensioneDAO.update(recensione);
     		ReportDAO.save(report);
     	}
-    		
-    	
-    	
-    	
     }
-    
-    
 }

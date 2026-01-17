@@ -29,6 +29,7 @@
     <meta charset="UTF-8">
     <title>Profilo di <%= visitedUser.getUsername() %></title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+	<link rel="icon" type="image/x-icon" href="${pageContext.request.contextPath}/static/images/favicon.ico">
     <link rel="stylesheet" href="static/css/Profile.css">
     <script src="static/scripts/profileScripts.js" defer></script>
 </head>

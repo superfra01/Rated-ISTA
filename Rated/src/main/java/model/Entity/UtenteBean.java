@@ -24,7 +24,7 @@ public class UtenteBean implements Serializable {
         biografia = "";
     }
 
-    public UtenteBean(String email, byte[] icona, String username, String password, String tipoUtente, int nWarning, String biografia) {
+    public UtenteBean(final String email, final byte[] icona, final String username, final String password, final String tipoUtente, final int nWarning, final String biografia) {
         this.email = email;
         this.icona = icona;
         this.username = username;
@@ -38,7 +38,7 @@ public class UtenteBean implements Serializable {
         return email;
     }
 
-    public void setEmail(String email) {
+    public void setEmail(final String email) {
         this.email = email;
     }
 
@@ -46,7 +46,7 @@ public class UtenteBean implements Serializable {
         return icona;
     }
 
-    public void setIcona(byte[] icona) {
+    public void setIcona(final byte[] icona) {
         this.icona = icona;
     }
 
@@ -54,7 +54,7 @@ public class UtenteBean implements Serializable {
         return username;
     }
 
-    public void setUsername(String username) {
+    public void setUsername(final String username) {
         this.username = username;
     }
 
@@ -62,7 +62,7 @@ public class UtenteBean implements Serializable {
         return password;
     }
 
-    public void setPassword(String password) {
+    public void setPassword(final String password) {
         this.password = password;
     }
 
@@ -70,7 +70,7 @@ public class UtenteBean implements Serializable {
         return tipoUtente;
     }
 
-    public void setTipoUtente(String tipoUtente) {
+    public void setTipoUtente(final String tipoUtente) {
         this.tipoUtente = tipoUtente;
     }
 
@@ -78,7 +78,7 @@ public class UtenteBean implements Serializable {
         return nWarning;
     }
 
-    public void setNWarning(int nWarning) {
+    public void setNWarning(final int nWarning) {
         this.nWarning = nWarning;
     }
     
@@ -86,7 +86,7 @@ public class UtenteBean implements Serializable {
         return biografia;
     }
 
-    public void setBiografia(String biografia) {
+    public void setBiografia(final String biografia) {
         this.biografia = biografia;
     }
 }

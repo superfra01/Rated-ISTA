@@ -1,22 +1,11 @@
 package sottosistemi.Gestione_Utenti.view;
 
-
-
-
 import model.Entity.UtenteBean;
-import model.Entity.ValutazioneBean;
-import model.Entity.FilmBean;
-import model.Entity.RecensioneBean;
-import sottosistemi.Gestione_Utenti.service.AutenticationService;
 import sottosistemi.Gestione_Utenti.service.ProfileService;
-import sottosistemi.Gestione_Catalogo.service.CatalogoService;
-import sottosistemi.Gestione_Recensioni.service.RecensioniService;
 import utilities.FieldValidator;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
-import java.util.HashMap;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
@@ -39,33 +28,35 @@ public class ProfileModifyServlet extends HttpServlet {
     }
 
     @Override
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
         
     }
 
     @Override
-    public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public void doPost(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
     	
-    		String username = request.getParameter("username");
-            String email = request.getParameter("email");
-            String password = request.getParameter("password");
-            String biography = request.getParameter("biography");
-            byte[] icon = null;
+    		final String username = request.getParameter("username");
+            final String email = request.getParameter("email");
+            final String password = request.getParameter("password");
+            final String biography = request.getParameter("biography");
             
-            Part filePart = request.getPart("icon");
+            byte[] icon = null; // Non può essere final perché riassegnata
+            
+            final Part filePart = request.getPart("icon");
             if (filePart != null && filePart.getSize() > 0) {
-                try (InputStream inputStream = filePart.getInputStream()) {
+                try (final InputStream inputStream = filePart.getInputStream()) {
                     icon = inputStream.readAllBytes();
                 }
             }
             if (FieldValidator.validateUsername(username) &&
                 FieldValidator.validatePassword(password)) {
             	
-            	UtenteBean utente = ProfileService.ProfileUpdate(username, email, password, biography, icon);
+            	final UtenteBean utente = ProfileService.ProfileUpdate(username, email, password, biography, icon);
             	
-            	HttpSession session = request.getSession(true);
+            	final HttpSession session = request.getSession(true);
             	if(utente==null)
-            	System.out.println(utente);
+            		System.out.println(utente);
+            	
             	session.setAttribute("user", utente);
             	session.setAttribute("visitedUser", utente);
             	

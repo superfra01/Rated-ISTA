@@ -1,20 +1,10 @@
 package sottosistemi.Gestione_Utenti.view;
 
-
-
 import model.Entity.UtenteBean;
-import model.Entity.ValutazioneBean;
-import model.Entity.FilmBean;
-import model.Entity.RecensioneBean;
-import sottosistemi.Gestione_Utenti.service.AutenticationService;
 import sottosistemi.Gestione_Utenti.service.ProfileService;
-import sottosistemi.Gestione_Catalogo.service.CatalogoService;
 import sottosistemi.Gestione_Recensioni.service.RecensioniService;
-import utilities.FieldValidator;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.HashMap;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -28,29 +18,26 @@ public class DeleteReviewServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private ProfileService ProfileService;
 
-    @Override
-    public void init() {
-        ProfileService = new ProfileService();
-    }
+	@Override
+	public void init() {
+		ProfileService = new ProfileService();
+	}
 
-    @Override
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        
-        
-    }
+	@Override
+	public void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
 
-    @Override
-    public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    	
-    	
-		
-		HttpSession session = request.getSession(true);
-		String email = ((UtenteBean)session.getAttribute("user")).getEmail();
-		int ID_Film = Integer.parseInt(request.getParameter("DeleteFilmID"));
-		
-		RecensioniService RecensioniService = new RecensioniService();
+	}
+
+	@Override
+	public void doPost(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
+
+		final HttpSession session = request.getSession(true);
+		final String email = ((UtenteBean) session.getAttribute("user")).getEmail();
+		final int ID_Film = Integer.parseInt(request.getParameter("DeleteFilmID"));
+
+		final RecensioniService RecensioniService = new RecensioniService();
 		RecensioniService.deleteRecensione(email, ID_Film);
-		
-		response.sendRedirect(request.getContextPath() + "/profile?visitedUser=" + ((UtenteBean)session.getAttribute("user")).getUsername());
-    }
+
+		response.sendRedirect(request.getContextPath() + "/profile?visitedUser=" + ((UtenteBean) session.getAttribute("user")).getUsername());
+	}
 }

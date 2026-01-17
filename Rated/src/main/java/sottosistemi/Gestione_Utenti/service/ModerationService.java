@@ -4,28 +4,22 @@ import model.DAO.UtenteDAO;
 import model.Entity.UtenteBean;
 
 public class ModerationService {
-    public UtenteDAO UtenteDAO;
-    
+    public final UtenteDAO UtenteDAO; // Reso final
 
     public ModerationService() {
         this.UtenteDAO = new UtenteDAO();
-        
     }
     
     // Costruttore per il test
-    public ModerationService(UtenteDAO utenteDAO) {
+    public ModerationService(final UtenteDAO utenteDAO) { // Parametro final
         this.UtenteDAO = utenteDAO;
     }
     
-    public void warn(String email) {
-    	UtenteBean user = UtenteDAO.findByEmail(email);
-    	if(user!=null) {
-    		user.setNWarning(user.getNWarning()+1);
+    public void warn(final String email) { // Parametro final
+    	final UtenteBean user = UtenteDAO.findByEmail(email); // Variabile locale final
+    	if(user != null) {
+    		user.setNWarning(user.getNWarning() + 1);
         	UtenteDAO.update(user);
     	}
-    	
     }
-    
-    
-    
 }

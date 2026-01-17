@@ -1,19 +1,10 @@
 package sottosistemi.Gestione_Utenti.view;
 
-
 import model.Entity.UtenteBean;
-import model.Entity.ValutazioneBean;
-import model.Entity.FilmBean;
-import model.Entity.RecensioneBean;
-import sottosistemi.Gestione_Utenti.service.AutenticationService;
 import sottosistemi.Gestione_Utenti.service.ProfileService;
-import sottosistemi.Gestione_Catalogo.service.CatalogoService;
-import sottosistemi.Gestione_Recensioni.service.RecensioniService;
 import utilities.FieldValidator;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.HashMap;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -33,24 +24,22 @@ public class PasswordModifyServlet extends HttpServlet {
     }
 
     @Override
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
     	
-        
     }
 
     @Override
-    public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		String email = request.getParameter("email");
-        String password = request.getParameter("password");
+    public void doPost(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
+		final String email = request.getParameter("email");
+        final String password = request.getParameter("password");
+        
         if(FieldValidator.validatePassword(password)) {
-        	UtenteBean utente = ProfileService.PasswordUpdate(email, password);
+        	final UtenteBean utente = ProfileService.PasswordUpdate(email, password);
         	
-        	HttpSession session = request.getSession(true);
+        	final HttpSession session = request.getSession(true);
         	session.setAttribute("user", utente);
         	
         	response.sendRedirect(request.getContextPath() + "/profile?visitedUser=" + ((UtenteBean)session.getAttribute("user")).getUsername());
         }
-        
     }
 }
-

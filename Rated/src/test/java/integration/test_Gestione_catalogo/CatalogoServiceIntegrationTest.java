@@ -31,8 +31,8 @@ public class CatalogoServiceIntegrationTest {
 
     // 2. Metodo per pulire il DB (Consigliato per evitare errori di ID duplicati)
     private void cleanDb() {
-        try (Connection conn = testDataSource.getConnection();
-             Statement stmt = conn.createStatement()) {
+        try (final Connection conn = testDataSource.getConnection();
+             final Statement stmt = conn.createStatement()) {
             
             stmt.execute("SET FOREIGN_KEY_CHECKS = 0");
             // Cancelliamo solo i Film e le tabelle collegate, se necessario
@@ -60,26 +60,26 @@ public class CatalogoServiceIntegrationTest {
 
     @Test
     void testGetFilms_ReturnsAllFilms() {
-        List<FilmBean> films = catalogoService.getFilms();
+        final List<FilmBean> films = catalogoService.getFilms();
         assertNotNull(films, "La lista dei film non dovrebbe essere null.");
     }
 
     @Test
     void testAggiungiFilm_ValidData_ShouldSaveToDatabase() {
-        String nome = "Test Film";
-        int anno = 2022;
-        int durata = 120;
-        String generi = "Azione";
-        String regista = "John Doe";
-        String attori = "Attore1, Attore2";
-        byte[] locandina = null; 
-        String trama = "Trama di test.";
+        final String nome = "Test Film";
+        final int anno = 2022;
+        final int durata = 120;
+        final String generi = "Azione";
+        final String regista = "John Doe";
+        final String attori = "Attore1, Attore2";
+        final byte[] locandina = null; 
+        final String trama = "Trama di test.";
 
         catalogoService.aggiungiFilm(nome, anno, durata, generi, regista, attori, locandina, trama);
 
         // Verifichiamo su DB
-        List<FilmBean> allFilms = filmDAO.findAll();
-        boolean found = allFilms.stream()
+        final List<FilmBean> allFilms = filmDAO.findAll();
+        final boolean found = allFilms.stream()
                 .anyMatch(f -> f.getNome().equals(nome) && f.getAnno() == anno);
         assertTrue(found, "Il film appena aggiunto deve essere presente nel catalogo.");
     }
@@ -87,33 +87,33 @@ public class CatalogoServiceIntegrationTest {
     @Test
     void testRicercaFilm_ExistingTitle_ShouldReturnResult() {
         // Inseriamo un film di test
-        FilmBean film = new FilmBean();
+        final FilmBean film = new FilmBean();
         film.setNome("Inception");
         film.setAnno(2010);
         // Assicurati di usare il metodo add/save corretto che hai sistemato prima
         filmDAO.save(film); // O 'save' se non hai rinominato, ma ricorda il RETURN_GENERATED_KEYS
 
         // Ora cerchiamo
-        List<FilmBean> risultati = catalogoService.ricercaFilm("Inception");
+        final List<FilmBean> risultati = catalogoService.ricercaFilm("Inception");
         assertFalse(risultati.isEmpty(), "Dovrebbe trovare almeno un film con titolo 'Inception'.");
         assertEquals("Inception", risultati.get(0).getNome());
     }
 
     @Test
     void testRimuoviFilm_ShouldDeleteFromDB() {
-        String nome = "FilmToRemove";
-        int anno = 2022;
-        int durata = 120;
-        String generi = "Azione";
-        String regista = "John Doe";
-        String attori = "Attore1, Attore2";
-        byte[] locandina = "s".getBytes(); 
-        String trama = "Trama di test.";
+        final String nome = "FilmToRemove";
+        final int anno = 2022;
+        final int durata = 120;
+        final String generi = "Azione";
+        final String regista = "John Doe";
+        final String attori = "Attore1, Attore2";
+        final byte[] locandina = "s".getBytes(); 
+        final String trama = "Trama di test.";
         
         catalogoService.aggiungiFilm(nome, anno, durata, generi, regista, attori, locandina, trama);
 
-        List<FilmBean> all = filmDAO.findAll();
-        FilmBean toRemove = all.stream()
+        final List<FilmBean> all = filmDAO.findAll();
+        final FilmBean toRemove = all.stream()
                 .filter(f -> "FilmToRemove".equals(f.getNome()))
                 .findFirst()
                 .orElse(null);
@@ -121,7 +121,7 @@ public class CatalogoServiceIntegrationTest {
 
         catalogoService.rimuoviFilm(toRemove);
 
-        FilmBean check = filmDAO.findById(toRemove.getIdFilm());
+        final FilmBean check = filmDAO.findById(toRemove.getIdFilm());
         assertNull(check, "Il film dovrebbe essere stato rimosso dal database.");
     }
 }

@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
-    <link rel="shortcut icon" href="static/images/RATED_icon.png">
+    <link rel="icon" type="image/x-icon" href="${pageContext.request.contextPath}/static/images/favicon.ico">
     <link href="static/css/loginRegister.css" rel="stylesheet">
     <script src="static/scripts/loginValidation.js"></script>
 </head>

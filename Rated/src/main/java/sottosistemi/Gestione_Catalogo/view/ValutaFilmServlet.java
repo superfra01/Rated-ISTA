@@ -1,13 +1,9 @@
 package sottosistemi.Gestione_Catalogo.view;
 
-
-
 import model.Entity.UtenteBean;
 import sottosistemi.Gestione_Recensioni.service.RecensioniService;
 
-
 import java.io.IOException;
-
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -27,25 +23,22 @@ public class ValutaFilmServlet extends HttpServlet {
     }
 
     @Override
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException { // Parametri final
       
     }
 
     @Override
-    public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public void doPost(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException { // Parametri final
     	
-    	HttpSession session = request.getSession(true);
-    	UtenteBean user = (UtenteBean) session.getAttribute("user");
-    	int idFilm = Integer.parseInt(request.getParameter("idFilm"));
-    	String titolo = request.getParameter("titolo");
-    	String recensione = request.getParameter("recensione");
-    	int valutazione = Integer.parseInt(request.getParameter("valutazione"));
+    	final HttpSession session = request.getSession(true); // Locale final
+    	final UtenteBean user = (UtenteBean) session.getAttribute("user"); // Locale final
+    	final int idFilm = Integer.parseInt(request.getParameter("idFilm")); // Locale final
+    	final String titolo = request.getParameter("titolo"); // Locale final
+    	final String recensione = request.getParameter("recensione"); // Locale final
+    	final int valutazione = Integer.parseInt(request.getParameter("valutazione")); // Locale final
 
-    	
     	RecensioniService.addRecensione(user.getEmail(), idFilm, recensione, titolo, valutazione);
     	
     	response.sendRedirect(request.getContextPath() + "/film?idFilm="+idFilm);
-        
-    	
     }
 }

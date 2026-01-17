@@ -1,10 +1,7 @@
 package sottosistemi.Gestione_Catalogo.view;
 
-
-
 import model.Entity.FilmBean;
 import sottosistemi.Gestione_Catalogo.service.CatalogoService;
-
 
 import java.io.IOException;
 import java.util.List;
@@ -27,21 +24,17 @@ public class RicercaCatalogoServlet extends HttpServlet {
     }
 
     @Override
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    	HttpSession session = request.getSession(true);
+    public void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException { // Parametri final
+    	final HttpSession session = request.getSession(true); // Locale final
 
-    	List<FilmBean> films = CatalogoService.ricercaFilm(request.getParameter("filmCercato"));
+    	final List<FilmBean> films = CatalogoService.ricercaFilm(request.getParameter("filmCercato")); // Locale final
     	session.setAttribute("films", films);
     	
-        
         request.getRequestDispatcher("/WEB-INF/jsp/catalogo.jsp").forward(request, response);
-        
-        
     }
 
     @Override
-    public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public void doPost(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException { // Parametri final
     	
-        
     }
 }
