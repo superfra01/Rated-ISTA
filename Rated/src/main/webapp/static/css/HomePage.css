@@ -7,7 +7,8 @@ body {
 }
 
 main {
-    padding: 20px 20px;
+    /* Padding bilanciato: ne troppo stretto (20px) ne troppo largo (50px) */
+    padding: 30px 20px; 
     padding-bottom: 80px;
 }
 
@@ -16,18 +17,19 @@ main {
     max-width: 800px;
     margin: 0 auto;
     text-align: center;
-    margin-bottom: 30px; 
+    margin-bottom: 40px; /* Distanza media dai consigliati */
 }
 
 .about-container .logo-large {
-    width: 220px; /* Logo compatto */
+    /* DIMENSIONE MEDIA: 280px (prima era 220px o 350px) */
+    width: 280px; 
 }
 
 .about-container .description {
-    font-size: 16px;
-    line-height: 1.5;
+    font-size: 17px; /* Dimensione testo intermedia */
+    line-height: 1.6;
     color: #ccc;
-    margin-bottom: 20px; 
+    margin-bottom: 25px; 
 }
 
 .catalogue-button {
@@ -47,12 +49,12 @@ main {
 
 /* --- Recommendations Section Styles --- */
 .recommendations-container {
-    width: 95%; /* Allargato leggermente il contenitore generale */
-    max-width: 1400px;
+    width: 95%;
+    max-width: 1300px; /* Larghezza massima contenuta */
     margin: 0 auto;
     text-align: left;
     border-top: 1px solid #444;
-    padding-top: 20px;
+    padding-top: 25px;
 }
 
 .section-title {
@@ -82,10 +84,10 @@ main {
     display: none;
 }
 
-/* --- MODIFICA QUI: Card più larghe --- */
+/* --- CARD FILM: DIMENSIONI MEDIE --- */
 .film-card-mini {
-    /* AUMENTATO DA 180px A 260px */
-    flex: 0 0 260px; 
+    /* LARGHEZZA: 220px (via di mezzo perfetta) */
+    flex: 0 0 240px; 
     background-color: #3b3b3b;
     border-radius: 8px;
     overflow: hidden;
@@ -101,8 +103,8 @@ main {
 
 .poster-container {
     width: 100%;
-    /* AUMENTATO DA 270px A 360px PER MANTENERE LA PROPORZIONE */
-    height: 360px; 
+    /* ALTEZZA: 330px (proporzione 2:3 rispetto alla larghezza) */
+    height: 330px; 
     overflow: hidden;
     cursor: pointer;
 }
@@ -110,21 +112,21 @@ main {
 .poster-container img {
     width: 100%;
     height: 100%;
-    object-fit: cover; /* Assicura che l'immagine riempia lo spazio senza deformarsi */
+    object-fit: cover;
 }
 
 .info-container {
-    padding: 15px; /* Un po' più di spazio interno */
+    padding: 12px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     flex-grow: 1;
-    min-height: 90px;
+    min-height: 85px;
 }
 
 .film-title {
     margin: 0 0 10px 0;
-    font-size: 1.1rem; /* Font leggermente più grande visto che la card è più grande */
+    font-size: 1rem;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -141,8 +143,8 @@ main {
     background-color: transparent;
     border: 1px solid #666;
     color: #bbb;
-    padding: 8px;
-    font-size: 0.85rem;
+    padding: 6px;
+    font-size: 0.8rem;
     border-radius: 4px;
     cursor: pointer;
     margin-top: auto;
@@ -160,10 +162,10 @@ main {
     background-color: rgba(0, 0, 0, 0.6);
     color: white;
     border: none;
-    font-size: 2.5rem; /* Frecce leggermente più grandi */
+    font-size: 2.2rem;
     padding: 0;
-    width: 50px;
-    height: 50px;
+    width: 45px;
+    height: 45px;
     border-radius: 50%;
     cursor: pointer;
     z-index: 10;
@@ -178,5 +180,5 @@ main {
     background-color: #ff4c4c;
 }
 
-.left-btn { left: -25px; }
-.right-btn { right: -25px; }
+.left-btn { left: -22px; }
+.right-btn { right: -22px; }
