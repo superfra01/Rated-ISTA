@@ -58,7 +58,7 @@ public class UtenteDAO {
     }
 
     public UtenteBean findByEmail(final String email) {
-        final String query = "SELECT * FROM Utente_Registrato WHERE email = ?";
+        final String query = "SELECT email, Icona, username, Password, Tipo_Utente, N_Warning, Biografia FROM Utente_Registrato WHERE email = ?";
         try (final Connection connection = dataSource.getConnection();
              final PreparedStatement ps = connection.prepareStatement(query)) {
             ps.setString(1, email);
@@ -82,7 +82,7 @@ public class UtenteDAO {
     }
 
     public UtenteBean findByUsername(final String username) {
-        final String query = "SELECT * FROM Utente_Registrato WHERE username = ?";
+        final String query = "SELECT email, Icona, username, Password, Tipo_Utente, N_Warning, Biografia FROM Utente_Registrato WHERE username = ?";
         try (final Connection connection = dataSource.getConnection();
              final PreparedStatement ps = connection.prepareStatement(query)) {
             ps.setString(1, username);
@@ -106,7 +106,7 @@ public class UtenteDAO {
     }
 
     public List<UtenteBean> findAll() {
-        final String query = "SELECT * FROM Utente_Registrato";
+        final String query = "SELECT email, Icona, username, Password, Tipo_Utente, N_Warning, Biografia FROM Utente_Registrato";
         final List<UtenteBean> utenti = new ArrayList<>();
         try (final Connection connection = dataSource.getConnection();
              final PreparedStatement ps = connection.prepareStatement(query);

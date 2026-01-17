@@ -42,7 +42,7 @@ public class ModificaFilmServlet extends HttpServlet {
     		final int anno = Integer.parseInt(request.getParameter("annoFilm")); // Locale final
     		final String Attori = request.getParameter("attoriFilm"); // Locale final
     		final int durata = Integer.parseInt(request.getParameter("durataFilm")); // Locale final
-    		final String[] generiSelezionati = request.getParameterValues("generiFilm");
+    		final String Generi = request.getParameter("generiFilm"); // Locale final
     		
     		final String Nome = request.getParameter("nomeFilm"); // Locale final
     		final String Regista = request.getParameter("registaFilm"); // Locale final
@@ -56,7 +56,7 @@ public class ModificaFilmServlet extends HttpServlet {
                 }
             }
             
-    		CatalogoService.modifyFilm(idFilm, anno, Attori, durata, generiSelezionati, locandina, Nome, Regista, Trama);
+    		CatalogoService.modifyFilm(idFilm, anno, Attori, durata, Generi, locandina, Nome, Regista, Trama);
     		response.sendRedirect(request.getContextPath() + "/film?idFilm=" + idFilm);
     	}else {
     		response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);

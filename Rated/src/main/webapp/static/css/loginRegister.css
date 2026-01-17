@@ -73,7 +73,7 @@ header button:hover {
     padding: 0;
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 15px; /* Spazio uniforme tra i campi */
 }
 
 input[type="text"],
@@ -88,7 +88,7 @@ textarea {
     color: white;
     outline: none;
     box-sizing: border-box;
-    margin-bottom: 10px;
+    margin-bottom: 10px; /* Spazio sotto ogni campo input */
 }
 
 input[type="text"]:focus,
@@ -102,65 +102,6 @@ textarea:focus {
 textarea {
     resize: none;
 }
-
-/* --- STILI PER I GENERI --- */
-.genres-section {
-    width: 100%;
-}
-
-.section-label {
-    display: block;
-    margin-bottom: 8px;
-    font-weight: bold;
-    color: #ccc;
-    font-size: 14px;
-}
-
-.genres-container {
-    max-height: 160px; /* Altezza massima con scroll */
-    overflow-y: auto;
-    background-color: #333;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    padding: 10px;
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-/* Stile per indicare errore sul container dei generi */
-.genres-container.error {
-    border-color: #ff4c4c;
-    box-shadow: 0 0 8px rgba(255, 76, 76, 0.6);
-}
-
-.genre-item {
-    display: flex;
-    align-items: center;
-}
-
-.genre-item input[type="checkbox"] {
-    margin-right: 10px;
-    cursor: pointer;
-    /* Reset larghezza per checkbox */
-    width: auto !important; 
-    margin-bottom: 0 !important;
-}
-
-.genre-item label {
-    cursor: pointer;
-    font-size: 14px;
-    user-select: none;
-}
-
-.backend-error {
-    color: #ff4c4c;
-    font-size: 13px;
-    text-align: center;
-    padding: 15px 0;
-}
-/* -------------------------- */
 
 form span {
     font-size: 12px;

@@ -41,7 +41,7 @@ public class AggiungiFilmServlet extends HttpServlet {
     		final int anno = Integer.parseInt(request.getParameter("annoFilm")); // Locale final
     		final String Attori = request.getParameter("attoriFilm"); // Locale final
     		final int durata = Integer.parseInt(request.getParameter("durataFilm")); // Locale final
-    		final String[] generiSelezionati = request.getParameterValues("generiFilm");
+    		final String Generi = request.getParameter("generiFilm"); // Locale final
     		final String Nome = request.getParameter("nomeFilm"); // Locale final
     		final String Regista = request.getParameter("registaFilm"); // Locale final
     		final String Trama = request.getParameter("tramaFilm"); // Locale final
@@ -55,7 +55,7 @@ public class AggiungiFilmServlet extends HttpServlet {
                 }
             }
 
-    		CatalogoService.addFilm(anno, Attori, durata, generiSelezionati, locandina, Nome, Regista, Trama);
+    		CatalogoService.addFilm(anno, Attori, durata, Generi, locandina, Nome, Regista, Trama);
     		response.sendRedirect(request.getContextPath() + "/catalogo");
     	}else {
     		response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);

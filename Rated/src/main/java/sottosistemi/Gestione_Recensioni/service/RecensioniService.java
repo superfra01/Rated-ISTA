@@ -195,9 +195,4 @@ public class RecensioniService {
     		ReportDAO.save(report);
     	}
     }
-    
-    public RecensioneBean getRecensione(int filmId, String email) {
-        model.DAO.RecensioneDAO recensioneDAO = new model.DAO.RecensioneDAO();
-        return recensioneDAO.findById(email, filmId);
-    }
 }

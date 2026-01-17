@@ -1,4 +1,4 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" import="java.util.*" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" import="java.util.*" import="model.*"%>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -18,51 +18,29 @@
             <h4>Register</h4>
             <form id="regForm" action="<%= request.getContextPath() %>/register" method="post" enctype="multipart/form-data">
                 
+                <!-- Username -->
                 <input type="text" id="username" name="username" placeholder="Username" required>
                 <span id="errorUsername" aria-live="polite"></span>
                 
+                <!-- Email -->
                 <input type="text" id="email" name="email" placeholder="E-mail" required>
                 <span id="errorEmail" aria-live="polite"></span>
                 
+                <!-- Password -->
                 <input type="password" id="password" name="password" placeholder="Password" required>
                 <span id="errorPassword" aria-live="polite"></span>
                 
+                <!-- Conferma Password -->
                 <input type="password" id="confirm_password" name="confirm_password" placeholder="Confirm Password" required>
                 <span id="errorConfirmPassword" aria-live="polite"></span>
                 
+                <!-- Caricamento immagine profilo -->
                 <input type="file" id="profile_icon" name="profile_icon" accept="image/*" required>
                 <span id="errorProfileIcon" aria-live="polite"></span>
                 
+                <!-- Biografia -->
                 <textarea id="bio" name="biography" placeholder="Biografia" rows="4" required></textarea>
                 <span id="errorBio" aria-live="polite"></span>
-
-                <div class="genres-section">
-                    <label class="section-label">Generi Preferiti (Seleziona almeno 2):</label>
-                    <div id="genresContainer" class="genres-container">
-                        <% 
-                            // Recupero la lista come List<String> (come in profile.jsp)
-                            List<String> genresList = (List<String>) session.getAttribute("genres");
-
-                            if (genresList != null && !genresList.isEmpty()) {
-                                for (String g : genresList) { 
-                        %>
-                                <div class="genre-item">
-                                    <input type="checkbox" id="genre_<%= g %>" name="genres" value="<%= g %>">
-                                    <label for="genre_<%= g %>"><%= g %></label>
-                                </div>
-                        <% 
-                                }
-                            } else { 
-                        %>
-                                <div class="backend-error">
-                                    <p>⚠ Generi non disponibili al momento.</p>
-                                </div>
-                        <% 
-                            } 
-                        %>
-                    </div>
-                    <span id="errorGenres" aria-live="polite"></span>
-                </div>
                 <br>
                 
                 <button type="submit">Register</button>

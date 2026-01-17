@@ -9,71 +9,29 @@ function voteReview(idFilm, emailRecensore, valutazione) {
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: formData.toString()
     })
-    .then(response => {
-        if (response.ok) {
-            window.location.reload();
-        } else {
-            alert("Errore durante la votazione. Riprova più tardi.");
-        }
-    })
-    .catch(error => {
-        console.error("Errore nella richiesta:", error);
-        alert("Errore durante la votazione.");
-    });
-}
-
-// --- FUNZIONE GESTIONE LISTE CORRETTA ---
-function toggleUserList(idFilm, listType, buttonElement) {
-    let urlServlet = "";
-    if (listType === 'watchlist') {
-        urlServlet = "AggiungiWatchlistServlet";
-    } else if (listType === 'watched') {
-        urlServlet = "SegnaComeVistoServlet";
-    }
-
-    const formData = new URLSearchParams();
-    formData.append("filmId", idFilm); 
-
-    fetch(urlServlet, {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: formData.toString()
-    })
-    .then(async response => {
-        if (response.ok) {
-            // SUCCESS: Aggiorna la UI
-            buttonElement.classList.toggle("active");
-            const isActive = buttonElement.classList.contains("active");
-
-            if(listType === 'watchlist') {
-                if (isActive) {
-                    buttonElement.innerHTML = '<i class="fas fa-minus-circle"></i> Rimuovi dalla Watchlist';
-                } else {
-                    buttonElement.innerHTML = '<i class="fas fa-bookmark"></i> Aggiungi alla Watchlist';
-                }
-            } else if (listType === 'watched') {
-                if (isActive) {
-                    buttonElement.innerHTML = '<i class="fas fa-times-circle"></i> Rimuovi da Visti';
-                } else {
-                    buttonElement.innerHTML = '<i class="fas fa-check-circle"></i> Segna come Visto';
-                }
+        .then(response => {
+            if (response.ok) {
+                window.location.reload();
+            } else {
+                alert("Errore durante la votazione. Riprova più tardi.");
             }
-        } else {
-            // ERROR: Leggi il messaggio inviato dalla Servlet
-            const errorMessage = await response.text();
-            alert(errorMessage || "Impossibile aggiornare la lista.");
-        }
-    })
-    .catch(error => {
-        console.error("Errore chiamata liste:", error);
-        alert("Errore di connessione al server.");
-    });
+        })
+        .catch(error => {
+            console.error("Errore nella richiesta:", error);
+            alert("Errore durante la votazione. Riprova più tardi.");
+        });
 }
 
 function showReviewForm() {
+    // Mostra l'overlay
     document.getElementById('reviewOverlay').style.display = 'flex';
+
+    // Disabilita il bottone "RATE IT" dopo il primo click
+    // (se hai messo l'ID "btnRateFilm" nel JSP)
     const rateButton = document.getElementById('btnRateFilm');
-    if (rateButton) rateButton.disabled = true;
+    if (rateButton) {
+        rateButton.disabled = true;
+    }
 }
 
 function hideReviewForm() {
@@ -102,14 +60,19 @@ function validateReviewForm() {
 
 function deleteFilm(idFilm) {
     if (confirm("Sei sicuro di voler eliminare questo film? Questa azione non può essere annullata.")) {
+        // Crea un form temporaneo
         const form = document.createElement('form');
         form.method = 'POST';
         form.action = 'deleteFilm';
+
+        // Aggiungi l'input nascosto
         const input = document.createElement('input');
         input.type = 'hidden';
         input.name = 'idFilm';
         input.value = idFilm;
         form.appendChild(input);
+
+        // Aggiungi il form al body e sottometti
         document.body.appendChild(form);
         form.submit();
     }
@@ -126,10 +89,16 @@ function reportReview(idFilm, emailRecensore) {
             headers: { "Content-Type": "application/x-www-form-urlencoded" },
             body: formData.toString()
         })
-        .then(response => {
-            if (response.ok) alert("Recensione segnalata con successo.");
-            else alert("Errore durante la segnalazione.");
-        })
-        .catch(error => console.error(error));
+            .then(response => {
+                if (response.ok) {
+                    alert("Recensione segnalata con successo.");
+                } else {
+                    alert("Errore durante la segnalazione. Riprova più tardi.");
+                }
+            })
+            .catch(error => {
+                console.error("Errore nella richiesta:", error);
+                alert("Errore durante la segnalazione. Riprova più tardi.");
+            });
     }
 }

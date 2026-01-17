@@ -8,8 +8,6 @@ import org.junit.jupiter.api.*;
 import integration.DatabaseSetupForTest;
 import sottosistemi.Gestione_Catalogo.service.CatalogoService;
 import model.DAO.FilmDAO;
-import model.DAO.FilmGenereDAO;
-import model.DAO.GenereDAO;
 import model.Entity.FilmBean;
 
 import javax.sql.DataSource;
@@ -57,7 +55,7 @@ public class CatalogoServiceIntegrationTest {
         
         // Ora testDataSource NON è null
         filmDAO = new FilmDAO(testDataSource);
-        catalogoService = new CatalogoService(new FilmDAO(), new FilmGenereDAO(), new GenereDAO());
+        catalogoService = new CatalogoService(filmDAO);
     }
 
     @Test
@@ -71,7 +69,7 @@ public class CatalogoServiceIntegrationTest {
         final String nome = "Test Film";
         final int anno = 2022;
         final int durata = 120;
-        final String generi[] = new String[]{"Azione"};
+        final String generi = "Azione";
         final String regista = "John Doe";
         final String attori = "Attore1, Attore2";
         final byte[] locandina = null; 
@@ -106,7 +104,7 @@ public class CatalogoServiceIntegrationTest {
         final String nome = "FilmToRemove";
         final int anno = 2022;
         final int durata = 120;
-        final String[] generi = new String[]{"Azione"};
+        final String generi = "Azione";
         final String regista = "John Doe";
         final String attori = "Attore1, Attore2";
         final byte[] locandina = "s".getBytes(); 

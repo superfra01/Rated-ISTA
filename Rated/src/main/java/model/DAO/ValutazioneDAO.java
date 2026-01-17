@@ -34,7 +34,7 @@ public class ValutazioneDAO {
     }
 
 	public void save(final ValutazioneBean valutazione) { // Parametro final
-        final String selectQuery = "SELECT * FROM Valutazione WHERE email = ? AND email_Recensore = ? AND ID_Film = ?";
+        final String selectQuery = "SELECT Like_Dislike, email, email_Recensore, ID_Film FROM Valutazione WHERE email = ? AND email_Recensore = ? AND ID_Film = ?";
         final String insertQuery = "INSERT INTO Valutazione (Like_Dislike, email, email_Recensore, ID_Film) VALUES (?, ?, ?, ?)";
         final String updateQuery = "UPDATE Valutazione SET Like_Dislike = ? WHERE email = ? AND email_Recensore = ? AND ID_Film = ?";
         final String deleteQuery = "DELETE FROM Valutazione WHERE email = ? AND email_Recensore = ? AND ID_Film = ?";
@@ -84,7 +84,7 @@ public class ValutazioneDAO {
     }
 
     public ValutazioneBean findById(final String email, final String emailRecensore, final int idFilm) { // Parametri final
-        final String query = "SELECT * FROM Valutazione WHERE email = ? AND email_Recensore = ? AND ID_Film = ?";
+        final String query = "SELECT Like_Dislike, email, email_Recensore, ID_Film FROM Valutazione WHERE email = ? AND email_Recensore = ? AND ID_Film = ?";
         try (final Connection connection = dataSource.getConnection();
              final PreparedStatement ps = connection.prepareStatement(query)) {
             ps.setString(1, email);
@@ -107,7 +107,7 @@ public class ValutazioneDAO {
     }
     
     public HashMap<String, ValutazioneBean> findByIdFilmAndEmail(final int idFilm, final String email) { // Parametri final
-        final String query = "SELECT * FROM Valutazione WHERE ID_Film = ? AND email = ?";
+        final String query = "SELECT Like_Dislike, email, email_Recensore, ID_Film FROM Valutazione WHERE ID_Film = ? AND email = ?";
         final HashMap<String, ValutazioneBean> valutazioni = new HashMap<>();
         try (final Connection connection = dataSource.getConnection();
              final PreparedStatement ps = connection.prepareStatement(query)) {

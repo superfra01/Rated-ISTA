@@ -1,7 +1,6 @@
 package sottosistemi.Gestione_Catalogo.view;
 
 import model.Entity.FilmBean;
-import model.Entity.FilmGenereBean;
 import model.Entity.RecensioneBean;
 import model.Entity.UtenteBean;
 import model.Entity.ValutazioneBean;
@@ -22,10 +21,10 @@ import javax.servlet.http.HttpSession;
 
 @WebServlet("/film")
 public class VisualizzaFilmServlet extends HttpServlet {
-    private static final long serialVersionUID = 1L;
-    private CatalogoService CatalogoService;
-    private RecensioniService RecensioniService;
-    private ProfileService ProfileService;
+	private static final long serialVersionUID = 1L;
+	private CatalogoService CatalogoService;
+	private RecensioniService RecensioniService;
+	private ProfileService ProfileService;
 
     @Override
     public void init() {
@@ -35,94 +34,33 @@ public class VisualizzaFilmServlet extends HttpServlet {
     }
 
     @Override
-    public void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
-        final HttpSession session = request.getSession(true);
-
-        // 1. Gestione sicura del parametro idFilm
-        String idFilmStr = request.getParameter("idFilm");
-        if (idFilmStr == null || idFilmStr.isEmpty()) {
-            response.sendRedirect("catalogo.jsp"); // O altra pagina di fallback
-            return;
-        }
-
-        final int idFilm;
-        try {
-            idFilm = Integer.parseInt(idFilmStr);
-        } catch (NumberFormatException e) {
-            response.sendRedirect("catalogo.jsp");
-            return;
-        }
-        
-        // 2. Recupero Film
-        final FilmBean film = CatalogoService.getFilm(idFilm);
-        if (film == null) {
-            response.sendRedirect("catalogo.jsp"); // Film non trovato
-            return;
-        }
-        session.setAttribute("film", film);
-        
-        // 3. Recupero Generi
-        final List<FilmGenereBean> generi = CatalogoService.getGeneri(film.getIdFilm());
-        session.setAttribute("Generi", generi);
-        
-        // 4. Recupero Recensioni
-        final List<RecensioneBean> recensioni = RecensioniService.GetRecensioni(idFilm);
-        session.setAttribute("recensioni", recensioni);
-        
-        if(recensioni != null && !recensioni.isEmpty()) {
-            final HashMap<String, String> utenti = ProfileService.getUsers(recensioni);
-            session.setAttribute("users", utenti);
-        } else {
-            session.removeAttribute("users"); // Pulizia se non ci sono recensioni
-        }
-        
-        // 5. Gestione Utente Loggato (Valutazioni e Liste)
-        final UtenteBean user = (UtenteBean) session.getAttribute("user");
-        
-        // Default: false se l'utente non è loggato
-        boolean isWatched = false;
-        boolean inWatchlist = false;
-
-        if(user != null) {
-            final String email = user.getEmail();
-            
-            // A. Valutazioni (Like/Dislike)
-            final HashMap<String, ValutazioneBean> valutazioni = RecensioniService.GetValutazioni(idFilm, email);
-            session.setAttribute("valutazioni", valutazioni);
-            
-            // B. Controllo "VISTI" (Confronto tramite ID)
-            List<FilmBean> watchedList = ProfileService.retrieveWatchedFilms(user.getUsername());
-            if (watchedList != null) {
-                for (FilmBean f : watchedList) {
-                    if (f.getIdFilm() == idFilm) {
-                        isWatched = true;
-                        break;
-                    }
-                }
-            }
-            
-            // C. Controllo "WATCHLIST" (Confronto tramite ID)
-            List<FilmBean> watchlist = ProfileService.retrieveWatchlist(user.getUsername());
-            if (watchlist != null) {
-                for (FilmBean f : watchlist) {
-                    if (f.getIdFilm() == idFilm) {
-                        inWatchlist = true;
-                        break;
-                    }
-                }
-            }
-        }
-        
-        // Impostiamo gli attributi in sessione (fondamentale per la JSP)
-        session.setAttribute("watched", isWatched);
-        session.setAttribute("inwatchlist", inWatchlist);
-        
-        // 6. Forward alla JSP
+    public void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException { // Parametri final
+    	final HttpSession session = request.getSession(true); // Locale final
+    	final int idFilm= Integer.parseInt(request.getParameter("idFilm")); // Locale final
+    	
+    	final FilmBean film = CatalogoService.getFilm(idFilm); // Locale final
+    	session.setAttribute("film", film);
+    	
+    	final List<RecensioneBean> recensioni = RecensioniService.GetRecensioni(idFilm); // Locale final
+    	session.setAttribute("recensioni", recensioni);
+    	
+    	if(recensioni!= null) {
+    		final HashMap<String, String> utenti = ProfileService.getUsers(recensioni); // Locale final
+    		session.setAttribute("users", utenti);
+    	}
+    	
+    	final UtenteBean user = (UtenteBean) session.getAttribute("user"); // Locale final
+    	if(user!=null) {
+    		final String email = user.getEmail(); // Locale final
+        	final HashMap<String, ValutazioneBean> valutazioni = RecensioniService.GetValutazioni(idFilm, email); // Locale final
+        	session.setAttribute("valutazioni", valutazioni);
+    	}
+    	
         request.getRequestDispatcher("/WEB-INF/jsp/film.jsp").forward(request, response);
     }
 
     @Override
-    public void doPost(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
-        doGet(request, response);
+    public void doPost(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException { // Parametri final
+    	
     }
 }

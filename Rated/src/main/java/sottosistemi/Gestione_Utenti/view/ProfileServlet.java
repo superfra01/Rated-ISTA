@@ -45,17 +45,11 @@ public class ProfileServlet extends HttpServlet {
         	final CatalogoService CatalogoService = new CatalogoService();
         	final HashMap<Integer, FilmBean> FilmMap = CatalogoService.getFilms(recensioni);
         	session.setAttribute("films", FilmMap);
-        
-        	CatalogoService catalogoService = new CatalogoService();
-        	List<String> generi = catalogoService.getAllGeneri();
-        	session.setAttribute("allGenres", generi);
         	
-        	List<String> userGenres = ProfileService.getPreferenze(visitedUser.getEmail());
-        	session.setAttribute("userGenres", userGenres);
         	request.getRequestDispatcher("/WEB-INF/jsp/profile.jsp").forward(request, response);	
         } else {
         	response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().write("You can't access the profile page if visitedUser is not set");
+            response.getWriter().write("You can't access the profile page if you are not autenticated");
         }
     }
 

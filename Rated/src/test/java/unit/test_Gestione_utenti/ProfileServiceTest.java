@@ -13,7 +13,6 @@ import javax.sql.DataSource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import model.DAO.PreferenzaDAO;
 import model.DAO.UtenteDAO;
 import model.Entity.RecensioneBean;
 import model.Entity.UtenteBean;
@@ -25,7 +24,6 @@ class ProfileServiceTest {
 
     private ProfileService profileService;
     private UtenteDAO mockUtenteDAO;
-    private PreferenzaDAO mockPreferenzaDAO;
     private DataSource mockDataSource;
     private Connection mockConnection;
 
@@ -40,10 +38,9 @@ class ProfileServiceTest {
 
         // Mock UtenteDAO
         mockUtenteDAO = mock(UtenteDAO.class);
-        mockPreferenzaDAO = mock(PreferenzaDAO.class);
 
         // ProfileService utilizza un DAO mockato
-        profileService = new ProfileService(mockUtenteDAO, mockPreferenzaDAO); 
+        profileService = new ProfileService(mockUtenteDAO); 
     }
 
     @Test

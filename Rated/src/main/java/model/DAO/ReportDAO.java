@@ -46,7 +46,7 @@ public class ReportDAO {
     }
 
     public ReportBean findById(final String email, final String emailRecensore, final int idFilm) { // Parametri final
-        final String query = "SELECT * FROM Report WHERE email = ? AND email_Recensore = ? AND ID_Film = ?";
+        final String query = "SELECT email, email_Recensore, ID_Film FROM Report WHERE email = ? AND email_Recensore = ? AND ID_Film = ?";
         try (final Connection connection = dataSource.getConnection();
              final PreparedStatement ps = connection.prepareStatement(query)) {
             ps.setString(1, email);
