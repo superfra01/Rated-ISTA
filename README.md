@@ -1,1 +1,1 @@
-Progetto Sustainable Software Engineering 2025/2026
+Progetto IS 2024/2025

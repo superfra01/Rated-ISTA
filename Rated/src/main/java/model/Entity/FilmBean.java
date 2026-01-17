@@ -11,6 +11,7 @@ public class FilmBean implements Serializable {
     private String nome;
     private int anno;
     private int durata;
+    private String generi;
     private String regista;
     private String attori;
     private int valutazione;
@@ -22,25 +23,20 @@ public class FilmBean implements Serializable {
         nome = "";
         anno = 0;
         durata = 0;
+        generi = "";
         regista = "";
         attori = "";
         valutazione = 1;
-        trama = "";
+        trama ="";
     }
 
-    public FilmBean(final int idFilm,
-                    final byte[] locandina,
-                    final String nome,
-                    final int anno,
-                    final int durata,
-                    final String regista,
-                    final String attori,
-                    final String trama) {
+    public FilmBean(int idFilm, byte[] locandina, String nome, int anno, int durata, String generi, String regista, String attori, String trama) {
         this.idFilm = idFilm;
         this.locandina = locandina;
         this.nome = nome;
         this.anno = anno;
         this.durata = durata;
+        this.generi = generi;
         this.regista = regista;
         this.attori = attori;
         this.valutazione = 1;
@@ -51,7 +47,7 @@ public class FilmBean implements Serializable {
         return idFilm;
     }
 
-    public void setIdFilm(final int idFilm) {
+    public void setIdFilm(int idFilm) {
         this.idFilm = idFilm;
     }
 
@@ -59,7 +55,7 @@ public class FilmBean implements Serializable {
         return locandina;
     }
 
-    public void setLocandina(final byte[] locandina) {
+    public void setLocandina(byte[] locandina) {
         this.locandina = locandina;
     }
 
@@ -67,7 +63,7 @@ public class FilmBean implements Serializable {
         return nome;
     }
 
-    public void setNome(final String nome) {
+    public void setNome(String nome) {
         this.nome = nome;
     }
 
@@ -75,7 +71,7 @@ public class FilmBean implements Serializable {
         return anno;
     }
 
-    public void setAnno(final int anno) {
+    public void setAnno(int anno) {
         this.anno = anno;
     }
 
@@ -83,15 +79,23 @@ public class FilmBean implements Serializable {
         return durata;
     }
 
-    public void setDurata(final int durata) {
+    public void setDurata(int durata) {
         this.durata = durata;
+    }
+
+    public String getGeneri() {
+        return generi;
+    }
+
+    public void setGeneri(String generi) {
+        this.generi = generi;
     }
 
     public String getRegista() {
         return regista;
     }
 
-    public void setRegista(final String regista) {
+    public void setRegista(String regista) {
         this.regista = regista;
     }
 
@@ -99,10 +103,9 @@ public class FilmBean implements Serializable {
         return attori;
     }
 
-    public void setAttori(final String attori) {
+    public void setAttori(String attori) {
         this.attori = attori;
     }
-
     public int getValutazione() {
         return valutazione;
     }
@@ -118,5 +121,4 @@ public class FilmBean implements Serializable {
     public void setTrama(String trama) {
         this.trama = trama;
     }
-
 }

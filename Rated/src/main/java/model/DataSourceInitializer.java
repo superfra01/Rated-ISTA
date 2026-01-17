@@ -13,27 +13,30 @@ import javax.sql.DataSource;
 public class DataSourceInitializer implements ServletContextListener {
 	
 	@Override
-	public void contextInitialized(final ServletContextEvent sce) {
+	public void contextInitialized(ServletContextEvent sce) {
 		
-		final ServletContext context = sce.getServletContext();
+		ServletContext context = sce.getServletContext();
 	
 		DataSource dataSource = null;
 		
+		
 		try {
-			final Context initCtx = new InitialContext();
-			final Context envCtx = (Context) initCtx.lookup("java:comp/env");
+			Context initCtx = new InitialContext();
+			Context envCtx = (Context) initCtx.lookup("java:comp/env");
 
 			dataSource = (DataSource) envCtx.lookup("jdbc/RatedDB");
 
-		} catch (final NamingException e) {
+		} catch (NamingException e) {
 			System.out.println("Error" + e.getMessage());
 		}		
+		
 
 		context.setAttribute("DataSource", dataSource);
 	}
 	
 	@Override
-	public void contextDestroyed(final ServletContextEvent sce) {
+	public void contextDestroyed(ServletContextEvent sce) {
 		ServletContextListener.super.contextDestroyed(sce);
 	}
+	
 }

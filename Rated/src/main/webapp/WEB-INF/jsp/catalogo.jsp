@@ -1,6 +1,5 @@
 <%@ page import="java.util.List" %>
 <%@ page import="model.Entity.FilmBean" %>
-<%@ page import="model.Entity.FilmGenereBean" %>
 <%@ page import="model.Entity.UtenteBean" %>
 <%@ page import="java.util.Base64" %>
 
@@ -25,18 +24,16 @@
     }
 %>
 
+<jsp:include page="header.jsp" />
+
 <!DOCTYPE html>
 <html lang="it">
 <head>
     <meta charset="UTF-8" />
     <title>Catalogo</title>
-	<link rel="icon" type="image/x-icon" href="${pageContext.request.contextPath}/static/images/favicon.ico">
     <link rel="stylesheet" href="static/css/Catalogo.css" />
     <script src="static/scripts/catalogoFunctions.js" defer></script>
 </head>
-
-<jsp:include page="header.jsp" />
-
 <body>
 
 <div class="catalog-container">
@@ -74,36 +71,16 @@
         %>
             <div class="film-card" onclick="window.location.href='<%= dettaglioUrl %>'">
                 <div class="film-poster">
-					<img src="<%= film.getLocandina() != null
-									? "data:image/jpeg;base64," + Base64.getEncoder().encodeToString(film.getLocandina())
-									: request.getContextPath() + "/static/images/RATED_icon.png" 
-							  %>"
-						alt="Locandina" />
-                    
+                    <img src="<%= film.getLocandina() != null
+                                    ? "data:image/jpeg;base64,"
+                                      + Base64.getEncoder().encodeToString(film.getLocandina())
+                                    : request.getContextPath() + "/images/RATED_icon.png"
+                              %>"
+                         alt="Locandina" />
                 </div>
                 <div class="film-info">
                     <h3><%= film.getNome() %></h3>
-
-					<%
-					    // Recupero la lista dei generi dalla sessione usando la chiave generata nella Servlet
-					    List<FilmGenereBean> listaGeneri = (List<FilmGenereBean>) session.getAttribute(film.getIdFilm() + "Generi");
-					    
-					    String stringaGeneri = "";
-					    if (listaGeneri != null && !listaGeneri.isEmpty()) {
-					        StringBuilder sb = new StringBuilder();
-					        for (FilmGenereBean g : listaGeneri) {
-					            if (sb.length() > 0) {
-					                sb.append(", "); // Aggiunge la virgola tra i generi
-					            }
-					            sb.append(g.getNomeGenere()); 
-					        }
-					        stringaGeneri = sb.toString();
-					    } else {
-					        stringaGeneri = "Non specificato";
-					    }
-					%>
-
-<p class="film-genres"><%= stringaGeneri %></p>
+                    <p class="film-genres"><%= film.getGeneri() %></p>
                     <div class="film-rating">
                         <%
                             int stars = film.getValutazione();
@@ -148,34 +125,8 @@
             <label for="durataFilm">Durata (min):</label>
             <input type="number" name="durataFilm" id="durataFilm" required />
 
-			<label for="generiFilm">Generi (Ctrl+Click per selezionarne più di uno):</label>
-			<select name="generiFilm" id="generiFilm" multiple required>
-				<option value="Animazione">Animazione</option>
-				<option value="Avventura">Avventura</option>
-				<option value="Azione">Azione</option>
-				<option value="Biografico">Biografico</option>
-				<option value="Commedia">Commedia</option>
-				<option value="Crimine">Crimine</option>
-				<option value="Documentario">Documentario</option>
-				<option value="Drammatico">Drammatico</option>
-				<option value="Epico">Epico</option>
-				<option value="Famiglia">Famiglia</option>
-				<option value="Fantascienza">Fantascienza</option>
-				<option value="Fantasy">Fantasy</option>
-				<option value="Giallo">Giallo</option>
-				<option value="Guerra">Guerra</option>
-				<option value="Horror">Horror</option>
-				<option value="Mistero">Mistero</option>
-				<option value="Musicale">Musicale</option>
-				<option value="Noir">Noir</option>
-				<option value="Poliziesco">Poliziesco</option>
-				<option value="Romantico">Romantico</option>
-				<option value="Sentimentale">Sentimentale</option>
-				<option value="Sportivo">Sportivo</option>
-				<option value="Storico">Storico</option>
-				<option value="Thriller">Thriller</option>
-				<option value="Western">Western</option>
-			</select>
+            <label for="generiFilm">Generi:</label>
+            <input type="text" name="generiFilm" id="generiFilm" required />
 
             <label for="registaFilm">Regista:</label>
             <input type="text" name="registaFilm" id="registaFilm" required />

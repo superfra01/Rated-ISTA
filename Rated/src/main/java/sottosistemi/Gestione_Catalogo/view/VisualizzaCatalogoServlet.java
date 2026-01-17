@@ -1,8 +1,9 @@
 package sottosistemi.Gestione_Catalogo.view;
 
+
 import model.Entity.FilmBean;
-import model.Entity.FilmGenereBean;
 import sottosistemi.Gestione_Catalogo.service.CatalogoService;
+
 
 import java.io.IOException;
 import java.util.List;
@@ -25,25 +26,21 @@ public class VisualizzaCatalogoServlet extends HttpServlet {
     }
 
     @Override
-    public void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException { // Parametri final
-    	final HttpSession session = request.getSession(true); // Locale final
+    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    	HttpSession session = request.getSession(true);
 
-    	final List<FilmBean> films = CatalogoService.getFilms(); // Locale final
+    	List<FilmBean> films = CatalogoService.getFilms();
     	session.setAttribute("films", films);
-    	for(FilmBean film: films) {
-    		final List<FilmGenereBean> generi = CatalogoService.getGeneri(film.getIdFilm()); // Locale final
-    		session.setAttribute(film.getIdFilm()+"Generi", generi);
-    	}
-    		
     	
-    	
-    	
-    	
+        
         request.getRequestDispatcher("/WEB-INF/jsp/catalogo.jsp").forward(request, response);
+        
+        
     }
 
     @Override
-    public void doPost(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException { // Parametri final
+    public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     	
+        
     }
 }

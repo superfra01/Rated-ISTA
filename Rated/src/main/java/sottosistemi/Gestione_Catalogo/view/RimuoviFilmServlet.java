@@ -1,9 +1,13 @@
 package sottosistemi.Gestione_Catalogo.view;
 
+
+
 import model.Entity.UtenteBean;
 import sottosistemi.Gestione_Catalogo.service.CatalogoService;
 
+
 import java.io.IOException;
+
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -23,18 +27,18 @@ public class RimuoviFilmServlet extends HttpServlet {
     }
 
     @Override
-    public void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException { // Parametri final
+    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
       
     }
 
     @Override
-    public void doPost(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException { // Parametri final
+    public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     	
-    	final HttpSession session = request.getSession(true); // Locale final
-    	final UtenteBean user = (UtenteBean) session.getAttribute("user"); // Locale final
+    	HttpSession session = request.getSession(true);
+    	UtenteBean user = (UtenteBean) session.getAttribute("user");
     	if(user.getTipoUtente().equals("GESTORE")) {
     		
-    		final int idFilm = Integer.parseInt(request.getParameter("idFilm")); // Locale final
+    		int idFilm = Integer.parseInt(request.getParameter("idFilm"));
     		
     		CatalogoService.removeFilm(idFilm);
     		//response.sendRedirect(request.getContextPath() + "/catalogo");

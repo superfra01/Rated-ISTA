@@ -7,23 +7,24 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class DriverManagerConnectionPool {
-	// Reso final perché inizializzato inline e mai riassegnato (solo modificato il contenuto)
-	private static List<Connection> freeDbConnections = new LinkedList<Connection>();
+	private static List<Connection> freeDbConnections;
 	
 	static {
+		freeDbConnections = new LinkedList<Connection>();
+		
 		try {
 			Class.forName("com.mysql.cj.jdbc.Driver");
 		}
-		catch (final ClassNotFoundException e) {
+		catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
 	}
 	
 	private static Connection createDBConnection() throws SQLException {
 		Connection newConnection = null;
-		final String db = "RatedDB";
-		final String username = "root";
-		final String password = "root";
+		String db = "RatedDB";
+		String username = "root";
+		String password = "root";
 
 		newConnection = DriverManager.getConnection("jdbc:mysql://localhost:3306/"+db, username, password);
 		
@@ -42,7 +43,7 @@ public class DriverManagerConnectionPool {
 				if (connection.isClosed()) {
 					connection = DriverManagerConnectionPool.getConnection();
 				}
-			} catch (final SQLException e) {
+			} catch (SQLException e) {
 				connection = DriverManagerConnectionPool.getConnection();
 			}
 		}
@@ -51,7 +52,7 @@ public class DriverManagerConnectionPool {
 		return connection;
 	}
 	
-	public static synchronized void releaseConnection(final Connection connection) {
+	public static synchronized void releaseConnection(Connection connection) {
 		DriverManagerConnectionPool.freeDbConnections.add(connection);
 	}
 }

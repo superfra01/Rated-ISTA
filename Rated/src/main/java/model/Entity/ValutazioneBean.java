@@ -18,7 +18,7 @@ public class ValutazioneBean implements Serializable {
         idFilm = 0;
     }
 
-    public ValutazioneBean(final boolean likeDislike, final String email, final String emailRecensore, final int idFilm) {
+    public ValutazioneBean(boolean likeDislike, String email, String emailRecensore, int idFilm) {
         this.likeDislike = likeDislike;
         this.email = email;
         this.emailRecensore = emailRecensore;
@@ -29,7 +29,7 @@ public class ValutazioneBean implements Serializable {
         return likeDislike;
     }
 
-    public void setLikeDislike(final boolean likeDislike) {
+    public void setLikeDislike(boolean likeDislike) {
         this.likeDislike = likeDislike;
     }
 
@@ -37,7 +37,7 @@ public class ValutazioneBean implements Serializable {
         return email;
     }
 
-    public void setEmail(final String email) {
+    public void setEmail(String email) {
         this.email = email;
     }
 
@@ -45,7 +45,7 @@ public class ValutazioneBean implements Serializable {
         return emailRecensore;
     }
 
-    public void setEmailRecensore(final String emailRecensore) {
+    public void setEmailRecensore(String emailRecensore) {
         this.emailRecensore = emailRecensore;
     }
 
@@ -53,7 +53,7 @@ public class ValutazioneBean implements Serializable {
         return idFilm;
     }
 
-    public void setIdFilm(final int idFilm) {
+    public void setIdFilm(int idFilm) {
         this.idFilm = idFilm;
     }
 }

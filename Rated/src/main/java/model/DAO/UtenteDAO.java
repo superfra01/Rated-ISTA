@@ -14,36 +14,33 @@ import model.Entity.UtenteBean;
 
 public class UtenteDAO {
 
-    private DataSource dataSource; // Non può essere final perché c'è un setter
+    private DataSource dataSource;
 
     public UtenteDAO() {
         try {
-            final Context initCtx = new InitialContext();
-            final Context envCtx = (Context) initCtx.lookup("java:comp/env");
+            Context initCtx = new InitialContext();
+            Context envCtx = (Context) initCtx.lookup("java:comp/env");
             this.dataSource = (DataSource) envCtx.lookup("jdbc/RatedDB");
-        } catch (final NamingException e) {
+        } catch (NamingException e) {
             throw new RuntimeException("Error initializing DataSource: " + e.getMessage());
         }
     }
     
     // Costruttore per test (iniezione di DataSource mock)
-    public UtenteDAO(final DataSource dataSource) {
+    public UtenteDAO(DataSource dataSource) {
         this.dataSource = dataSource;
-    }
-    
-    protected UtenteDAO(final boolean testMode) {
-        // Vuoto: non fa nulla, niente DB!
     }
 
     // Metodo setter per cambiare il DataSource
-    public void setDataSource(final DataSource dataSource) {
+    public void setDataSource(DataSource dataSource) {
         this.dataSource = dataSource;
     }
 
-    public void save(final UtenteBean utente) {
-        final String query = "INSERT INTO Utente_Registrato (email, icona, username, password, Tipo_Utente, N_Warning, Biografia) VALUES (?, ?, ?, ?, ?, ?, ?)";
-        try (final Connection connection = dataSource.getConnection();
-             final PreparedStatement ps = connection.prepareStatement(query)) {
+
+    public void save(UtenteBean utente) {
+        String query = "INSERT INTO Utente_Registrato (email, icona, username, password, Tipo_Utente, N_Warning, Biografia) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement ps = connection.prepareStatement(query)) {
             ps.setString(1, utente.getEmail());
             ps.setBytes(2, utente.getIcona());
             ps.setString(3, utente.getUsername());
@@ -52,19 +49,19 @@ public class UtenteDAO {
             ps.setInt(6, utente.getNWarning());
             ps.setString(7, utente.getBiografia());
             ps.executeUpdate();
-        } catch (final SQLException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    public UtenteBean findByEmail(final String email) {
-        final String query = "SELECT * FROM Utente_Registrato WHERE email = ?";
-        try (final Connection connection = dataSource.getConnection();
-             final PreparedStatement ps = connection.prepareStatement(query)) {
+    public UtenteBean findByEmail(String email) {
+        String query = "SELECT * FROM Utente_Registrato WHERE email = ?";
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement ps = connection.prepareStatement(query)) {
             ps.setString(1, email);
-            try (final ResultSet rs = ps.executeQuery()) {
+            try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    final UtenteBean utente = new UtenteBean();
+                    UtenteBean utente = new UtenteBean();
                     utente.setEmail(rs.getString("email"));
                     utente.setIcona(rs.getBytes("icona"));
                     utente.setUsername(rs.getString("username"));
@@ -75,20 +72,20 @@ public class UtenteDAO {
                     return utente;
                 }
             }
-        } catch (final SQLException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return null;
     }
 
-    public UtenteBean findByUsername(final String username) {
-        final String query = "SELECT * FROM Utente_Registrato WHERE username = ?";
-        try (final Connection connection = dataSource.getConnection();
-             final PreparedStatement ps = connection.prepareStatement(query)) {
+    public UtenteBean findByUsername(String username) {
+        String query = "SELECT * FROM Utente_Registrato WHERE username = ?";
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement ps = connection.prepareStatement(query)) {
             ps.setString(1, username);
-            try (final ResultSet rs = ps.executeQuery()) {
+            try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    final UtenteBean user = new UtenteBean();
+                    UtenteBean user = new UtenteBean();
                     user.setUsername(rs.getString("username"));
                     user.setEmail(rs.getString("email"));
                     user.setPassword(rs.getString("password"));
@@ -99,20 +96,20 @@ public class UtenteDAO {
                     return user;
                 }
             }
-        } catch (final SQLException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return null;
     }
 
     public List<UtenteBean> findAll() {
-        final String query = "SELECT * FROM Utente_Registrato";
-        final List<UtenteBean> utenti = new ArrayList<>();
-        try (final Connection connection = dataSource.getConnection();
-             final PreparedStatement ps = connection.prepareStatement(query);
-             final ResultSet rs = ps.executeQuery()) {
+        String query = "SELECT * FROM Utente_Registrato";
+        List<UtenteBean> utenti = new ArrayList<>();
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement ps = connection.prepareStatement(query);
+             ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
-                final UtenteBean utente = new UtenteBean();
+                UtenteBean utente = new UtenteBean();
                 utente.setEmail(rs.getString("email"));
                 utente.setIcona(rs.getBytes("icona"));
                 utente.setUsername(rs.getString("username"));
@@ -122,16 +119,16 @@ public class UtenteDAO {
                 utente.setBiografia(rs.getString("Biografia"));
                 utenti.add(utente);
             }
-        } catch (final SQLException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return utenti;
     }
 
-    public void update(final UtenteBean utente) {
-        final String query = "UPDATE Utente_Registrato SET icona = ?, username = ?, password = ?, Tipo_Utente = ?, N_Warning = ?, Biografia = ? WHERE email = ?";
-        try (final Connection connection = dataSource.getConnection();
-             final PreparedStatement ps = connection.prepareStatement(query)) {
+    public void update(UtenteBean utente) {
+        String query = "UPDATE Utente_Registrato SET icona = ?, username = ?, password = ?, Tipo_Utente = ?, N_Warning = ?, Biografia = ? WHERE email = ?";
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement ps = connection.prepareStatement(query)) {
             ps.setBytes(1, utente.getIcona());
             ps.setString(2, utente.getUsername());
             ps.setString(3, utente.getPassword());
@@ -140,18 +137,18 @@ public class UtenteDAO {
             ps.setString(6, utente.getBiografia());
             ps.setString(7, utente.getEmail());
             ps.executeUpdate();
-        } catch (final SQLException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    public void delete(final String email) {
-        final String query = "DELETE FROM Utente_Registrato WHERE email = ?";
-        try (final Connection connection = dataSource.getConnection();
-             final PreparedStatement ps = connection.prepareStatement(query)) {
+    public void delete(String email) {
+        String query = "DELETE FROM Utente_Registrato WHERE email = ?";
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement ps = connection.prepareStatement(query)) {
             ps.setString(1, email);
             ps.executeUpdate();
-        } catch (final SQLException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }
