@@ -152,6 +152,22 @@ public class ProfileService {
             }
         }
     }
+    
+    public void ignoreFilm(String email, int filmId){
+
+        InteresseBean interesse = new InteresseBean();
+
+        // Configurazione del bean
+        interesse.setEmail(email);
+        interesse.setIdFilm(filmId);
+        
+        // Imposta true per indicare che è una "Watchlist" (o interesse positivo)
+        interesse.setInteresse(false);
+
+        // Chiama il DAO per il salvataggio
+        InteresseDAO.save(interesse);
+    }
+    
     public List<FilmBean> retrieveWatchedFilms(final String username) {
 
     	return VistoDAO.doRetrieveFilmsByUtente(username);
@@ -167,7 +183,8 @@ public class ProfileService {
     
     public boolean isFilmInWatchlist(String email, int filmId) {
         InteresseDAO interesseDAO = new InteresseDAO();
-            return interesseDAO.findByEmailAndIdFilm(email, filmId) != null;
+            InteresseBean interesseBean = interesseDAO.findByEmailAndIdFilm(email, filmId);
+            return interesseBean.isInteresse();
 
     }
 
