@@ -15,7 +15,7 @@ import model.Entity.FilmBean;
 import model.Entity.UtenteBean;
 import sottosistemi.Gestione_Catalogo.service.CatalogoService;
 
-@WebServlet("/HomePageServlet")
+@WebServlet("")
 public class HomePageServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
