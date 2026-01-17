@@ -8,6 +8,7 @@ body {
 
 main {
     padding: 50px 20px;
+    padding-bottom: 80px;
 }
 
 /* --- About Section --- */
@@ -15,7 +16,7 @@ main {
     max-width: 800px;
     margin: 0 auto;
     text-align: center;
-    margin-bottom: 60px; /* Spazio extra prima dei consigliati */
+    margin-bottom: 60px; /* Spazio prima dei consigliati */
 }
 
 .about-container .logo-large {
@@ -44,9 +45,9 @@ main {
     background-color: #e60000;
 }
 
-/* --- Recommendations Section (Carousel) --- */
-.recommendations-section {
-    width: 95%;
+/* --- Recommendations Section Styles --- */
+.recommendations-container {
+    width: 90%;
     max-width: 1200px;
     margin: 0 auto;
     text-align: left;
@@ -54,82 +55,91 @@ main {
     padding-top: 20px;
 }
 
-.rec-title {
+.section-title {
     color: #fff;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
     font-size: 1.5rem;
     padding-left: 10px;
 }
 
-.carousel-container {
+.carousel-wrapper {
     position: relative;
     display: flex;
     align-items: center;
 }
 
-.rec-wrapper {
+/* Contenitore scorrevole (nasconde la scrollbar) */
+.carousel-track {
     display: flex;
+    gap: 20px;
     overflow-x: auto;
     scroll-behavior: smooth;
-    gap: 15px;
-    padding: 10px;
+    padding: 10px 5px;
     scrollbar-width: none; /* Firefox */
 }
 
-.rec-wrapper::-webkit-scrollbar {
-    display: none; /* Chrome/Safari */
+.carousel-track::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Edge */
 }
 
-.rec-card {
-    flex: 0 0 160px; /* Larghezza fissa card */
+/* Stile Card Film nel carosello */
+.film-card-mini {
+    flex: 0 0 180px; /* Larghezza fissa per ogni card */
     background-color: #3b3b3b;
     border-radius: 8px;
     overflow: hidden;
-    transition: transform 0.2s;
     display: flex;
     flex-direction: column;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+    transition: transform 0.2s;
 }
 
-.rec-card:hover {
+.film-card-mini:hover {
     transform: scale(1.03);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.4);
 }
 
-.rec-poster {
+.poster-container {
     width: 100%;
-    height: 240px; /* Altezza fissa immagine */
+    height: 270px; /* Altezza fissa locandina */
     overflow: hidden;
     cursor: pointer;
 }
 
-.rec-poster img {
+.poster-container img {
     width: 100%;
     height: 100%;
     object-fit: cover;
 }
 
-.rec-info {
+.info-container {
     padding: 10px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     flex-grow: 1;
+    min-height: 80px;
 }
 
-.rec-info h4 {
+.film-title {
     margin: 0 0 10px 0;
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    color: #fff;
     cursor: pointer;
 }
 
-.not-interested-btn {
-    background-color: #555;
-    color: #ccc;
+.film-title:hover {
+    text-decoration: underline;
+}
+
+/* Pulsante "Non mi interessa" */
+.remove-btn {
+    background-color: transparent;
     border: 1px solid #666;
-    padding: 5px;
+    color: #bbb;
+    padding: 6px;
     font-size: 0.75rem;
     border-radius: 4px;
     cursor: pointer;
@@ -137,38 +147,34 @@ main {
     transition: all 0.2s;
 }
 
-.not-interested-btn:hover {
-    background-color: #777;
-    color: white;
+.remove-btn:hover {
+    background-color: #555;
+    color: #fff;
+    border-color: #888;
 }
 
-/* Scroll Buttons */
-.scroll-btn {
+/* Pulsanti Navigazione (Frecce) */
+.nav-btn {
     background-color: rgba(0, 0, 0, 0.6);
     color: white;
     border: none;
     font-size: 2rem;
-    padding: 10px;
+    padding: 0;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
     cursor: pointer;
     z-index: 10;
-    border-radius: 50%;
-    width: 50px;
-    height: 50px;
+    position: absolute;
     display: flex;
     align-items: center;
     justify-content: center;
     transition: background-color 0.2s;
-    position: absolute;
 }
 
-.scroll-btn:hover {
+.nav-btn:hover {
     background-color: #ff4c4c;
 }
 
-.scroll-btn.left {
-    left: -20px;
-}
-
-.scroll-btn.right {
-    right: -20px;
-}
+.left-btn { left: -20px; }
+.right-btn { right: -20px; }
