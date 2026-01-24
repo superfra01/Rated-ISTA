@@ -38,6 +38,13 @@ public class ProfileService {
         this.InteresseDAO = new InteresseDAO(dataSource);
         this.VistoDAO = new VistoDAO(dataSource);
     }
+
+    public ProfileService(final UtenteDAO utenteDAO, final PreferenzaDAO preferenzaDAO) {
+        this.UtenteDAO = utenteDAO;
+        this.PreferenzaDAO = preferenzaDAO;
+        this.InteresseDAO = new InteresseDAO();
+        this.VistoDAO = new VistoDAO();
+    }
     
     public ProfileService(final UtenteDAO utenteDAO, final PreferenzaDAO PreferenzaDAO, final InteresseDAO InteresseDAO, final VistoDAO VistoDAO) { // Parametro final
         this.UtenteDAO = utenteDAO;
