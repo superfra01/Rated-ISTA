@@ -13,6 +13,8 @@ import model.DAO.ValutazioneDAO;
 import model.Entity.RecensioneBean;
 import model.Entity.UtenteBean;
 import model.Entity.FilmBean;
+import model.Entity.ReportBean;
+import model.Entity.ValutazioneBean;
 
 import javax.sql.DataSource;
 
@@ -177,5 +179,75 @@ public class RecensioniServiceIntegrationTest {
 
         final FilmBean updatedFilm = filmDAO.findById(film.getIdFilm());
         assertEquals(2, updatedFilm.getValutazione()); // solo Bob rimane
+    }
+
+    @Test
+    void testReportAndDeleteReports() {
+        final UtenteBean reporter = new UtenteBean();
+        reporter.setEmail("reporter@example.com");
+        reporter.setUsername("reporter");
+        reporter.setPassword("password");
+        utenteDAO.save(reporter);
+
+        final UtenteBean author = new UtenteBean();
+        author.setEmail("author@example.com");
+        author.setUsername("author");
+        author.setPassword("password");
+        utenteDAO.save(author);
+
+        FilmBean film = new FilmBean();
+        film.setNome("Film Report");
+        filmDAO.save(film);
+        final List<FilmBean> lista = (List<FilmBean>) filmDAO.findByName(film.getNome());
+        film = lista.get(0);
+
+        recensioniService.addRecensione(author.getEmail(), film.getIdFilm(), "Recensione", "Titolo", 4);
+
+        recensioniService.report(reporter.getEmail(), author.getEmail(), film.getIdFilm());
+
+        final RecensioneBean recensione = recensioneDAO.findById(author.getEmail(), film.getIdFilm());
+        assertEquals(1, recensione.getNReports());
+        final ReportBean report = reportDAO.findById(reporter.getEmail(), author.getEmail(), film.getIdFilm());
+        assertNotNull(report);
+
+        recensioniService.deleteReports(author.getEmail(), film.getIdFilm());
+
+        final RecensioneBean aggiornata = recensioneDAO.findById(author.getEmail(), film.getIdFilm());
+        assertEquals(0, aggiornata.getNReports());
+        assertNull(reportDAO.findById(reporter.getEmail(), author.getEmail(), film.getIdFilm()));
+    }
+
+    @Test
+    void testAddValutazione_SwitchToDislike() {
+        final UtenteBean reviewer = new UtenteBean();
+        reviewer.setEmail("reviewer@example.com");
+        reviewer.setUsername("reviewer");
+        reviewer.setPassword("password");
+        utenteDAO.save(reviewer);
+
+        final UtenteBean voter = new UtenteBean();
+        voter.setEmail("voter@example.com");
+        voter.setUsername("voter");
+        voter.setPassword("password");
+        utenteDAO.save(voter);
+
+        FilmBean film = new FilmBean();
+        film.setNome("Film Valutazione");
+        filmDAO.save(film);
+        final List<FilmBean> lista = (List<FilmBean>) filmDAO.findByName(film.getNome());
+        film = lista.get(0);
+
+        recensioniService.addRecensione(reviewer.getEmail(), film.getIdFilm(), "Recensione", "Titolo", 3);
+
+        recensioniService.addValutazione(voter.getEmail(), film.getIdFilm(), reviewer.getEmail(), true);
+        recensioniService.addValutazione(voter.getEmail(), film.getIdFilm(), reviewer.getEmail(), false);
+
+        final RecensioneBean recensione = recensioneDAO.findById(reviewer.getEmail(), film.getIdFilm());
+        assertEquals(0, recensione.getNLike());
+        assertEquals(1, recensione.getNDislike());
+
+        final ValutazioneBean valutazione = valutazioneDAO.findById(voter.getEmail(), reviewer.getEmail(), film.getIdFilm());
+        assertNotNull(valutazione);
+        assertFalse(valutazione.isLikeDislike());
     }
 }

@@ -95,6 +95,83 @@ class RecensioniServiceTest {
     }
 
     @Test
+    void testAddValutazione_SwitchToDislike() {
+        final String email = "user@example.com";
+        final int idFilm = 1;
+        final String emailRecensore = "reviewer@example.com";
+
+        final RecensioneBean recensione = new RecensioneBean();
+        recensione.setNLike(2);
+        recensione.setNDislike(0);
+        when(mockRecensioneDAO.findById(emailRecensore, idFilm)).thenReturn(recensione);
+
+        final ValutazioneBean valutazioneEsistente = new ValutazioneBean();
+        valutazioneEsistente.setEmail(email);
+        valutazioneEsistente.setEmailRecensore(emailRecensore);
+        valutazioneEsistente.setIdFilm(idFilm);
+        valutazioneEsistente.setLikeDislike(true);
+        when(mockValutazioneDAO.findById(email, emailRecensore, idFilm)).thenReturn(valutazioneEsistente);
+
+        recensioniService.addValutazione(email, idFilm, emailRecensore, false);
+
+        assertEquals(1, recensione.getNLike());
+        assertEquals(1, recensione.getNDislike());
+        assertFalse(valutazioneEsistente.isLikeDislike());
+        verify(mockValutazioneDAO).save(valutazioneEsistente);
+        verify(mockRecensioneDAO).update(recensione);
+    }
+
+    @Test
+    void testAddValutazione_RemoveExistingLike() {
+        final String email = "user@example.com";
+        final int idFilm = 1;
+        final String emailRecensore = "reviewer@example.com";
+
+        final RecensioneBean recensione = new RecensioneBean();
+        recensione.setNLike(1);
+        recensione.setNDislike(0);
+        when(mockRecensioneDAO.findById(emailRecensore, idFilm)).thenReturn(recensione);
+
+        final ValutazioneBean valutazioneEsistente = new ValutazioneBean();
+        valutazioneEsistente.setEmail(email);
+        valutazioneEsistente.setEmailRecensore(emailRecensore);
+        valutazioneEsistente.setIdFilm(idFilm);
+        valutazioneEsistente.setLikeDislike(true);
+        when(mockValutazioneDAO.findById(email, emailRecensore, idFilm)).thenReturn(valutazioneEsistente);
+
+        recensioniService.addValutazione(email, idFilm, emailRecensore, true);
+
+        assertEquals(0, recensione.getNLike());
+        verify(mockValutazioneDAO).delete(email, emailRecensore, idFilm);
+        verify(mockRecensioneDAO).update(recensione);
+    }
+
+    @Test
+    void testAddValutazione_RecensioneMissing() {
+        final String email = "user@example.com";
+        final int idFilm = 1;
+        final String emailRecensore = "reviewer@example.com";
+
+        when(mockRecensioneDAO.findById(emailRecensore, idFilm)).thenReturn(null);
+
+        assertThrows(IllegalArgumentException.class,
+                () -> recensioniService.addValutazione(email, idFilm, emailRecensore, true));
+    }
+
+    @Test
+    void testAddRecensione_DuplicateDoesNotSave() {
+        final String email = "user@example.com";
+        final int idFilm = 1;
+
+        when(mockRecensioneDAO.findById(email, idFilm)).thenReturn(new RecensioneBean());
+
+        recensioniService.addRecensione(email, idFilm, "contenuto", "titolo", 4);
+
+        verify(mockRecensioneDAO, never()).save(any(RecensioneBean.class));
+        verify(mockFilmDAO, never()).update(any(FilmBean.class));
+    }
+
+    @Test
     void testFindRecensioni() {
         final String email = "user@example.com";
         final List<RecensioneBean> mockRecensioni = new ArrayList<>();
@@ -124,6 +201,47 @@ class RecensioniServiceTest {
 
         assertEquals(1, result.size());
         assertSame(recensione2, result.get(0));
+    }
+
+    @Test
+    void testDeleteReports() {
+        final String email = "reviewer@example.com";
+        final int idFilm = 1;
+
+        final RecensioneBean recensione = new RecensioneBean();
+        recensione.setNReports(3);
+        when(mockRecensioneDAO.findById(email, idFilm)).thenReturn(recensione);
+
+        recensioniService.deleteReports(email, idFilm);
+
+        assertEquals(0, recensione.getNReports());
+        verify(mockRecensioneDAO).update(recensione);
+        verify(mockReportDAO).deleteReports(email, idFilm);
+    }
+
+    @Test
+    void testGetRecensioni() {
+        final int idFilm = 5;
+        final List<RecensioneBean> recensioni = new ArrayList<>();
+        recensioni.add(new RecensioneBean());
+        when(mockRecensioneDAO.findByIdFilm(idFilm)).thenReturn(recensioni);
+
+        final List<RecensioneBean> result = recensioniService.GetRecensioni(idFilm);
+
+        assertSame(recensioni, result);
+    }
+
+    @Test
+    void testGetValutazioni() {
+        final int idFilm = 2;
+        final String email = "user@example.com";
+        final java.util.HashMap<String, ValutazioneBean> valutazioni = new java.util.HashMap<>();
+        valutazioni.put("reviewer@example.com", new ValutazioneBean());
+        when(mockValutazioneDAO.findByIdFilmAndEmail(idFilm, email)).thenReturn(valutazioni);
+
+        final java.util.HashMap<String, ValutazioneBean> result = recensioniService.GetValutazioni(idFilm, email);
+
+        assertSame(valutazioni, result);
     }
 
     @Test

@@ -9,6 +9,10 @@ import utilities.PasswordUtility;
 
 import sottosistemi.Gestione_Utenti.service.ProfileService;
 import model.DAO.UtenteDAO;
+import model.DAO.PreferenzaDAO;
+import model.DAO.InteresseDAO;
+import model.DAO.VistoDAO;
+import model.DAO.FilmDAO;
 import model.Entity.UtenteBean;
 
 import javax.sql.DataSource;
@@ -18,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import model.Entity.RecensioneBean;
+import model.Entity.InteresseBean;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -50,19 +55,34 @@ public class ProfileServiceIntegrationTest {
             "b@example.com", 
             "pw@example.com", 
             "mail1@example.com", 
-            "mail2@example.com"
+            "mail2@example.com",
+            "watch@example.com",
+            "visto@example.com",
+            "pref@example.com"
         };
 
         try (final Connection conn = testDataSource.getConnection()) {
             // Disable auto-commit for batch performance (optional but good practice)
             conn.setAutoCommit(false);
             
-            try (final PreparedStatement ps = conn.prepareStatement("DELETE FROM Utente_Registrato WHERE email = ?")) {
+            try (final PreparedStatement deletePreferenza = conn.prepareStatement("DELETE FROM Preferenza WHERE email = ?");
+                 final PreparedStatement deleteInteresse = conn.prepareStatement("DELETE FROM Interesse WHERE email = ?");
+                 final PreparedStatement deleteVisto = conn.prepareStatement("DELETE FROM Visto WHERE email = ?");
+                 final PreparedStatement deleteUtente = conn.prepareStatement("DELETE FROM Utente_Registrato WHERE email = ?")) {
                 for (final String email : emailsToDelete) {
-                    ps.setString(1, email);
-                    ps.addBatch();
+                    deletePreferenza.setString(1, email);
+                    deletePreferenza.addBatch();
+                    deleteInteresse.setString(1, email);
+                    deleteInteresse.addBatch();
+                    deleteVisto.setString(1, email);
+                    deleteVisto.addBatch();
+                    deleteUtente.setString(1, email);
+                    deleteUtente.addBatch();
                 }
-                ps.executeBatch();
+                deletePreferenza.executeBatch();
+                deleteInteresse.executeBatch();
+                deleteVisto.executeBatch();
+                deleteUtente.executeBatch();
                 conn.commit();
             } catch (SQLException e) {
                 conn.rollback();
@@ -181,5 +201,69 @@ public class ProfileServiceIntegrationTest {
         assertEquals(2, usersMap.size());
         assertEquals("user1", usersMap.get("mail1@example.com"));
         assertEquals("user2", usersMap.get("mail2@example.com"));
+    }
+
+    @Test
+    void testWatchlistLifecycle() {
+        final String email = "watch@example.com";
+        final UtenteBean user = new UtenteBean();
+        user.setEmail(email);
+        user.setUsername("watchUser");
+        user.setPassword("pass");
+        utenteDAO.save(user);
+
+        final FilmDAO filmDAO = new FilmDAO(testDataSource);
+        final model.Entity.FilmBean film = new model.Entity.FilmBean();
+        film.setNome("Watchlist Film");
+        filmDAO.save(film);
+        final int filmId = filmDAO.findByName("Watchlist Film").get(0).getIdFilm();
+        profileService.aggiungiAllaWatchlist(email, filmId);
+
+        final InteresseDAO interesseDAO = new InteresseDAO(testDataSource);
+        final InteresseBean interesse = interesseDAO.findByEmailAndIdFilm(email, filmId);
+        assertNotNull(interesse);
+        assertTrue(interesse.isInteresse());
+
+        profileService.rimuoviDallaWatchlist(email, filmId);
+        assertNull(interesseDAO.findByEmailAndIdFilm(email, filmId));
+    }
+
+    @Test
+    void testFilmVistoLifecycle() {
+        final String email = "visto@example.com";
+        final UtenteBean user = new UtenteBean();
+        user.setEmail(email);
+        user.setUsername("vistoUser");
+        user.setPassword("pass");
+        utenteDAO.save(user);
+
+        final FilmDAO filmDAO = new FilmDAO(testDataSource);
+        final model.Entity.FilmBean film = new model.Entity.FilmBean();
+        film.setNome("Visto Film");
+        filmDAO.save(film);
+        final int filmId = filmDAO.findByName("Visto Film").get(0).getIdFilm();
+        profileService.aggiungiFilmVisto(email, filmId);
+
+        assertTrue(profileService.isFilmVisto(email, filmId));
+
+        profileService.rimuoviFilmVisto(email, filmId);
+        final VistoDAO vistoDAO = new VistoDAO(testDataSource);
+        assertNull(vistoDAO.findByEmailAndIdFilm(email, filmId));
+    }
+
+    @Test
+    void testAggiornaPreferenzeUtente_Persist() {
+        final String email = "pref@example.com";
+        final UtenteBean user = new UtenteBean();
+        user.setEmail(email);
+        user.setUsername("prefUser");
+        user.setPassword("pass");
+        utenteDAO.save(user);
+
+        final String[] generi = new String[]{"Azione", "Drammatico"};
+        profileService.aggiornaPreferenzeUtente(email, generi);
+
+        final PreferenzaDAO preferenzaDAO = new PreferenzaDAO(testDataSource);
+        assertEquals(2, preferenzaDAO.findByEmail(email).size());
     }
 }

@@ -9,6 +9,7 @@ import model.DAO.FilmDAO;
 import model.DAO.FilmGenereDAO;
 import model.DAO.GenereDAO;
 import model.Entity.FilmBean;
+import model.Entity.FilmGenereBean;
 import model.Entity.RecensioneBean;
 import sottosistemi.Gestione_Catalogo.service.CatalogoService;
 
@@ -19,6 +20,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 
 class CatalogoServiceTest {
 
@@ -151,6 +153,58 @@ class CatalogoServiceTest {
     }
 
     @Test
+    void testAddFilm() throws SQLException {
+        final int anno = 2024;
+        final String attori = "Attori";
+        final int durata = 100;
+        final String[] generi = new String[]{"Azione", "Drammatico"};
+        final byte[] locandina = new byte[]{1};
+        final String nome = "Nuovo Film";
+        final String regista = "Regista";
+        final String trama = "Trama";
+
+        final FilmBean savedFilm = new FilmBean();
+        savedFilm.setIdFilm(10);
+        when(mockFilmDAO.findByName(nome)).thenReturn(List.of(savedFilm));
+
+        catalogoService.addFilm(anno, attori, durata, generi, locandina, nome, regista, trama);
+
+        verify(mockFilmDAO).save(any(FilmBean.class));
+        final ArgumentCaptor<FilmGenereBean> captor = ArgumentCaptor.forClass(FilmGenereBean.class);
+        verify(mockFilmGenereDAO, times(2)).save(captor.capture());
+        assertEquals(10, captor.getAllValues().get(0).getIdFilm());
+        assertEquals("Azione", captor.getAllValues().get(0).getNomeGenere());
+        assertEquals("Drammatico", captor.getAllValues().get(1).getNomeGenere());
+    }
+
+    @Test
+    void testModifyFilm_UpdatesGeneri() throws SQLException {
+        final int idFilm = 7;
+        final int durata = 90;
+        final String titolo = "Titolo";
+        final int anno = 2021;
+        final String[] generi = new String[]{"Horror", "Thriller"};
+        final byte[] image = new byte[]{3};
+        final String regista = "Regista";
+        final String attori = "Attori";
+        final String descrizione = "Descrizione";
+
+        final FilmBean filmAttuale = new FilmBean();
+        filmAttuale.setIdFilm(idFilm);
+        filmAttuale.setValutazione(3);
+        when(mockFilmDAO.findById(idFilm)).thenReturn(filmAttuale);
+
+        catalogoService.modifyFilm(idFilm, durata, titolo, anno, generi, image, regista, attori, descrizione);
+
+        final ArgumentCaptor<FilmBean> filmCaptor = ArgumentCaptor.forClass(FilmBean.class);
+        verify(mockFilmDAO).update(filmCaptor.capture());
+        assertEquals(3, filmCaptor.getValue().getValutazione());
+
+        verify(mockFilmGenereDAO).deleteByIdFilm(idFilm);
+        verify(mockFilmGenereDAO, times(2)).save(any(FilmGenereBean.class));
+    }
+
+    @Test
     void testRemoveFilm() throws SQLException {
         final int idFilm = 1;
 
@@ -179,5 +233,28 @@ class CatalogoServiceTest {
         // Verifica
         assertEquals(1, result.size());
         assertSame(film, result.get(1));
+    }
+
+    @Test
+    void testGetGeneri() {
+        final int idFilm = 3;
+        final List<FilmGenereBean> generi = new ArrayList<>();
+        generi.add(new FilmGenereBean(idFilm, "Azione"));
+
+        when(mockFilmGenereDAO.findByIdFilm(idFilm)).thenReturn(generi);
+
+        final List<FilmGenereBean> result = catalogoService.getGeneri(idFilm);
+
+        assertSame(generi, result);
+    }
+
+    @Test
+    void testGetAllGeneri() {
+        final List<String> generi = List.of("Azione", "Commedia");
+        when(mockGenereDAO.findAllString()).thenReturn(generi);
+
+        final List<String> result = catalogoService.getAllGeneri();
+
+        assertSame(generi, result);
     }
 }

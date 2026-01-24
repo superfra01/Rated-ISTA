@@ -15,17 +15,26 @@ import org.junit.jupiter.api.Test;
 
 import model.DAO.PreferenzaDAO;
 import model.DAO.UtenteDAO;
+import model.DAO.InteresseDAO;
+import model.DAO.VistoDAO;
+import model.Entity.FilmBean;
+import model.Entity.InteresseBean;
+import model.Entity.PreferenzaBean;
+import model.Entity.VistoBean;
 import model.Entity.RecensioneBean;
 import model.Entity.UtenteBean;
 import sottosistemi.Gestione_Utenti.service.ProfileService;
 
 import utilities.PasswordUtility;
+import org.mockito.ArgumentCaptor;
 
 class ProfileServiceTest {
 
     private ProfileService profileService;
     private UtenteDAO mockUtenteDAO;
     private PreferenzaDAO mockPreferenzaDAO;
+    private InteresseDAO mockInteresseDAO;
+    private VistoDAO mockVistoDAO;
     private DataSource mockDataSource;
     private Connection mockConnection;
 
@@ -41,9 +50,11 @@ class ProfileServiceTest {
         // Mock UtenteDAO
         mockUtenteDAO = mock(UtenteDAO.class);
         mockPreferenzaDAO = mock(PreferenzaDAO.class);
+        mockInteresseDAO = mock(InteresseDAO.class);
+        mockVistoDAO = mock(VistoDAO.class);
 
         // ProfileService utilizza un DAO mockato
-        profileService = new ProfileService(mockUtenteDAO, mockPreferenzaDAO); 
+        profileService = new ProfileService(mockUtenteDAO, mockPreferenzaDAO, mockInteresseDAO, mockVistoDAO); 
     }
 
     @Test
@@ -186,5 +197,105 @@ class ProfileServiceTest {
         assertEquals(2, users.size());
         assertEquals("user1", users.get("email1@example.com"));
         assertEquals("user2", users.get("email2@example.com"));
+    }
+
+    @Test
+    void testGetPreferenze() {
+        final String email = "user@example.com";
+        final List<PreferenzaBean> preferenze = new ArrayList<>();
+        preferenze.add(new PreferenzaBean(email, "Azione"));
+        preferenze.add(new PreferenzaBean(email, "Drammatico"));
+
+        when(mockPreferenzaDAO.findByEmail(email)).thenReturn(preferenze);
+
+        final List<String> result = profileService.getPreferenze(email);
+
+        assertEquals(List.of("Azione", "Drammatico"), result);
+    }
+
+    @Test
+    void testAddPreferenza() {
+        final String email = "user@example.com";
+        final String genere = "Commedia";
+
+        profileService.addPreferenza(email, genere);
+
+        final ArgumentCaptor<PreferenzaBean> captor = ArgumentCaptor.forClass(PreferenzaBean.class);
+        verify(mockPreferenzaDAO).save(captor.capture());
+        assertEquals(email, captor.getValue().getEmail());
+        assertEquals(genere, captor.getValue().getNomeGenere());
+    }
+
+    @Test
+    void testAggiungiAllaWatchlist() {
+        profileService.aggiungiAllaWatchlist("user@example.com", 10);
+
+        final ArgumentCaptor<InteresseBean> captor = ArgumentCaptor.forClass(InteresseBean.class);
+        verify(mockInteresseDAO).save(captor.capture());
+        assertTrue(captor.getValue().isInteresse());
+        assertEquals(10, captor.getValue().getIdFilm());
+    }
+
+    @Test
+    void testIgnoreFilm() {
+        profileService.ignoreFilm("user@example.com", 10);
+
+        final ArgumentCaptor<InteresseBean> captor = ArgumentCaptor.forClass(InteresseBean.class);
+        verify(mockInteresseDAO).save(captor.capture());
+        assertFalse(captor.getValue().isInteresse());
+        assertEquals(10, captor.getValue().getIdFilm());
+    }
+
+    @Test
+    void testAggiungiFilmVisto() {
+        profileService.aggiungiFilmVisto("user@example.com", 5);
+
+        final ArgumentCaptor<VistoBean> captor = ArgumentCaptor.forClass(VistoBean.class);
+        verify(mockVistoDAO).save(captor.capture());
+        assertEquals("user@example.com", captor.getValue().getEmail());
+        assertEquals(5, captor.getValue().getIdFilm());
+    }
+
+    @Test
+    void testAggiornaPreferenzeUtente_WithGeneri() {
+        final String email = "user@example.com";
+        final String[] generi = new String[]{"Azione", "Giallo"};
+
+        profileService.aggiornaPreferenzeUtente(email, generi);
+
+        verify(mockPreferenzaDAO).deleteByEmail(email);
+        verify(mockPreferenzaDAO, times(2)).save(any(PreferenzaBean.class));
+    }
+
+    @Test
+    void testAggiornaPreferenzeUtente_NullGeneri() {
+        final String email = "user@example.com";
+
+        profileService.aggiornaPreferenzeUtente(email, null);
+
+        verify(mockPreferenzaDAO).deleteByEmail(email);
+        verify(mockPreferenzaDAO, never()).save(any(PreferenzaBean.class));
+    }
+
+    @Test
+    void testRetrieveWatchedFilms() {
+        final List<FilmBean> films = new ArrayList<>();
+        films.add(new FilmBean());
+        when(mockVistoDAO.doRetrieveFilmsByUtente("user")).thenReturn(films);
+
+        final List<FilmBean> result = profileService.retrieveWatchedFilms("user");
+
+        assertSame(films, result);
+    }
+
+    @Test
+    void testRetrieveWatchlist() {
+        final List<FilmBean> films = new ArrayList<>();
+        films.add(new FilmBean());
+        when(mockInteresseDAO.doRetrieveFilmsByUtente("user")).thenReturn(films);
+
+        final List<FilmBean> result = profileService.retrieveWatchlist("user");
+
+        assertSame(films, result);
     }
 }

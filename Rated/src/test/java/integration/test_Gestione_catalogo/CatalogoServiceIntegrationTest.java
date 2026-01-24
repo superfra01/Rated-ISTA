@@ -11,6 +11,7 @@ import model.DAO.FilmDAO;
 import model.DAO.FilmGenereDAO;
 import model.DAO.GenereDAO;
 import model.Entity.FilmBean;
+import model.Entity.FilmGenereBean;
 
 import javax.sql.DataSource;
 
@@ -23,6 +24,7 @@ public class CatalogoServiceIntegrationTest {
 
     private static DataSource testDataSource; 
     private FilmDAO filmDAO;
+    private FilmGenereDAO filmGenereDAO;
     private CatalogoService catalogoService;
 
     // 1. QUESTO MANCAVA: Inizializzazione del DataSource
@@ -57,6 +59,7 @@ public class CatalogoServiceIntegrationTest {
         
         // Ora testDataSource NON è null
         filmDAO = new FilmDAO(testDataSource);
+        filmGenereDAO = new FilmGenereDAO();
         catalogoService = new CatalogoService(new FilmDAO(), new FilmGenereDAO(), new GenereDAO());
     }
 
@@ -125,5 +128,60 @@ public class CatalogoServiceIntegrationTest {
 
         final FilmBean check = filmDAO.findById(toRemove.getIdFilm());
         assertNull(check, "Il film dovrebbe essere stato rimosso dal database.");
+    }
+
+    @Test
+    void testAddFilm_AddsGeneriAssociations() {
+        final String nome = "Film Generi";
+        final int anno = 2020;
+        final int durata = 100;
+        final String[] generi = new String[]{"Azione", "Drammatico"};
+        final String regista = "Regista";
+        final String attori = "Attori";
+        final byte[] locandina = null;
+        final String trama = "Trama";
+
+        catalogoService.addFilm(anno, attori, durata, generi, locandina, nome, regista, trama);
+
+        final FilmBean film = filmDAO.findByName(nome).get(0);
+        final List<FilmGenereBean> generiSalvati = filmGenereDAO.findByIdFilm(film.getIdFilm());
+        assertTrue(generiSalvati.size() >= 2);
+        final boolean hasAzione = generiSalvati.stream().anyMatch(g -> "Azione".equals(g.getNomeGenere()));
+        final boolean hasDrammatico = generiSalvati.stream().anyMatch(g -> "Drammatico".equals(g.getNomeGenere()));
+        assertTrue(hasAzione);
+        assertTrue(hasDrammatico);
+    }
+
+    @Test
+    void testModifyFilm_UpdatesGeneri() {
+        final String nome = "Film Modifica";
+        final int anno = 2019;
+        final int durata = 110;
+        final String[] generi = new String[]{"Azione"};
+        final String regista = "Regista";
+        final String attori = "Attori";
+        final byte[] locandina = null;
+        final String trama = "Trama";
+
+        catalogoService.addFilm(anno, attori, durata, generi, locandina, nome, regista, trama);
+        final FilmBean film = filmDAO.findByName(nome).get(0);
+
+        final String[] nuoviGeneri = new String[]{"Commedia", "Thriller"};
+        catalogoService.modifyFilm(film.getIdFilm(), durata, nome, anno, nuoviGeneri, locandina, regista, attori, trama);
+
+        final List<FilmGenereBean> generiAggiornati = filmGenereDAO.findByIdFilm(film.getIdFilm());
+        assertEquals(2, generiAggiornati.size());
+    }
+
+    @Test
+    void testGetGeneri_ReturnsAssociations() {
+        final List<FilmGenereBean> generi = catalogoService.getGeneri(1);
+        assertFalse(generi.isEmpty(), "Il film con ID 1 deve avere generi associati.");
+    }
+
+    @Test
+    void testGetAllGeneri_ReturnsList() {
+        final List<String> generi = catalogoService.getAllGeneri();
+        assertTrue(generi.contains("Azione"));
     }
 }
