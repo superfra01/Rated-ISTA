@@ -11,6 +11,7 @@ import model.DAO.GenereDAO;
 import model.Entity.FilmBean;
 import model.Entity.FilmGenereBean;
 import model.Entity.RecensioneBean;
+import model.Entity.UtenteBean;
 import sottosistemi.Gestione_Catalogo.service.CatalogoService;
 
 import java.sql.SQLException;
@@ -256,5 +257,26 @@ class CatalogoServiceTest {
         final List<String> result = catalogoService.getAllGeneri();
 
         assertSame(generi, result);
+    }
+    
+    @Test
+    void testGetFilmCompatibili() throws SQLException {
+        // Setup
+        UtenteBean utente = new UtenteBean();
+        utente.setEmail("test@email.com");
+
+        List<FilmBean> filmConsigliati = new ArrayList<>();
+        filmConsigliati.add(new FilmBean());
+        
+        // Configura il mock
+        when(mockFilmDAO.doRetrieveConsigliati("test@email.com")).thenReturn(filmConsigliati);
+
+        // Esecuzione
+        List<FilmBean> result = catalogoService.getFilmCompatibili(utente);
+
+        // Verifica
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        verify(mockFilmDAO).doRetrieveConsigliati("test@email.com");
     }
 }

@@ -130,8 +130,7 @@ public class CatalogoService {
 
     public List<FilmBean> getFilmCompatibili(UtenteBean utente) {
         // Il Service delega al DAO l'esecuzione della query complessa
-        FilmDAO filmDAO = new FilmDAO();
-        return filmDAO.doRetrieveConsigliati(utente.getEmail());
+        return this.FilmDAO.doRetrieveConsigliati(utente.getEmail());
     }
     
 }

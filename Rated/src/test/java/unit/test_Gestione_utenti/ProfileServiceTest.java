@@ -298,4 +298,69 @@ class ProfileServiceTest {
 
         assertSame(films, result);
     }
+    
+    @Test
+    void testIsFilmInWatchlist_True() {
+        String email = "test@example.com";
+        int filmId = 10;
+        
+        InteresseBean bean = new InteresseBean();
+        bean.setInteresse(true);
+        
+        when(mockInteresseDAO.findByEmailAndIdFilm(email, filmId)).thenReturn(bean);
+        
+        boolean result = profileService.isFilmInWatchlist(email, filmId);
+        
+        assertTrue(result);
+        verify(mockInteresseDAO).findByEmailAndIdFilm(email, filmId);
+    }
+
+    @Test
+    void testRimuoviDallaWatchlist() {
+        String email = "test@example.com";
+        int filmId = 10;
+        
+        profileService.rimuoviDallaWatchlist(email, filmId);
+        
+        verify(mockInteresseDAO).delete(email, filmId);
+    }
+
+    @Test
+    void testIsFilmVisto_True() {
+        String email = "test@example.com";
+        int filmId = 5;
+        
+        VistoBean bean = new VistoBean();
+        
+        when(mockVistoDAO.findByEmailAndIdFilm(email, filmId)).thenReturn(bean);
+        
+        boolean result = profileService.isFilmVisto(email, filmId);
+        
+        assertTrue(result);
+        verify(mockVistoDAO).findByEmailAndIdFilm(email, filmId);
+    }
+    
+    @Test
+    void testIsFilmVisto_False() {
+        String email = "test@example.com";
+        int filmId = 5;
+        
+        when(mockVistoDAO.findByEmailAndIdFilm(email, filmId)).thenReturn(null);
+        
+        boolean result = profileService.isFilmVisto(email, filmId);
+        
+        assertFalse(result);
+    }
+
+    @Test
+    void testRimuoviFilmVisto() {
+        String email = "test@example.com";
+        int filmId = 5;
+        
+        profileService.rimuoviFilmVisto(email, filmId);
+        
+        verify(mockVistoDAO).delete(email, filmId);
+    }
 }
+
+

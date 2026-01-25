@@ -39,12 +39,6 @@ public class ProfileService {
         this.VistoDAO = new VistoDAO(dataSource);
     }
 
-    public ProfileService(final UtenteDAO utenteDAO, final PreferenzaDAO preferenzaDAO) {
-        this.UtenteDAO = utenteDAO;
-        this.PreferenzaDAO = preferenzaDAO;
-        this.InteresseDAO = new InteresseDAO();
-        this.VistoDAO = new VistoDAO();
-    }
     
     public ProfileService(final UtenteDAO utenteDAO, final PreferenzaDAO PreferenzaDAO, final InteresseDAO InteresseDAO, final VistoDAO VistoDAO) { // Parametro final
         this.UtenteDAO = utenteDAO;
@@ -189,15 +183,13 @@ public class ProfileService {
     }
     
     public boolean isFilmInWatchlist(String email, int filmId) {
-        InteresseDAO interesseDAO = new InteresseDAO();
-            InteresseBean interesseBean = interesseDAO.findByEmailAndIdFilm(email, filmId);
+            InteresseBean interesseBean = this.InteresseDAO.findByEmailAndIdFilm(email, filmId);
             return interesseBean.isInteresse();
 
     }
 
     public void rimuoviDallaWatchlist(String email, int filmId) {
-        InteresseDAO interesseDAO = new InteresseDAO();
-        interesseDAO.delete(email, filmId);
+        this.InteresseDAO.delete(email, filmId);
     }
     
  // Inserire dentro ProfileService.java
@@ -206,16 +198,14 @@ public class ProfileService {
      * Verifica se un film è presente nella lista dei visti dell'utente.
      */
     public boolean isFilmVisto(String email, int filmId) {
-        model.DAO.VistoDAO vistoDAO = new model.DAO.VistoDAO();
-        return vistoDAO.findByEmailAndIdFilm(email, filmId) != null;
+        return this.VistoDAO.findByEmailAndIdFilm(email, filmId) != null;
     }
 
     /**
      * Rimuove un film dalla lista dei visti dell'utente.
      */
     public void rimuoviFilmVisto(String email, int filmId) {
-        model.DAO.VistoDAO vistoDAO = new model.DAO.VistoDAO();
-        vistoDAO.delete(email, filmId);
+        this.VistoDAO.delete(email, filmId);
 
     }
 }
