@@ -84,7 +84,7 @@ public class PreferenzaDAO {
 
         return preferenze;
     }
-
+/*
     public void delete(final String email, final String nomeGenere) {
         final String query = "DELETE FROM Preferenza WHERE email = ? AND Nome_Genere = ?";
 
@@ -99,7 +99,7 @@ public class PreferenzaDAO {
             e.printStackTrace();
         }
     }
-
+*/
     public void deleteByEmail(final String email) {
         final String query = "DELETE FROM Preferenza WHERE email = ?";
 

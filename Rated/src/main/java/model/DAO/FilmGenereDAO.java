@@ -27,6 +27,10 @@ public class FilmGenereDAO {
             throw new RuntimeException("Error initializing DataSource: " + e.getMessage());
         }
     }
+    
+    public FilmGenereDAO(final DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
 
     public void save(final FilmGenereBean filmGenere) {
         final String selectQuery = "SELECT 1 FROM Film_Genere WHERE ID_Film = ? AND Nome_Genere = ?";
@@ -76,7 +80,7 @@ public class FilmGenereDAO {
 
         return generi;
     }
-
+/*
     public void delete(final int idFilm, final String nomeGenere) {
         final String query = "DELETE FROM Film_Genere WHERE ID_Film = ? AND Nome_Genere = ?";
 
@@ -91,6 +95,7 @@ public class FilmGenereDAO {
             e.printStackTrace();
         }
     }
+    */
 
     public void deleteByIdFilm(final int idFilm) {
         final String query = "DELETE FROM Film_Genere WHERE ID_Film = ?";

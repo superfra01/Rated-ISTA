@@ -27,7 +27,12 @@ public class GenereDAO {
             throw new RuntimeException("Error initializing DataSource: " + e.getMessage());
         }
     }
-
+    
+    // Costruttore aggiunto per i Test
+    public GenereDAO(final DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
+    
     public void save(final GenereBean genere) {
         final String selectQuery = "SELECT 1 FROM Genere WHERE Nome = ?";
         final String insertQuery = "INSERT INTO Genere (Nome) VALUES (?)";
@@ -49,7 +54,7 @@ public class GenereDAO {
             e.printStackTrace();
         }
     }
-
+/*
     public GenereBean findByNome(final String nome) {
         final String query = "SELECT * FROM Genere WHERE Nome = ?";
 
@@ -72,7 +77,8 @@ public class GenereDAO {
 
         return null;
     }
-
+*/
+    /*
     public List<GenereBean> findAll() {
         final String query = "SELECT * FROM Genere ORDER BY Nome";
         final List<GenereBean> generi = new ArrayList<>();
@@ -93,7 +99,7 @@ public class GenereDAO {
 
         return generi;
     }
-    
+    */
     public List<String> findAllString() {
         final String query = "SELECT * FROM Genere ORDER BY Nome";
         final List<String> generi = new ArrayList<String>();
@@ -112,7 +118,7 @@ public class GenereDAO {
 
         return generi;
     }
-
+    /*
     public void delete(final String nome) {
         final String query = "DELETE FROM Genere WHERE Nome = ?";
 
@@ -126,4 +132,5 @@ public class GenereDAO {
             e.printStackTrace();
         }
     }
+    */
 }

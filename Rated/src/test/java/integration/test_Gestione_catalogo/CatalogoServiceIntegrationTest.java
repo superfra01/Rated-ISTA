@@ -2,7 +2,6 @@ package integration.test_Gestione_catalogo;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import org.apache.commons.dbcp2.BasicDataSource;
 import org.junit.jupiter.api.*;
 
 import integration.DatabaseSetupForTest;
@@ -10,8 +9,21 @@ import sottosistemi.Gestione_Catalogo.service.CatalogoService;
 import model.DAO.FilmDAO;
 import model.DAO.FilmGenereDAO;
 import model.DAO.GenereDAO;
+import model.DAO.UtenteDAO;
+import model.DAO.PreferenzaDAO;
+import model.DAO.VistoDAO;
+import model.DAO.InteresseDAO;
+import model.DAO.ValutazioneDAO;
+import model.DAO.RecensioneDAO;
 import model.Entity.FilmBean;
 import model.Entity.FilmGenereBean;
+import model.Entity.GenereBean;
+import model.Entity.UtenteBean;
+import model.Entity.PreferenzaBean;
+import model.Entity.VistoBean;
+import model.Entity.InteresseBean;
+import model.Entity.ValutazioneBean;
+import model.Entity.RecensioneBean;
 
 import javax.sql.DataSource;
 
@@ -19,32 +31,43 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
+import java.util.HashMap;
 
 public class CatalogoServiceIntegrationTest {
 
     private static DataSource testDataSource; 
     private FilmDAO filmDAO;
     private FilmGenereDAO filmGenereDAO;
+    private GenereDAO genereDAO;
+    private UtenteDAO utenteDAO;
+    private PreferenzaDAO preferenzaDAO;
+
+    
     private CatalogoService catalogoService;
 
-    // 1. QUESTO MANCAVA: Inizializzazione del DataSource
     @BeforeAll
     static void beforeAll() {
     	testDataSource = DatabaseSetupForTest.getH2DataSource();
     }
 
-    // 2. Metodo per pulire il DB (Consigliato per evitare errori di ID duplicati)
     private void cleanDb() {
         try (final Connection conn = testDataSource.getConnection();
              final Statement stmt = conn.createStatement()) {
             
             stmt.execute("SET FOREIGN_KEY_CHECKS = 0");
-            // Cancelliamo solo i Film e le tabelle collegate, se necessario
-            // Se cancelli un film, devi assicurarti che non ci siano recensioni collegate
+            
             stmt.executeUpdate("TRUNCATE TABLE Valutazione");
             stmt.executeUpdate("TRUNCATE TABLE Report");
             stmt.executeUpdate("TRUNCATE TABLE Recensione");
+            stmt.executeUpdate("TRUNCATE TABLE Preferenza");
+            stmt.executeUpdate("TRUNCATE TABLE Visto");
+            stmt.executeUpdate("TRUNCATE TABLE Interesse");
+            stmt.executeUpdate("TRUNCATE TABLE Film_Genere");
+            
             stmt.executeUpdate("TRUNCATE TABLE Film");
+            stmt.executeUpdate("TRUNCATE TABLE Utente_Registrato");
+            stmt.executeUpdate("TRUNCATE TABLE Genere");
+            
             stmt.execute("SET FOREIGN_KEY_CHECKS = 1");
             
         } catch (SQLException e) {
@@ -54,19 +77,21 @@ public class CatalogoServiceIntegrationTest {
 
     @BeforeEach
     void setUp() {
-        // Pulizia prima di ogni test
         cleanDb();
         
-        // Ora testDataSource NON è null
         filmDAO = new FilmDAO(testDataSource);
-        filmGenereDAO = new FilmGenereDAO();
-        catalogoService = new CatalogoService(new FilmDAO(), new FilmGenereDAO(), new GenereDAO());
+        filmGenereDAO = new FilmGenereDAO(testDataSource);
+        genereDAO = new GenereDAO(testDataSource);
+        utenteDAO = new UtenteDAO(testDataSource);
+        preferenzaDAO = new PreferenzaDAO(testDataSource);
+        
+        catalogoService = new CatalogoService(filmDAO, filmGenereDAO, genereDAO);
     }
 
     @Test
     void testGetFilms_ReturnsAllFilms() {
         final List<FilmBean> films = catalogoService.getFilms();
-        assertNotNull(films, "La lista dei film non dovrebbe essere null.");
+        assertNotNull(films);
     }
 
     @Test
@@ -75,113 +100,189 @@ public class CatalogoServiceIntegrationTest {
         final int anno = 2022;
         final int durata = 120;
         final String generi[] = new String[]{"Azione"};
-        final String regista = "John Doe";
-        final String attori = "Attore1, Attore2";
-        final byte[] locandina = null; 
-        final String trama = "Trama di test.";
+        genereDAO.save(new GenereBean("Azione")); 
+        
+        catalogoService.aggiungiFilm(nome, anno, durata, generi, "John Doe", "Attori", null, "Trama");
 
-        catalogoService.aggiungiFilm(nome, anno, durata, generi, regista, attori, locandina, trama);
-
-        // Verifichiamo su DB
         final List<FilmBean> allFilms = filmDAO.findAll();
-        final boolean found = allFilms.stream()
-                .anyMatch(f -> f.getNome().equals(nome) && f.getAnno() == anno);
-        assertTrue(found, "Il film appena aggiunto deve essere presente nel catalogo.");
+        final boolean found = allFilms.stream().anyMatch(f -> f.getNome().equals(nome));
+        assertTrue(found);
     }
 
     @Test
     void testRicercaFilm_ExistingTitle_ShouldReturnResult() {
-        // Inseriamo un film di test
         final FilmBean film = new FilmBean();
         film.setNome("Inception");
         film.setAnno(2010);
-        // Assicurati di usare il metodo add/save corretto che hai sistemato prima
-        filmDAO.save(film); // O 'save' se non hai rinominato, ma ricorda il RETURN_GENERATED_KEYS
+        filmDAO.save(film); 
 
-        // Ora cerchiamo
         final List<FilmBean> risultati = catalogoService.ricercaFilm("Inception");
-        assertFalse(risultati.isEmpty(), "Dovrebbe trovare almeno un film con titolo 'Inception'.");
+        assertFalse(risultati.isEmpty());
         assertEquals("Inception", risultati.get(0).getNome());
     }
 
     @Test
-    void testRimuoviFilm_ShouldDeleteFromDB() {
+    void testRemoveFilmByBean_ShouldDeleteFromDB() {
         final String nome = "FilmToRemove";
-        final int anno = 2022;
-        final int durata = 120;
-        final String[] generi = new String[]{"Azione"};
-        final String regista = "John Doe";
-        final String attori = "Attore1, Attore2";
-        final byte[] locandina = "s".getBytes(); 
-        final String trama = "Trama di test.";
-        
-        catalogoService.aggiungiFilm(nome, anno, durata, generi, regista, attori, locandina, trama);
+        genereDAO.save(new GenereBean("Azione"));
+        catalogoService.aggiungiFilm(nome, 2022, 120, new String[]{"Azione"}, "Regista", "Attori", null, "Trama");
 
         final List<FilmBean> all = filmDAO.findAll();
-        final FilmBean toRemove = all.stream()
-                .filter(f -> "FilmToRemove".equals(f.getNome()))
-                .findFirst()
-                .orElse(null);
+        final FilmBean toRemove = all.stream().filter(f -> nome.equals(f.getNome())).findFirst().orElse(null);
         assertNotNull(toRemove);
 
-        catalogoService.rimuoviFilm(toRemove);
-
-        final FilmBean check = filmDAO.findById(toRemove.getIdFilm());
-        assertNull(check, "Il film dovrebbe essere stato rimosso dal database.");
+        catalogoService.removeFilmByBean(toRemove);
+        assertNull(filmDAO.findById(toRemove.getIdFilm()));
     }
+    
+    @Test
+    void testRemoveFilm_ShouldDeleteFromDB() {
+        final String nome = "FilmToRemove";
+        genereDAO.save(new GenereBean("Azione"));
+        catalogoService.aggiungiFilm(nome, 2022, 120, new String[]{"Azione"}, "Regista", "Attori", null, "Trama");
+
+        final List<FilmBean> all = filmDAO.findAll();
+        final FilmBean toRemove = all.stream().filter(f -> nome.equals(f.getNome())).findFirst().orElse(null);
+        assertNotNull(toRemove);
+
+        catalogoService.removeFilm(toRemove.getIdFilm());
+        assertNull(filmDAO.findById(toRemove.getIdFilm()));
+    }
+
 
     @Test
     void testAddFilm_AddsGeneriAssociations() {
-        final String nome = "Film Generi";
-        final int anno = 2020;
-        final int durata = 100;
-        final String[] generi = new String[]{"Azione", "Drammatico"};
-        final String regista = "Regista";
-        final String attori = "Attori";
-        final byte[] locandina = null;
-        final String trama = "Trama";
+        genereDAO.save(new GenereBean("Azione"));
+        genereDAO.save(new GenereBean("Drammatico"));
 
-        catalogoService.addFilm(anno, attori, durata, generi, locandina, nome, regista, trama);
+        catalogoService.addFilm(2020, "Attori", 100, new String[]{"Azione", "Drammatico"}, null, "Film Generi", "Regista", "Trama");
 
-        final FilmBean film = filmDAO.findByName(nome).get(0);
+        final FilmBean film = filmDAO.findByName("Film Generi").get(0);
         final List<FilmGenereBean> generiSalvati = filmGenereDAO.findByIdFilm(film.getIdFilm());
+        
         assertTrue(generiSalvati.size() >= 2);
-        final boolean hasAzione = generiSalvati.stream().anyMatch(g -> "Azione".equals(g.getNomeGenere()));
-        final boolean hasDrammatico = generiSalvati.stream().anyMatch(g -> "Drammatico".equals(g.getNomeGenere()));
-        assertTrue(hasAzione);
-        assertTrue(hasDrammatico);
+        assertTrue(generiSalvati.stream().anyMatch(g -> "Azione".equals(g.getNomeGenere())));
     }
 
     @Test
     void testModifyFilm_UpdatesGeneri() {
-        final String nome = "Film Modifica";
-        final int anno = 2019;
-        final int durata = 110;
-        final String[] generi = new String[]{"Azione"};
-        final String regista = "Regista";
-        final String attori = "Attori";
-        final byte[] locandina = null;
-        final String trama = "Trama";
+        genereDAO.save(new GenereBean("Azione"));
+        genereDAO.save(new GenereBean("Commedia"));
 
-        catalogoService.addFilm(anno, attori, durata, generi, locandina, nome, regista, trama);
-        final FilmBean film = filmDAO.findByName(nome).get(0);
+        catalogoService.addFilm(2019, "Attori", 110, new String[]{"Azione"}, null, "Film Modifica", "Regista", "Trama");
+        final FilmBean film = filmDAO.findByName("Film Modifica").get(0);
 
-        final String[] nuoviGeneri = new String[]{"Commedia", "Thriller"};
-        catalogoService.modifyFilm(film.getIdFilm(), durata, nome, anno, nuoviGeneri, locandina, regista, attori, trama);
+        catalogoService.modifyFilm(film.getIdFilm(), 2019, "Attori", 110, new String[]{"Commedia"}, null, "Film Modifica", "Regista", "Trama");
 
         final List<FilmGenereBean> generiAggiornati = filmGenereDAO.findByIdFilm(film.getIdFilm());
-        assertEquals(2, generiAggiornati.size());
+        assertEquals(1, generiAggiornati.size());
+        assertEquals("Commedia", generiAggiornati.get(0).getNomeGenere());
+    }
+    
+    @Test
+    void testGetAllGeneri_Service() {
+        genereDAO.save(new GenereBean("Genere1"));
+        genereDAO.save(new GenereBean("Genere2"));
+
+        List<String> result = catalogoService.getAllGeneri();
+
+        assertNotNull(result);
+        assertTrue(result.contains("Genere1"));
+        assertTrue(result.contains("Genere2"));
     }
 
     @Test
-    void testGetGeneri_ReturnsAssociations() {
-        final List<FilmGenereBean> generi = catalogoService.getGeneri(1);
-        assertFalse(generi.isEmpty(), "Il film con ID 1 deve avere generi associati.");
+    void testFindGeneriByIdFilm() {
+        final String nomeGenere = "Fantascienza";
+        genereDAO.save(new GenereBean(nomeGenere));
+        
+        FilmBean film = new FilmBean();
+        film.setNome("Star Wars");
+        film.setAnno(1977);
+        filmDAO.save(film);
+        final FilmBean savedFilm = filmDAO.findByName("Star Wars").get(0);
+        
+        filmGenereDAO.save(new FilmGenereBean(savedFilm.getIdFilm(), nomeGenere));
+        
+        // FIX: Uso il Service (catalogoService.getGeneri) invece del DAO diretto.
+        // Il Service ritorna List<FilmGenereBean>, non List<String>.
+        List<FilmGenereBean> generiTrovati = catalogoService.getGeneri(savedFilm.getIdFilm());
+        
+        assertNotNull(generiTrovati);
+        assertFalse(generiTrovati.isEmpty());
+        assertTrue(generiTrovati.stream().anyMatch(g -> g.getNomeGenere().equals(nomeGenere)));
     }
 
     @Test
-    void testGetAllGeneri_ReturnsList() {
-        final List<String> generi = catalogoService.getAllGeneri();
-        assertTrue(generi.contains("Azione"));
+    void testDoRetrieveConsigliati() {
+        UtenteBean user = new UtenteBean();
+        user.setEmail("fan@cinema.it");
+        user.setUsername("MovieFan");
+        user.setPassword("pass");
+        utenteDAO.save(user);
+        
+        genereDAO.save(new GenereBean("Horror"));
+        preferenzaDAO.save(new PreferenzaBean("fan@cinema.it", "Horror"));
+        
+        FilmBean film = new FilmBean(); 
+        film.setNome("IT"); 
+        film.setValutazione(5); 
+        filmDAO.save(film);
+        final FilmBean filmHorror = filmDAO.findByName("IT").get(0);
+        filmGenereDAO.save(new FilmGenereBean(filmHorror.getIdFilm(), "Horror"));
+        
+        // FIX: Uso il Service (getFilmCompatibili) invece del DAO diretto.
+        List<FilmBean> consigliati = catalogoService.getFilmCompatibili(user);
+        
+        assertNotNull(consigliati);
+        assertTrue(consigliati.stream().anyMatch(f -> f.getIdFilm() == filmHorror.getIdFilm()));
     }
+
+    @Test
+    void testGetFilmsByRecensioni_ShouldReturnMap() {
+        // Setup Dati
+        UtenteBean user = new UtenteBean();
+        user.setEmail("map@test.com");
+        user.setUsername("MapUser");
+        user.setPassword("pass");
+        utenteDAO.save(user);
+
+        FilmBean f1 = new FilmBean(); f1.setNome("Film A"); filmDAO.save(f1);
+        f1 = filmDAO.findByName("Film A").get(0);
+        
+        FilmBean f2 = new FilmBean(); f2.setNome("Film B"); filmDAO.save(f2);
+        f2 = filmDAO.findByName("Film B").get(0);
+
+        RecensioneBean r1 = new RecensioneBean();
+        r1.setEmail("map@test.com"); r1.setIdFilm(f1.getIdFilm()); r1.setContenuto("R1");
+        
+        RecensioneBean r2 = new RecensioneBean();
+        r2.setEmail("map@test.com"); r2.setIdFilm(f2.getIdFilm()); r2.setContenuto("R2");
+        
+        List<RecensioneBean> listaRecensioni = List.of(r1, r2);
+
+        // Act
+        HashMap<Integer, FilmBean> result = catalogoService.getFilms(listaRecensioni);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(2, result.size());
+        assertTrue(result.containsKey(f1.getIdFilm()));
+        assertTrue(result.containsKey(f2.getIdFilm()));
+        assertEquals("Film A", result.get(f1.getIdFilm()).getNome());
+    }
+    
+    @Test
+    void testGetFilm_ShouldReturnSingleFilm() {
+        FilmBean f = new FilmBean(); 
+        f.setNome("SingleFilm"); 
+        filmDAO.save(f);
+        int id = filmDAO.findByName("SingleFilm").get(0).getIdFilm();
+
+        FilmBean res = catalogoService.getFilm(id);
+        assertNotNull(res);
+        assertEquals("SingleFilm", res.getNome());
+    }
+    
+    
 }

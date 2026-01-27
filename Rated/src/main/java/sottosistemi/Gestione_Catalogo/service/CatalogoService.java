@@ -50,7 +50,7 @@ public class CatalogoService {
         
     }
 
-    public void rimuoviFilm(final FilmBean film) { // Parametro final
+    public void removeFilmByBean(final FilmBean film) { // Parametro final
         FilmDAO.delete(film.getIdFilm());
     }
 

@@ -1,6 +1,5 @@
 package integration.test_Gestione_utenti;
 
-
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.*;
 
@@ -13,16 +12,18 @@ import model.DAO.PreferenzaDAO;
 import model.DAO.InteresseDAO;
 import model.DAO.VistoDAO;
 import model.DAO.FilmDAO;
+import model.DAO.GenereDAO;
 import model.Entity.UtenteBean;
+import model.Entity.GenereBean;
+import model.Entity.FilmBean; 
+import model.Entity.RecensioneBean;
+import model.Entity.InteresseBean;
 
 import javax.sql.DataSource;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
-import model.Entity.RecensioneBean;
-import model.Entity.InteresseBean;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -37,7 +38,7 @@ public class ProfileServiceIntegrationTest {
 
     @BeforeAll
     static void beforeAll() {
-    	testDataSource = DatabaseSetupForTest.getH2DataSource();
+        testDataSource = DatabaseSetupForTest.getH2DataSource();
     }
 
     @BeforeEach
@@ -58,11 +59,11 @@ public class ProfileServiceIntegrationTest {
             "mail2@example.com",
             "watch@example.com",
             "visto@example.com",
-            "pref@example.com"
+            "pref@example.com",
+            "intDAO@example.com"
         };
 
         try (final Connection conn = testDataSource.getConnection()) {
-            // Disable auto-commit for batch performance (optional but good practice)
             conn.setAutoCommit(false);
             
             try (final PreparedStatement deletePreferenza = conn.prepareStatement("DELETE FROM Preferenza WHERE email = ?");
@@ -95,32 +96,26 @@ public class ProfileServiceIntegrationTest {
     
     @Test
     void testProfileUpdate_Success() {
-        // 1. Creo un utente esistente
         final String email = "test@example.com";
         final UtenteBean existingUser = new UtenteBean();
         existingUser.setEmail(email);
         existingUser.setUsername("olduser");
-        existingUser.setPassword(PasswordUtility.hashPassword("oldpass")); // Salvo già hashata per coerenza
+        existingUser.setPassword(PasswordUtility.hashPassword("oldpass")); 
         existingUser.setBiografia("vecchia bio");
         utenteDAO.save(existingUser);
 
-        // 2. Dati per la modifica
         final String newUsername = "newUsername";
-        final String newPasswordClear = "newPassword"; // Password in chiaro
+        final String newPasswordClear = "newPassword"; 
         final String newBio = "New biography";
         final byte[] icon = new byte[]{1,2,3};
 
-        // 3. Eseguo l'update
         final UtenteBean updatedUser = profileService.ProfileUpdate(newUsername, email, newPasswordClear, newBio, icon);
 
         assertNotNull(updatedUser);
         assertEquals(newUsername, updatedUser.getUsername());
         
-        // --- IMPLEMENTAZIONE HASH NEL TEST ---
-        // Calcolo l'hash della password in chiaro per confrontarlo con quello nel DB
         final String expectedHash = PasswordUtility.hashPassword(newPasswordClear);
-        assertEquals(expectedHash, updatedUser.getPassword(), "La password nel DB deve corrispondere all'hash della nuova password");
-        // -------------------------------------
+        assertEquals(expectedHash, updatedUser.getPassword());
 
         assertEquals(newBio, updatedUser.getBiografia());
         assertArrayEquals(icon, updatedUser.getIcona());
@@ -128,7 +123,6 @@ public class ProfileServiceIntegrationTest {
     
     @Test
     void testProfileUpdate_UsernameAlreadyExists() {
-        // Creo due utenti
         final UtenteBean userA = new UtenteBean();
         userA.setEmail("a@example.com");
         userA.setUsername("UserA");
@@ -141,10 +135,10 @@ public class ProfileServiceIntegrationTest {
         userB.setPassword("passB");
         utenteDAO.save(userB);
 
-        // B cerca di cambiare username in "UserA" (già preso)
         final UtenteBean result = profileService.ProfileUpdate("UserA", "b@example.com", "passB", "Bio", null);
-        assertNull(result, "Se l'username è già in uso, il metodo ritorna null.");
+        assertNull(result);
     }
+    
     @Test
     void testPasswordUpdate_Success() {
         final String email = "pw@example.com";
@@ -156,15 +150,12 @@ public class ProfileServiceIntegrationTest {
 
         final String newPasswordClear = "newPass";
         
-        // Eseguo l'update
         final UtenteBean updated = profileService.PasswordUpdate(email, newPasswordClear);
         
         assertNotNull(updated);
         
-        // --- IMPLEMENTAZIONE HASH NEL TEST ---
         final String expectedHash = PasswordUtility.hashPassword(newPasswordClear);
         assertEquals(expectedHash, updated.getPassword());
-        // -------------------------------------
     }
 
     @Test
@@ -175,7 +166,6 @@ public class ProfileServiceIntegrationTest {
 
     @Test
     void testGetUsers() {
-        // Simuliamo qualche recensione
         final List<RecensioneBean> recensioni = new ArrayList<>();
 
         final RecensioneBean r1 = new RecensioneBean();
@@ -185,7 +175,6 @@ public class ProfileServiceIntegrationTest {
         recensioni.add(r1);
         recensioni.add(r2);
 
-        // Creiamo due utenti
         final UtenteBean user1 = new UtenteBean();
         user1.setEmail("mail1@example.com");
         user1.setUsername("user1");
@@ -213,8 +202,9 @@ public class ProfileServiceIntegrationTest {
         utenteDAO.save(user);
 
         final FilmDAO filmDAO = new FilmDAO(testDataSource);
-        final model.Entity.FilmBean film = new model.Entity.FilmBean();
+        final FilmBean film = new FilmBean();
         film.setNome("Watchlist Film");
+        film.setValutazione(3);
         filmDAO.save(film);
         final int filmId = filmDAO.findByName("Watchlist Film").get(0).getIdFilm();
         profileService.aggiungiAllaWatchlist(email, filmId);
@@ -238,8 +228,9 @@ public class ProfileServiceIntegrationTest {
         utenteDAO.save(user);
 
         final FilmDAO filmDAO = new FilmDAO(testDataSource);
-        final model.Entity.FilmBean film = new model.Entity.FilmBean();
+        final FilmBean film = new FilmBean();
         film.setNome("Visto Film");
+        film.setValutazione(3);
         filmDAO.save(film);
         final int filmId = filmDAO.findByName("Visto Film").get(0).getIdFilm();
         profileService.aggiungiFilmVisto(email, filmId);
@@ -254,6 +245,11 @@ public class ProfileServiceIntegrationTest {
     @Test
     void testAggiornaPreferenzeUtente_Persist() {
         final String email = "pref@example.com";
+        
+        final GenereDAO genereDAO = new GenereDAO(testDataSource);
+        genereDAO.save(new GenereBean("Azione"));
+        genereDAO.save(new GenereBean("Drammatico"));
+        
         final UtenteBean user = new UtenteBean();
         user.setEmail(email);
         user.setUsername("prefUser");
@@ -266,4 +262,84 @@ public class ProfileServiceIntegrationTest {
         final PreferenzaDAO preferenzaDAO = new PreferenzaDAO(testDataSource);
         assertEquals(2, preferenzaDAO.findByEmail(email).size());
     }
+
+    
+    @Test
+    void testAggiungiFilmVisto_Duplicate_ShouldNotThrowAndNotDuplicate() throws SQLException {
+        // --- 1. SETUP DATI (Senza metodi helper) ---
+        String email = "duplicate@test.com";
+        
+        // Creazione Utente
+        UtenteBean user = new UtenteBean();
+        user.setEmail(email);
+        user.setUsername("DupUser");
+        user.setPassword("passHash"); 
+        user.setTipoUtente("RECENSORE");
+        utenteDAO.save(user); // Usa utenteDAO già presente nella classe
+
+        // Creazione Film (Serve FilmDAO o SQL diretto)
+        // Istanzio FilmDAO localmente usando il dataSource di test
+        model.DAO.FilmDAO filmDAO = new model.DAO.FilmDAO(testDataSource);
+        FilmBean film = new FilmBean();
+        film.setNome("DupFilm");
+        film.setAnno(2023);
+        film.setDurata(120);
+        film.setValutazione(3);
+        filmDAO.save(film); 
+        // FilmDAO.save aggiorna l'ID nel bean
+        int filmId = film.getIdFilm();
+
+        // --- 2. ACT ---
+        // Prima aggiunta
+        profileService.aggiungiFilmVisto(email, filmId);
+        
+        // Seconda aggiunta (dovrebbe essere ignorata dal DAO senza errori)
+        assertDoesNotThrow(() -> profileService.aggiungiFilmVisto(email, filmId));
+
+        // --- 3. ASSERT ---
+        // Verifichiamo che ci sia 1 solo record nel DB
+        List<FilmBean> visti = profileService.retrieveWatchedFilms("DupUser");
+        assertEquals(1, visti.size(), "Non dovrebbero esserci duplicati nella lista visti");
+    }
+    @Test
+    void testRetrieveWatchlist() {
+        final String email = "retwatch@example.com";
+        final String username = "RetWatchUser";
+        
+        // 1. Setup Utente
+        UtenteBean user = new UtenteBean();
+        user.setEmail(email);
+        user.setUsername(username);
+        user.setPassword("pass");
+        utenteDAO.save(user);
+        
+        // 2. Setup Film
+        FilmDAO filmDAO = new FilmDAO(testDataSource);
+        FilmBean film1 = new FilmBean();
+        film1.setNome("Film Watch 1");
+        film1.setValutazione(3);
+        filmDAO.save(film1);
+        int id1 = filmDAO.findByName("Film Watch 1").get(0).getIdFilm();
+        
+        FilmBean film2 = new FilmBean();
+        film2.setNome("Film Watch 2");
+        film2.setValutazione(4);
+        filmDAO.save(film2);
+        int id2 = filmDAO.findByName("Film Watch 2").get(0).getIdFilm();
+        
+        // 3. Aggiunta alla watchlist
+        profileService.aggiungiAllaWatchlist(email, id1);
+        profileService.aggiungiAllaWatchlist(email, id2);
+        
+        // 4. Test Metodo
+        List<FilmBean> result = profileService.retrieveWatchlist(username);
+        
+        // 5. Verifiche
+        assertNotNull(result);
+        assertEquals(2, result.size());
+        assertTrue(result.stream().anyMatch(f -> f.getIdFilm() == id1));
+        assertTrue(result.stream().anyMatch(f -> f.getIdFilm() == id2));
+    }
+    
+    
 }

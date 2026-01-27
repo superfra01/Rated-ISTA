@@ -203,31 +203,7 @@ public class FilmDAO {
         }
     }
 
-    /**
-     * Recupera qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq
-     */
-    public List<String> findGeneriByIdFilm(final int idFilm) {
-	    final String query = "SELECT Nome_Genere FROM Film_Genere WHERE ID_Film = ? ORDER BY Nome_Genere";
-	    final List<String> generi = new ArrayList<>();
-	
-	    try (final Connection connection = dataSource.getConnection();
-	         final PreparedStatement ps = connection.prepareStatement(query)) {
-	
-	        ps.setInt(1, idFilm);
-	
-	        try (final ResultSet rs = ps.executeQuery()) {
-	            while (rs.next()) {
-	                generi.add(rs.getString("Nome_Genere"));
-	            }
-	        }
-	
-	    } catch (final SQLException e) {
-	        e.printStackTrace();
-	    }
-	
-	    return generi;
-    }
-
+    
     public synchronized List<FilmBean> doRetrieveConsigliati(String emailUtente) {
         List<FilmBean> films = new ArrayList<>();
 

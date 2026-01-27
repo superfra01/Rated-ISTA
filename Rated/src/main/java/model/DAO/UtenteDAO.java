@@ -104,7 +104,7 @@ public class UtenteDAO {
         }
         return null;
     }
-
+/*
     public List<UtenteBean> findAll() {
         final String query = "SELECT * FROM Utente_Registrato";
         final List<UtenteBean> utenti = new ArrayList<>();
@@ -127,7 +127,7 @@ public class UtenteDAO {
         }
         return utenti;
     }
-
+*/
     public void update(final UtenteBean utente) {
         final String query = "UPDATE Utente_Registrato SET icona = ?, username = ?, password = ?, Tipo_Utente = ?, N_Warning = ?, Biografia = ? WHERE email = ?";
         try (final Connection connection = dataSource.getConnection();
@@ -144,7 +144,7 @@ public class UtenteDAO {
             e.printStackTrace();
         }
     }
-
+/*
     public void delete(final String email) {
         final String query = "DELETE FROM Utente_Registrato WHERE email = ?";
         try (final Connection connection = dataSource.getConnection();
@@ -155,4 +155,5 @@ public class UtenteDAO {
             e.printStackTrace();
         }
     }
+*/
 }

@@ -82,6 +82,7 @@ public class VistoDAO {
         return null;
     }
 
+    /*
     public List<VistoBean> findByEmail(final String email) {
         final String query = "SELECT * FROM Visto WHERE email = ?";
         final List<VistoBean> visti = new ArrayList<>();
@@ -106,7 +107,7 @@ public class VistoDAO {
 
         return visti;
     }
-
+	*/
     public void delete(final String email, final int idFilm) {
         final String query = "DELETE FROM Visto WHERE email = ? AND ID_Film = ?";
 
@@ -121,7 +122,7 @@ public class VistoDAO {
             e.printStackTrace();
         }
     }
-
+    /*
     public void deleteByEmail(final String email) {
         final String query = "DELETE FROM Visto WHERE email = ?";
 
@@ -136,7 +137,7 @@ public class VistoDAO {
         }
     }
     
-
+	*/
 
 
     public List<FilmBean> doRetrieveFilmsByUtente(String username){

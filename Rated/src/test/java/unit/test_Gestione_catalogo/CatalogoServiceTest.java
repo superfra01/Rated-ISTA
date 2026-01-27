@@ -79,12 +79,12 @@ class CatalogoServiceTest {
     }
 
     @Test
-    void testRimuoviFilm() throws SQLException {
+    void testRemoveFilmByBean() throws SQLException {
         final FilmBean film = new FilmBean();
         film.setIdFilm(1);
 
         // Esegui il metodo
-        catalogoService.rimuoviFilm(film);
+        catalogoService.removeFilmByBean(film);
 
         // Verifica
         verify(mockFilmDAO).delete(1);

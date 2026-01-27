@@ -129,7 +129,6 @@ public class ValutazioneDAO {
         return valutazioni;
     }
     
-
     public void delete(final String email, final String emailRecensore, final int idFilm) { // Parametri final
         final String query = "DELETE FROM Valutazione WHERE email = ? AND email_Recensore = ? AND ID_Film = ?";
         try (final Connection connection = dataSource.getConnection();

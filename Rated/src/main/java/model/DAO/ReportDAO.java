@@ -66,7 +66,7 @@ public class ReportDAO {
         }
         return null;
     }
-
+/*
     public void delete(final String email, final String emailRecensore, final int idFilm) { // Parametri final
         final String query = "DELETE FROM Report WHERE email = ? AND email_Recensore = ? AND ID_Film = ?";
         try (final Connection connection = dataSource.getConnection();
@@ -79,7 +79,7 @@ public class ReportDAO {
             e.printStackTrace();
         }
     }
-    
+*/
     public void deleteReports(final String emailRecensore, final int idFilm) { // Parametri final
         final String query = "DELETE FROM Report WHERE email_Recensore = ? AND ID_Film = ?";
         try (final Connection connection = dataSource.getConnection();

@@ -90,7 +90,7 @@ public class InteresseDAO {
 
         return null;
     }
-
+/*         Metodo non usato
     public List<InteresseBean> findByEmail(final String email) {
         final String query = "SELECT * FROM Interesse WHERE email = ?";
         final List<InteresseBean> interessi = new ArrayList<>();
@@ -116,7 +116,8 @@ public class InteresseDAO {
 
         return interessi;
     }
-
+*/
+    /*
     public List<InteresseBean> findInterestedByEmail(final String email) {
         final String query = "SELECT * FROM Interesse WHERE email = ? AND interesse = TRUE";
         final List<InteresseBean> interessi = new ArrayList<>();
@@ -142,7 +143,7 @@ public class InteresseDAO {
 
         return interessi;
     }
-
+*/
     public void delete(final String email, final int idFilm) {
         final String query = "DELETE FROM Interesse WHERE email = ? AND ID_Film = ?";
 
@@ -157,7 +158,7 @@ public class InteresseDAO {
             e.printStackTrace();
         }
     }
-
+/*    Metodo non usato
     public void deleteByEmail(final String email) {
         final String query = "DELETE FROM Interesse WHERE email = ?";
 
@@ -172,7 +173,7 @@ public class InteresseDAO {
         }
     }
     
-
+*/
     public List<FilmBean> doRetrieveFilmsByUtente(String username){
         List<FilmBean> films = new ArrayList<>();
         
