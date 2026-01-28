@@ -1,1 +1,1 @@
-Progetto Sustainable Software Engineering 2025/2026
+Progetto ISTA 2025/2026
