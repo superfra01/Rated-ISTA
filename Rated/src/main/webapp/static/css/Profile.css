@@ -18,7 +18,7 @@ body {
 .user-info {
     display: flex;
     flex-direction: row;
-    align-items: flex-start; /* Allinea in alto per gestire biografie lunghe */
+    align-items: flex-start;
     background: #4A4646;
     padding: 15px;
     border-radius: 10px;
@@ -51,7 +51,6 @@ body {
     color: #ff4c4c;
 }
 
-/* Stili per visualizzare i generi nel profilo */
 .user-genres-display {
     margin-top: 15px;
     display: flex;
@@ -79,7 +78,7 @@ body {
     display: flex;
     justify-content: flex-start;
     gap: 10px;
-    flex-wrap: wrap; /* Per gestire più bottoni su schermi piccoli */
+    flex-wrap: wrap;
 }
 
 .buttons-container button {
@@ -97,6 +96,7 @@ body {
     background-color: #e60000;
 }
 
+/* ... resto degli stili per recensioni e overlay ... */
 .reviews-container {
     margin-top: 30px;
 }
@@ -165,11 +165,10 @@ body {
     max-width: 90%;
     position: relative;
     color: #FFFFFF;
-    max-height: 90vh; /* Evita che il modale esca dallo schermo */
-    overflow-y: auto; /* Scroll se troppo alto */
+    max-height: 90vh;
+    overflow-y: auto;
 }
 
-/* Modale più largo per i generi */
 .modal.modal-wide {
     width: 600px;
 }
@@ -193,11 +192,6 @@ body {
     border: 1px solid #C4C4C4;
     font-size: 14px;
     background: #4A4646;
-    color: #FFFFFF;
-}
-
-.modal form input[type="file"] {
-    margin-bottom: 15px;
     color: #FFFFFF;
 }
 
@@ -227,7 +221,6 @@ body {
     cursor: pointer;
 }
 
-/* Griglia per i checkbox dei generi */
 .genres-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));

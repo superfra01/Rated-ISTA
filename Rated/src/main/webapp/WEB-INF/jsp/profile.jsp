@@ -63,6 +63,7 @@
             <div class="username"><%= visitedUser.getUsername() %></div>
             <div class="biografia"><%= visitedUser.getBiografia() %></div>
             <div class="reputation">Reputation Score: <%= reputationScore %></div>
+            
             <% if (!userGenres.isEmpty()) { %>
             <div class="user-genres-display">
                 <i class="fas fa-tags"></i>
@@ -71,27 +72,25 @@
                 <% } %>
             </div>
             <% } %>
-            
-            <div style="margin-top: 15px;">
-			    <button onclick="window.location.href='${pageContext.request.contextPath}/userFilms?username=<%= visitedUser.getUsername() %>'" style="background-color: #555; font-size: 0.9rem;">
-			        <i class="fas fa-film"></i> Film Utente
-			    </button>
-			</div>
         </div>
     </div>
 
-    <% if (isProfileOwner) { %>
     <div class="buttons-container">
-        <button onclick="openOverlay('changePasswordOverlay')">Cambia Password</button>
-        <% if(currentUser.getTipoUtente().equals("RECENSORE")){ %>
-            <button onclick="openOverlay('changeProfileOverlay')">Modifica Profilo</button>
-            <button onclick="openOverlay('changeGenresOverlay')">Modifica Generi</button>
+        <button onclick="window.location.href='${pageContext.request.contextPath}/userFilms?username=<%= visitedUser.getUsername() %>'">
+            <i class="fas fa-film"></i> Film Utente
+        </button>
+
+        <% if (isProfileOwner) { %>
+            <button onclick="openOverlay('changePasswordOverlay')">Cambia Password</button>
+            <% if(currentUser.getTipoUtente().equals("RECENSORE")){ %>
+                <button onclick="openOverlay('changeProfileOverlay')">Modifica Profilo</button>
+                <button onclick="openOverlay('changeGenresOverlay')">Modifica Generi</button>
+            <% } %>
+            <form method="get" action="<%= request.getContextPath() %>/logout" style="display: inline;">
+                <button type="submit">Logout</button>
+            </form>
         <% } %>
-        <form method="get" action="<%= request.getContextPath() %>/logout" style="display: inline;">
-            <button type="submit">Logout</button>
-        </form>
     </div>
-    <% } %>
 
     <div class="reviews-container">
         <h3>Recensioni pubblicate:</h3>
@@ -110,8 +109,8 @@
             <% if (isProfileOwner) { %>
                 <a href="#"
                    onclick="if(confirm('Sei sicuro di voler eliminare questa recensione?')) { 
-                                document.getElementById('deleteReviewForm_<%= recensione.getIdFilm() %>').submit();
-                            }"
+                                 document.getElementById('deleteReviewForm_<%= recensione.getIdFilm() %>').submit();
+                             }"
                 >
                     <i class="fas fa-trash-alt delete-icon"></i>
                 </a>
