@@ -19,7 +19,7 @@ import model.Entity.PreferenzaBean;
 import model.Entity.RecensioneBean;
 
 public class ProfileService {
-    public final UtenteDAO UtenteDAO; // Reso final
+    public final UtenteDAO UtenteDAO;
     public final PreferenzaDAO PreferenzaDAO;
     public final InteresseDAO InteresseDAO;
     public final VistoDAO VistoDAO;
@@ -32,7 +32,7 @@ public class ProfileService {
     }
     
     //test
-    public ProfileService(final DataSource dataSource) { // Parametro final
+    public ProfileService(final DataSource dataSource) { 
         this.UtenteDAO = new UtenteDAO(dataSource);
         this.PreferenzaDAO = new PreferenzaDAO(dataSource);
         this.InteresseDAO = new InteresseDAO(dataSource);
@@ -40,66 +40,66 @@ public class ProfileService {
     }
 
     
-    public ProfileService(final UtenteDAO utenteDAO, final PreferenzaDAO PreferenzaDAO, final InteresseDAO InteresseDAO, final VistoDAO VistoDAO) { // Parametro final
+    public ProfileService(final UtenteDAO utenteDAO, final PreferenzaDAO PreferenzaDAO, final InteresseDAO InteresseDAO, final VistoDAO VistoDAO) { 
         this.UtenteDAO = utenteDAO;
         this.PreferenzaDAO = PreferenzaDAO;
         this.InteresseDAO = InteresseDAO;
         this.VistoDAO = VistoDAO;
     }
     
-    public UtenteBean ProfileUpdate(final String username, final String email, final String password, final String biografia, final byte[] icon) { // Parametri final
-    	
-    	final UtenteBean u = UtenteDAO.findByUsername(username); // Variabile locale final
-    	if(u != null && !(u.getEmail().equals(email)))
-    		return null;
-    	
-    	final UtenteBean user = UtenteDAO.findByEmail(email); // Variabile locale final
-    	user.setUsername(username);
-    	user.setPassword(PasswordUtility.hashPassword(password));
-    	user.setBiografia(biografia);
-    	user.setIcona(icon);
-    	UtenteDAO.update(user);
-    	
-    	return user;
+    public UtenteBean ProfileUpdate(final String username, final String email, final String password, final String biografia, final byte[] icon) { 
+        
+        final UtenteBean u = UtenteDAO.findByUsername(username); 
+        if(u != null && !(u.getEmail().equals(email)))
+            return null;
+        
+        final UtenteBean user = UtenteDAO.findByEmail(email); 
+        user.setUsername(username);
+        user.setPassword(PasswordUtility.hashPassword(password));
+        user.setBiografia(biografia);
+        user.setIcona(icon);
+        UtenteDAO.update(user);
+        
+        return user;
     }
     
-    public UtenteBean PasswordUpdate(final String email, final String password) { // Parametri final
-    	
-    	final UtenteBean user = UtenteDAO.findByEmail(email); // Variabile locale final
-    	if(user == null)
-    		return null;
-    	
-    	user.setPassword(PasswordUtility.hashPassword(password));
-    	UtenteDAO.update(user);
-    	
-    	return user;
+    public UtenteBean PasswordUpdate(final String email, final String password) { 
+        
+        final UtenteBean user = UtenteDAO.findByEmail(email); 
+        if(user == null)
+            return null;
+        
+        user.setPassword(PasswordUtility.hashPassword(password));
+        UtenteDAO.update(user);
+        
+        return user;
     }
     
-    public UtenteBean findByUsername(final String username) { // Parametro final
-    	return UtenteDAO.findByUsername(username);
+    public UtenteBean findByUsername(final String username) { 
+        return UtenteDAO.findByUsername(username);
     }
     
-    public HashMap<String, String> getUsers(final List<RecensioneBean> recensioni) { // Parametro final
-    	final HashMap<String, String> users = new HashMap<String, String>(); // Variabile locale final
-    	for(final RecensioneBean recensione: recensioni) { // Variabile loop final
-    		final String email = recensione.getEmail(); // Variabile locale final
-    		final String username = UtenteDAO.findByEmail(email).getUsername(); // Variabile locale final
-    		users.put(email, username);
-    	}
-    	return users;
+    public HashMap<String, String> getUsers(final List<RecensioneBean> recensioni) { 
+        final HashMap<String, String> users = new HashMap<String, String>(); 
+        for(final RecensioneBean recensione: recensioni) { 
+            final String email = recensione.getEmail(); 
+            final String username = UtenteDAO.findByEmail(email).getUsername(); 
+            users.put(email, username);
+        }
+        return users;
     }
     
     public List<String> getPreferenze(final String email){
-    	List<PreferenzaBean> preferenze = PreferenzaDAO.findByEmail(email);
-    	List<String> preferenzeString = new ArrayList<String>();
-    	for(PreferenzaBean b : preferenze)
-    		preferenzeString.add(b.getNomeGenere());
-    	return preferenzeString;
+        List<PreferenzaBean> preferenze = PreferenzaDAO.findByEmail(email);
+        List<String> preferenzeString = new ArrayList<String>();
+        for(PreferenzaBean b : preferenze)
+            preferenzeString.add(b.getNomeGenere());
+        return preferenzeString;
     }
     
     public void addPreferenza(final String email, final String genere) {
-    	PreferenzaBean preferenza = new PreferenzaBean(email, genere);
-    	PreferenzaDAO.save(preferenza);
+        PreferenzaBean preferenza = new PreferenzaBean(email, genere);
+        PreferenzaDAO.save(preferenza);
     }
     
     public void aggiungiAllaWatchlist(String email, int filmId){
@@ -134,7 +134,7 @@ public class ProfileService {
         // Questo garantisce che se l'utente deseleziona tutto, il DB rifletta lo stato vuoto
         PreferenzaDAO.deleteByEmail(email);
 
-        	
+            
         // 2. Se ci sono nuovi generi selezionati, inseriscili uno per uno
         if (idGeneri != null && idGeneri.length > 0) {
             for (String idGenereStr : idGeneri) {
@@ -171,7 +171,7 @@ public class ProfileService {
     
     public List<FilmBean> retrieveWatchedFilms(final String username) {
 
-    	return VistoDAO.doRetrieveFilmsByUtente(username);
+        return VistoDAO.doRetrieveFilmsByUtente(username);
         
     }
 
@@ -182,18 +182,23 @@ public class ProfileService {
 
     }
     
+    // --- CORREZIONE QUI SOTTO ---
     public boolean isFilmInWatchlist(String email, int filmId) {
             InteresseBean interesseBean = this.InteresseDAO.findByEmailAndIdFilm(email, filmId);
+            
+            // Se interesseBean è null, significa che non c'è nessuna tupla nel DB.
+            // Quindi il film NON è in watchlist.
+            if (interesseBean == null) {
+                return false;
+            }
+            
             return interesseBean.isInteresse();
-
     }
 
     public void rimuoviDallaWatchlist(String email, int filmId) {
         this.InteresseDAO.delete(email, filmId);
     }
     
- // Inserire dentro ProfileService.java
-
     /**
      * Verifica se un film è presente nella lista dei visti dell'utente.
      */

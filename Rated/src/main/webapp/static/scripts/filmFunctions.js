@@ -25,13 +25,21 @@ function voteReview(idFilm, emailRecensore, valutazione) {
 // --- FUNZIONE GESTIONE LISTE CORRETTA ---
 function toggleUserList(idFilm, listType, buttonElement) {
     let urlServlet = "";
+    
+    // Selezione Servlet corretta
     if (listType === 'watchlist') {
         urlServlet = "AggiungiWatchlistServlet";
     } else if (listType === 'watched') {
         urlServlet = "SegnaComeVistoServlet";
     }
 
+    if (!urlServlet) {
+        console.error("Tipo di lista non valido");
+        return;
+    }
+
     const formData = new URLSearchParams();
+    // Nota: La servlet si aspetta "filmId" come parametro
     formData.append("filmId", idFilm); 
 
     fetch(urlServlet, {
@@ -61,6 +69,7 @@ function toggleUserList(idFilm, listType, buttonElement) {
         } else {
             // ERROR: Leggi il messaggio inviato dalla Servlet
             const errorMessage = await response.text();
+            console.error("Errore server:", errorMessage);
             alert(errorMessage || "Impossibile aggiornare la lista.");
         }
     })
@@ -71,13 +80,19 @@ function toggleUserList(idFilm, listType, buttonElement) {
 }
 
 function showReviewForm() {
-    document.getElementById('reviewOverlay').style.display = 'flex';
+    const overlay = document.getElementById('reviewOverlay');
+    if(overlay) overlay.style.display = 'flex';
+    
     const rateButton = document.getElementById('btnRateFilm');
     if (rateButton) rateButton.disabled = true;
 }
 
 function hideReviewForm() {
-    document.getElementById('reviewOverlay').style.display = 'none';
+    const overlay = document.getElementById('reviewOverlay');
+    if(overlay) overlay.style.display = 'none';
+    
+    const rateButton = document.getElementById('btnRateFilm');
+    if (rateButton) rateButton.disabled = false;
 }
 
 function showModifyForm() {

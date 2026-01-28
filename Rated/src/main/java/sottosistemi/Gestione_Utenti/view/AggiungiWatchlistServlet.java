@@ -26,13 +26,14 @@ public class AggiungiWatchlistServlet extends HttpServlet {
         HttpSession session = request.getSession();
         UtenteBean utenteSessione = (UtenteBean) session.getAttribute("user");
 
+        // Controllo Login
         if (utenteSessione == null) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write("Devi effettuare il login.");
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // 401
+            response.getWriter().write("Devi effettuare il login per gestire la watchlist.");
             return;
         }
 
-        // 1. Recupera ID dal parametro della request (inviato dal JS)
+        // Recupero parametri
         String filmIdStr = request.getParameter("filmId");
         int filmId = -1;
         
@@ -41,7 +42,7 @@ public class AggiungiWatchlistServlet extends HttpServlet {
                 filmId = Integer.parseInt(filmIdStr);
             }
         } catch (NumberFormatException e) {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST); // 400
             response.getWriter().write("ID Film non valido.");
             return;
         }
@@ -49,18 +50,30 @@ public class AggiungiWatchlistServlet extends HttpServlet {
         if (filmId != -1) {
             ProfileService profileService = new ProfileService();
             
-            boolean isPresent = profileService.isFilmInWatchlist(utenteSessione.getEmail(), filmId);
-            
-            if (isPresent) {
-                profileService.rimuoviDallaWatchlist(utenteSessione.getEmail(), filmId);
-            } else {
-                profileService.aggiungiAllaWatchlist(utenteSessione.getEmail(), filmId);
+            try {
+                // Logica di toggle (aggiungi/rimuovi)
+                boolean isPresent = profileService.isFilmInWatchlist(utenteSessione.getEmail(), filmId);
+                
+                if (isPresent) {
+                    profileService.rimuoviDallaWatchlist(utenteSessione.getEmail(), filmId);
+                    response.getWriter().write("Film rimosso dalla watchlist.");
+                } else {
+                    profileService.aggiungiAllaWatchlist(utenteSessione.getEmail(), filmId);
+                    response.getWriter().write("Film aggiunto alla watchlist.");
+                }
+                
+                response.setStatus(HttpServletResponse.SC_OK); // 200
+                
+            } catch (Exception e) {
+                // Log dell'errore lato server (utile per l'amministratore/sviluppatore)
+                e.printStackTrace();
+                
+                // Risposta generica per l'utente (sicurezza)
+                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR); // 500
+                response.getWriter().write("Errore interno del server. Riprova più tardi.");
             }
-            
-            // Successo
-            response.setStatus(HttpServletResponse.SC_OK);
         } else {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST); // 400
             response.getWriter().write("Impossibile identificare il film.");
         }
     }

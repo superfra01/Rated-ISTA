@@ -72,7 +72,7 @@
         
         <div class="left-column">
             <div class="sort-bar">
-            </div>
+                </div>
 
             <% if (recensioni != null && !recensioni.isEmpty()) {
                 HashMap<String, String> users = (HashMap<String, String>) session.getAttribute("users");
@@ -192,7 +192,6 @@
                         <button type="button" 
                                 class="btn-list-action btn-watchlist <%= isInWatchlist ? "active" : "" %>" 
                                 id="btnWatchlist"
-                                <%= userHasReviewed ? "onclick=\"alert('Hai recensito questo film, ma puoi comunque rimuoverlo dalla watchlist se lo desideri.')\"" : "" %>
                                 onclick="toggleUserList('<%= film.getIdFilm() %>', 'watchlist', this)"
                         >
                             <% if(isInWatchlist) { %>
